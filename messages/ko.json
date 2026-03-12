@@ -1,0 +1,177 @@
+{
+  "common": {
+    "appName": "여행한입",
+    "tagline": "여행지, 맛집, 캠핑장, 특산품, 레시피를 한입에",
+    "search": "검색",
+    "searchPlaceholder": "여행지, 맛집, 특산품을 검색하세요...",
+    "home": "홈",
+    "allRegions": "전체",
+    "loading": "불러오는 중...",
+    "noResults": "검색 결과가 없어요",
+    "noResultsDesc": "다른 키워드로 검색해보세요",
+    "backToHome": "홈으로 돌아가기",
+    "viewMore": "더보기",
+    "close": "닫기"
+  },
+  "nav": {
+    "travel": "여행지",
+    "restaurants": "맛집",
+    "camping": "캠핑장",
+    "specialties": "특산품",
+    "recipes": "레시피",
+    "region": "지역",
+    "search": "검색",
+    "home": "홈"
+  },
+  "home": {
+    "heroTitle": "대한민국의 맛과 멋을",
+    "heroSubtitle": "한입에 담다",
+    "recommended": "추천 여행지",
+    "popularRegions": "인기 지역",
+    "seasonalSpecialties": "제철 특산품",
+    "weatherRecommended": "날씨별 추천",
+    "latestRecipes": "최신 레시피",
+    "recommendedCamping": "추천 캠핑장"
+  },
+  "travel": {
+    "title": "여행지",
+    "description": "전국의 아름다운 여행지를 탐색해보세요"
+  },
+  "restaurants": {
+    "title": "맛집",
+    "description": "지역별 맛집을 찾아보세요"
+  },
+  "camping": {
+    "title": "캠핑장",
+    "description": "전국 캠핑장을 탐색해보세요"
+  },
+  "specialties": {
+    "title": "특산품",
+    "description": "지역 특산품을 만나보세요"
+  },
+  "recipes": {
+    "title": "레시피",
+    "description": "특산품으로 만드는 맛있는 레시피"
+  },
+  "region": {
+    "title": "지역 탐색",
+    "description": "지역별 여행 정보를 한눈에",
+    "travelSpots": "여행지",
+    "restaurants": "맛집",
+    "campingSites": "캠핑장",
+    "specialties": "특산품",
+    "weather": "날씨",
+    "viewAll": "전체보기"
+  },
+  "footer": {
+    "about": "서비스 소개",
+    "privacy": "개인정보처리방침",
+    "terms": "이용약관",
+    "dataSource": "데이터 출처",
+    "copyright": "© 2026 여행한입. All rights reserved.",
+    "tourApi": "한국관광공사 Tour API",
+    "campingApi": "한국관광공사 고캠핑 API",
+    "recipeApi": "식품의약품안전처 조리식품 레시피 API",
+    "weatherApi": "기상청 단기예보 API"
+  },
+  "detail": {
+    "overview": "소개",
+    "address": "주소",
+    "tel": "전화번호",
+    "homepage": "홈페이지",
+    "images": "이미지",
+    "map": "지도",
+    "reviews": "리뷰",
+    "writeReview": "리뷰 작성",
+    "noReviews": "아직 리뷰가 없어요",
+    "accessibility": "무장애 정보",
+    "weather": "날씨 정보",
+    "ingredients": "재료",
+    "cookingMethod": "조리방법",
+    "cookingSteps": "조리 순서",
+    "nutrition": "영양 정보",
+    "calories": "열량",
+    "carbs": "탄수화물",
+    "protein": "단백질",
+    "fat": "지방",
+    "sodium": "나트륨",
+    "relatedRecipes": "관련 레시피",
+    "season": "제철",
+    "category": "분류",
+    "backToList": "목록으로"
+  },
+  "filter": {
+    "allCategories": "전체",
+    "allMethods": "전체",
+    "allSeasons": "전체",
+    "category": "카테고리",
+    "method": "조리방법",
+    "season": "계절",
+    "sort": "정렬",
+    "sortRating": "평점순",
+    "sortNewest": "최신순",
+    "apply": "적용"
+  },
+  "review": {
+    "rating": "별점",
+    "content": "리뷰 내용",
+    "contentOptional": "(선택)",
+    "placeholder": "리뷰를 작성해주세요.",
+    "submit": "리뷰 작성",
+    "submitting": "제출 중...",
+    "ratingRequired": "별점을 선택해주세요.",
+    "submitFailed": "리뷰 작성에 실패했습니다."
+  },
+  "weather": {
+    "sunny": "맑음",
+    "cloudy": "구름많음",
+    "overcast": "흐림",
+    "rainy": "비",
+    "snowy": "눈",
+    "temp": "기온",
+    "humidity": "습도",
+    "sky": "하늘상태",
+    "currentWeather": "현재 날씨"
+  },
+  "accessibility": {
+    "wheelchairRamp": "휠체어 경사로",
+    "elevator": "엘리베이터",
+    "accessibleParking": "장애인 주차",
+    "accessibleRestroom": "장애인 화장실",
+    "brailleGuide": "점자 안내",
+    "audioGuide": "음성 안내",
+    "available": "이용 가능",
+    "unavailable": "이용 불가",
+    "unknown": "정보 없음"
+  },
+  "camping": {
+    "title": "캠핑장",
+    "description": "전국 캠핑장을 탐색해보세요",
+    "environment": "환경",
+    "facilities": "시설",
+    "reservation": "예약",
+    "reservationUrl": "예약 바로가기",
+    "operationDates": "운영 기간",
+    "doCategory": "지역",
+    "indutyCategory": "캠핑장 유형",
+    "sbrsCl": "부대시설",
+    "animalCl": "반려동물",
+    "posblFcltyCl": "주변 체험활동"
+  },
+  "search": {
+    "title": "검색",
+    "placeholder": "검색어를 입력하세요",
+    "results": "검색 결과",
+    "travel": "여행지",
+    "restaurants": "맛집",
+    "camping": "캠핑장",
+    "specialties": "특산품"
+  },
+  "error": {
+    "notFound": "페이지를 찾을 수 없어요",
+    "notFoundDesc": "요청하신 페이지가 존재하지 않습니다.",
+    "serverError": "서버 오류가 발생했어요",
+    "serverErrorDesc": "잠시 후 다시 시도해주세요.",
+    "retry": "다시 시도"
+  }
+}

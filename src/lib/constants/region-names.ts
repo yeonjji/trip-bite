@@ -1,0 +1,41 @@
+// 지역 한영 이름 매핑 (area-codes.ts의 AREA_CODES 기준)
+
+export const REGION_NAME_EN: Record<string, string> = {
+  "1": "Seoul",
+  "2": "Incheon",
+  "3": "Daejeon",
+  "4": "Daegu",
+  "5": "Gwangju",
+  "6": "Busan",
+  "7": "Ulsan",
+  "8": "Sejong",
+  "31": "Gyeonggi",
+  "32": "Gangwon",
+  "33": "Chungbuk",
+  "34": "Chungnam",
+  "35": "Jeonbuk",
+  "36": "Jeonnam",
+  "37": "Gyeongbuk",
+  "38": "Gyeongnam",
+  "39": "Jeju",
+};
+
+export const REGION_NAME_KO: Record<string, string> = {
+  "1": "서울",
+  "2": "인천",
+  "3": "대전",
+  "4": "대구",
+  "5": "광주",
+  "6": "부산",
+  "7": "울산",
+  "8": "세종",
+  "31": "경기",
+  "32": "강원",
+  "33": "충북",
+  "34": "충남",
+  "35": "전북",
+  "36": "전남",
+  "37": "경북",
+  "38": "경남",
+  "39": "제주",
+};

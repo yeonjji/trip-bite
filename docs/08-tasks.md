@@ -3,7 +3,7 @@
 > **프로젝트**: 여행한입 (Trip Bite)
 > **작성일**: 2026-03-12
 > **총 태스크**: 128개 (6 Phase)
-> **상태**: 전체 pending
+> **상태**: 진행 중 (120/128 완료) — Phase 0~4 ✅, Phase 5 P5-01~13 ✅
 
 ---
 
@@ -193,35 +193,35 @@
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P2-01 | specialties 테이블 마이그레이션 | P1-08 | `006_specialties.sql` |
-| P2-02 | recipes 테이블 마이그레이션 | P2-01 | `007_recipes.sql` |
-| P2-03 | RecipeApiClient 구현 | P1-06 | `src/lib/api/recipe-api.ts` |
-| P2-04 | 특산품 시드 데이터 | P2-01 | `supabase/seed-specialties.sql` (60~80개) |
-| P2-05 | sync-recipes Edge Function | P2-03, P2-02 | `supabase/functions/sync-recipes/` |
+| ✅ P2-01 | specialties 테이블 마이그레이션 | P1-08 | `006_specialties.sql` |
+| ✅ P2-02 | recipes 테이블 마이그레이션 | P2-01 | `007_recipes.sql` |
+| ✅ P2-03 | RecipeApiClient 구현 | P1-06 | `src/lib/api/recipe-api.ts` |
+| ✅ P2-04 | 특산품 시드 데이터 | P2-01 | `supabase/seed-specialties.sql` (60개) |
+| ✅ P2-05 | sync-recipes Edge Function | P2-03, P2-02 | `supabase/functions/sync-recipes/` |
 
 ### 2-B. UI 컴포넌트 (P2-06 ~ P2-07)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P2-06 | SpecialtyCard 컴포넌트 | P0-03 | `src/components/cards/SpecialtyCard.tsx` |
-| P2-07 | RecipeCard 컴포넌트 | P0-03 | `src/components/cards/RecipeCard.tsx` |
+| ✅ P2-06 | SpecialtyCard 컴포넌트 | P0-03 | `src/components/cards/SpecialtyCard.tsx` |
+| ✅ P2-07 | RecipeCard 컴포넌트 | P0-03 | `src/components/cards/RecipeCard.tsx` |
 
 ### 2-C. 특산품 페이지 (P2-08 ~ P2-10)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P2-08 | 특산품 데이터 fetch 유틸 | P2-01, P1-07 | `src/lib/data/specialties.ts` |
-| P2-09 | 특산품 목록 페이지 | P2-08, P2-06, P1-23, P1-29 | `[locale]/specialties/page.tsx` |
-| P2-10 | 특산품 상세 페이지 | P2-08, P2-07 | `[locale]/specialties/[id]/page.tsx` |
+| ✅ P2-08 | 특산품 데이터 fetch 유틸 | P2-01, P1-07 | `src/lib/data/specialties.ts` |
+| ✅ P2-09 | 특산품 목록 페이지 | P2-08, P2-06, P1-23, P1-29 | `[locale]/specialties/page.tsx` |
+| ✅ P2-10 | 특산품 상세 페이지 | P2-08, P2-07 | `[locale]/specialties/[id]/page.tsx` |
 
 ### 2-D. 레시피 페이지 (P2-11 ~ P2-14)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P2-11 | 레시피 데이터 fetch 유틸 | P2-02, P1-07 | `src/lib/data/recipes.ts` |
-| P2-12 | 레시피 목록 페이지 | P2-11, P2-07, P1-29 | `[locale]/recipes/page.tsx` |
-| P2-13 | 레시피 상세 페이지 | P2-11 | `[locale]/recipes/[id]/page.tsx` |
-| P2-14 | 레시피 JSON-LD 구조화 데이터 | P2-13 | Schema.org Recipe markup |
+| ✅ P2-11 | 레시피 데이터 fetch 유틸 | P2-02, P1-07 | `src/lib/data/recipes.ts` |
+| ✅ P2-12 | 레시피 목록 페이지 | P2-11, P2-07, P1-29 | `[locale]/recipes/page.tsx` |
+| ✅ P2-13 | 레시피 상세 페이지 | P2-11 | `[locale]/recipes/[id]/page.tsx` |
+| ✅ P2-14 | 레시피 JSON-LD 구조화 데이터 | P2-13 | Schema.org Recipe markup |
 
 ### Phase 2 검증 기준
 - COOKRCP01 API 레시피 데이터 정상 로딩
@@ -236,13 +236,13 @@
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P3-01 | accessibility_info 테이블 마이그레이션 | P1-09 | `010_accessibility_info.sql` |
-| P3-02 | TourAPI detailPetTour 연동 | P1-14 | tour-api.ts detailPetTour 메서드 |
-| P3-03 | TourAPI detailWithTour 연동 | P1-14 | tour-api.ts detailWithTour 메서드 |
-| P3-04 | sync-accessibility Edge Function | P3-01, P3-02, P3-03 | `supabase/functions/sync-accessibility/` |
-| P3-05 | AccessibilityBadge 컴포넌트 | P0-03 | `src/components/shared/AccessibilityBadge.tsx` |
-| P3-06 | TargetGroupFilter 컴포넌트 | P0-03 | `src/components/filters/TargetGroupFilter.tsx` |
-| P3-07 | 접근성 상세 섹션 + 카드 배지 통합 | P3-04, P3-05, P3-06, P1-35, P1-33 | 상세+목록 페이지 수정 |
+| ✅ P3-01 | accessibility_info 테이블 마이그레이션 | P1-09 | `010_accessibility_info.sql` |
+| ✅ P3-02 | TourAPI detailPetTour 연동 | P1-14 | tour-api.ts detailPetTour 메서드 |
+| ✅ P3-03 | TourAPI detailWithTour 연동 | P1-14 | tour-api.ts detailWithTour 메서드 |
+| ✅ P3-04 | sync-accessibility Edge Function | P3-01, P3-02, P3-03 | `supabase/functions/sync-accessibility/` |
+| ✅ P3-05 | AccessibilityBadge 컴포넌트 | P0-03 | `src/components/shared/AccessibilityBadge.tsx` |
+| ✅ P3-06 | TargetGroupFilter 컴포넌트 | P0-03 | `src/components/filters/TargetGroupFilter.tsx` |
+| ✅ P3-07 | 접근성 상세 섹션 + 카드 배지 통합 | P3-04, P3-05, P3-06, P1-35, P1-33 | 상세+목록 페이지 수정 |
 
 ### Phase 3 검증 기준
 - 반려동물 동반/휠체어/외국인 친화 필터 동작
@@ -258,40 +258,40 @@
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P4-01 | weather_cache 테이블 마이그레이션 | P1-08 | `009_weather_cache.sql` |
-| P4-02 | 격자좌표 매핑 상수 | P1-03 | `src/lib/constants/grid-coords.ts` |
-| P4-03 | WeatherApiClient 구현 | P4-02 | `src/lib/api/weather-api.ts` |
-| P4-04 | 날씨 캐시 + 동기화 로직 | P4-01, P4-03 | `src/lib/data/weather.ts` (3시간 캐시) |
-| P4-05 | WeatherWidget 컴포넌트 | P4-04 | `src/components/weather/WeatherWidget.tsx` |
+| ✅ P4-01 | weather_cache 테이블 마이그레이션 | P1-08 | `009_weather_cache.sql` |
+| ✅ P4-02 | 격자좌표 매핑 상수 | P1-03 | `src/lib/constants/grid-coords.ts` |
+| ✅ P4-03 | WeatherApiClient 구현 | P4-02 | `src/lib/api/weather-api.ts` |
+| ✅ P4-04 | 날씨 캐시 + 동기화 로직 | P4-01, P4-03 | `src/lib/data/weather.ts` (3시간 캐시) |
+| ✅ P4-05 | WeatherWidget 컴포넌트 | P4-04 | `src/components/weather/WeatherWidget.tsx` |
 
 ### 4-B. 지도 + 추천 (P4-06 ~ P4-09)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P4-06 | KoreaMapSvg 컴포넌트 | P1-03 | `src/components/maps/KoreaMapSvg.tsx` |
-| P4-07 | 여행지 상세 날씨 위젯 추가 | P4-05, P1-35 | travel/[id] 날씨 표시 |
-| P4-08 | 계절별 추천 로직 | P1-32, P4-04 | `src/lib/utils/recommendation.ts` |
-| P4-09 | 지역 허브 페이지 | P4-05, P1-32, P1-37, P1-40, P2-08 | `[locale]/region/[areaCode]/page.tsx` |
+| ✅ P4-06 | KoreaMapSvg 컴포넌트 | P1-03 | `src/components/maps/KoreaMapSvg.tsx` |
+| ✅ P4-07 | 여행지 상세 날씨 위젯 추가 | P4-05, P1-35 | travel/[id] 날씨 표시 |
+| ✅ P4-08 | 계절별 추천 로직 | P1-32, P4-04 | `src/lib/utils/recommendation.ts` |
+| ✅ P4-09 | 지역 허브 페이지 | P4-05, P1-32, P1-37, P1-40, P2-08 | `[locale]/region/[areaCode]/page.tsx` |
 
 ### 4-C. 홈페이지 섹션 (P4-10 ~ P4-14)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P4-10 | 홈 히어로 섹션 | P1-48 | 배경 이미지 + SearchBar + 인기 검색어 |
-| P4-11 | 홈 추천 여행지 캐러셀 | P4-10, P1-20, P4-08 | TravelCard 수평 캐러셀 |
-| P4-12 | 홈 인기 지역 그리드 | P4-10, P4-06 | SVG 지도 + 지역 카드 |
-| P4-13 | 홈 제철 특산품 섹션 | P4-10, P2-06, P2-08 | SpecialtyCard 스크롤 |
-| P4-14 | 홈 날씨별 추천 + 최신 레시피 + 추천 캠핑장 | P4-10, P4-08, P2-07, P2-11, P1-22, P1-40 | 3개 섹션 |
+| ✅ P4-10 | 홈 히어로 섹션 | P1-48 | 배경 이미지 + SearchBar + 인기 검색어 |
+| ✅ P4-11 | 홈 추천 여행지 캐러셀 | P4-10, P1-20, P4-08 | TravelCard 수평 캐러셀 |
+| ✅ P4-12 | 홈 인기 지역 그리드 | P4-10, P4-06 | SVG 지도 + 지역 카드 |
+| ✅ P4-13 | 홈 제철 특산품 섹션 | P4-10, P2-06, P2-08 | SpecialtyCard 스크롤 |
+| ✅ P4-14 | 홈 날씨별 추천 + 최신 레시피 + 추천 캠핑장 | P4-10, P4-08, P2-07, P2-11, P1-22, P1-40 | 3개 섹션 |
 
 ### 4-D. UX + 스케줄 (P4-15 ~ P4-19)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P4-15 | 로딩 스켈레톤 - 목록 페이지 | P0-03 | 5개 목록 `loading.tsx` |
-| P4-16 | 로딩 스켈레톤 - 상세 페이지 | P0-03 | 3개 상세 `loading.tsx` |
-| P4-17 | 로딩 스켈레톤 - 홈 + 지역 허브 | P0-03 | 홈/지역 `loading.tsx` |
-| P4-18 | 이미지 최적화 | P4-14 | next/image sizes, remotePatterns, lazy |
-| P4-19 | pg_cron 스케줄 설정 | P1-18, P1-19, P2-05, P3-04, P4-04 | `012_cron_jobs.sql` |
+| ✅ P4-15 | 로딩 스켈레톤 - 목록 페이지 | P0-03 | 5개 목록 `loading.tsx` |
+| ✅ P4-16 | 로딩 스켈레톤 - 상세 페이지 | P0-03 | 3개 상세 `loading.tsx` |
+| ✅ P4-17 | 로딩 스켈레톤 - 홈 + 지역 허브 | P0-03 | 홈/지역 `loading.tsx` |
+| ✅ P4-18 | 이미지 최적화 | P4-14 | next/image sizes, remotePatterns, lazy |
+| ✅ P4-19 | pg_cron 스케줄 설정 | P1-18, P1-19, P2-05, P3-04, P4-04 | `012_cron_jobs.sql` |
 
 ### Phase 4 검증 기준
 - 홈 -> 지역 허브 -> 상세 전체 플로우
@@ -310,34 +310,34 @@
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P5-01 | ko.json UI 문자열 완성 | P4-14 | 모든 UI를 t() 사용 |
-| P5-02 | en.json 영어 번역 | P5-01 | `messages/en.json` 완성 |
-| P5-03 | 지역명/카테고리/접근성 라벨 영어 번역 | P5-02 | 상수 + DB en 필드 |
+| ✅ P5-01 | ko.json UI 문자열 완성 | P4-14 | 모든 UI를 t() 사용 |
+| ✅ P5-02 | en.json 영어 번역 | P5-01 | `messages/en.json` 완성 |
+| ✅ P5-03 | 지역명/카테고리/접근성 라벨 영어 번역 | P5-02 | 상수 + DB en 필드 |
 
 ### 5-B. SEO (P5-04 ~ P5-06)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P5-04 | sitemap.xml 동적 생성 | P5-02 | `src/app/sitemap.ts` |
-| P5-05 | robots.txt | - | `public/robots.txt` |
-| P5-06 | OG 이미지 생성 | - | `src/app/api/og/route.tsx` |
+| ✅ P5-04 | sitemap.xml 동적 생성 | P5-02 | `src/app/sitemap.ts` |
+| ✅ P5-05 | robots.txt | - | `src/app/robots.ts` |
+| ✅ P5-06 | OG 이미지 생성 | - | `src/app/opengraph-image.tsx` |
 
 ### 5-C. 에러 + 보안 (P5-07 ~ P5-10)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P5-07 | 에러 페이지 (404, 500) i18n | P5-02 | `not-found.tsx`, `error.tsx`, `global-error.tsx` |
-| P5-08 | RLS 정책 설정 | P1-11 | `011_rls_policies.sql` |
-| P5-09 | API Route rate limiting | P1-46 | `src/lib/utils/rate-limit.ts` |
-| P5-10 | CSP 헤더 + 보안 헤더 | - | `next.config.ts` headers |
+| ✅ P5-07 | 에러 페이지 (404, 500) i18n | P5-02 | `not-found.tsx`, `error.tsx`, `global-error.tsx` |
+| ✅ P5-08 | RLS 정책 설정 | P1-11 | `013_rls_policies.sql` |
+| ✅ P5-09 | API Route rate limiting | P1-46 | `src/lib/utils/rate-limit.ts` |
+| ✅ P5-10 | CSP 헤더 + 보안 헤더 | - | `next.config.ts` headers |
 
 ### 5-D. 법적 페이지 (P5-11 ~ P5-13)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P5-11 | 개인정보처리방침 페이지 | P5-02 | `[locale]/privacy/page.tsx` |
-| P5-12 | 이용약관 페이지 | P5-02 | `[locale]/terms/page.tsx` |
-| P5-13 | 서비스 소개 페이지 | P5-02 | `[locale]/about/page.tsx` |
+| ✅ P5-11 | 개인정보처리방침 페이지 | P5-02 | `[locale]/privacy/page.tsx` |
+| ✅ P5-12 | 이용약관 페이지 | P5-02 | `[locale]/terms/page.tsx` |
+| ✅ P5-13 | 서비스 소개 페이지 | P5-02 | `[locale]/about/page.tsx` |
 
 ### 5-E. 프로덕션 배포 (P5-14 ~ P5-19)
 

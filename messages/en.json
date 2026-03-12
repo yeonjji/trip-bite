@@ -1,0 +1,173 @@
+{
+  "common": {
+    "appName": "Trip Bite",
+    "tagline": "Discover travel spots, restaurants, camping, specialties & recipes in one bite",
+    "search": "Search",
+    "searchPlaceholder": "Search for travel spots, restaurants, specialties...",
+    "home": "Home",
+    "allRegions": "All",
+    "loading": "Loading...",
+    "noResults": "No results found",
+    "noResultsDesc": "Try a different keyword",
+    "backToHome": "Back to Home",
+    "viewMore": "View More",
+    "close": "Close"
+  },
+  "nav": {
+    "travel": "Travel",
+    "restaurants": "Restaurants",
+    "camping": "Camping",
+    "specialties": "Specialties",
+    "recipes": "Recipes",
+    "region": "Region",
+    "search": "Search",
+    "home": "Home"
+  },
+  "home": {
+    "heroTitle": "Discover Korea's",
+    "heroSubtitle": "Flavors & Sights in One Bite",
+    "recommended": "Recommended Destinations",
+    "popularRegions": "Popular Regions",
+    "seasonalSpecialties": "Seasonal Specialties",
+    "weatherRecommended": "Weather-based Picks",
+    "latestRecipes": "Latest Recipes",
+    "recommendedCamping": "Recommended Camping"
+  },
+  "travel": {
+    "title": "Travel Spots",
+    "description": "Explore beautiful destinations across Korea"
+  },
+  "restaurants": {
+    "title": "Restaurants",
+    "description": "Find the best local restaurants"
+  },
+  "camping": {
+    "title": "Camping Sites",
+    "description": "Explore camping sites across Korea",
+    "environment": "Environment",
+    "facilities": "Facilities",
+    "reservation": "Reservation",
+    "reservationUrl": "Book Now",
+    "operationDates": "Operating Period",
+    "doCategory": "Region",
+    "indutyCategory": "Campsite Type",
+    "sbrsCl": "Amenities",
+    "animalCl": "Pets",
+    "posblFcltyCl": "Activities"
+  },
+  "specialties": {
+    "title": "Specialties",
+    "description": "Discover regional specialties"
+  },
+  "recipes": {
+    "title": "Recipes",
+    "description": "Delicious recipes with local specialties"
+  },
+  "region": {
+    "title": "Explore by Region",
+    "description": "Travel info by region at a glance",
+    "travelSpots": "Travel Spots",
+    "restaurants": "Restaurants",
+    "campingSites": "Camping Sites",
+    "specialties": "Specialties",
+    "weather": "Weather",
+    "viewAll": "View All"
+  },
+  "footer": {
+    "about": "About",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "dataSource": "Data Sources",
+    "copyright": "© 2026 Trip Bite. All rights reserved.",
+    "tourApi": "Korea Tourism Organization Tour API",
+    "campingApi": "Korea Tourism Organization GoCamping API",
+    "recipeApi": "Ministry of Food and Drug Safety Recipe API",
+    "weatherApi": "Korea Meteorological Administration API"
+  },
+  "detail": {
+    "overview": "Overview",
+    "address": "Address",
+    "tel": "Phone",
+    "homepage": "Website",
+    "images": "Photos",
+    "map": "Map",
+    "reviews": "Reviews",
+    "writeReview": "Write a Review",
+    "noReviews": "No reviews yet",
+    "accessibility": "Accessibility",
+    "weather": "Weather",
+    "ingredients": "Ingredients",
+    "cookingMethod": "Cooking Method",
+    "cookingSteps": "Cooking Steps",
+    "nutrition": "Nutrition",
+    "calories": "Calories",
+    "carbs": "Carbs",
+    "protein": "Protein",
+    "fat": "Fat",
+    "sodium": "Sodium",
+    "relatedRecipes": "Related Recipes",
+    "season": "Season",
+    "category": "Category",
+    "backToList": "Back to List"
+  },
+  "filter": {
+    "allCategories": "All",
+    "allMethods": "All",
+    "allSeasons": "All",
+    "category": "Category",
+    "method": "Method",
+    "season": "Season",
+    "sort": "Sort",
+    "sortRating": "By Rating",
+    "sortNewest": "Newest",
+    "apply": "Apply"
+  },
+  "review": {
+    "rating": "Rating",
+    "content": "Review",
+    "contentOptional": "(optional)",
+    "placeholder": "Write your review...",
+    "submit": "Submit Review",
+    "submitting": "Submitting...",
+    "ratingRequired": "Please select a rating.",
+    "submitFailed": "Failed to submit review."
+  },
+  "weather": {
+    "sunny": "Sunny",
+    "cloudy": "Partly Cloudy",
+    "overcast": "Cloudy",
+    "rainy": "Rainy",
+    "snowy": "Snowy",
+    "temp": "Temperature",
+    "humidity": "Humidity",
+    "sky": "Sky",
+    "currentWeather": "Current Weather"
+  },
+  "accessibility": {
+    "wheelchairRamp": "Wheelchair Ramp",
+    "elevator": "Elevator",
+    "accessibleParking": "Accessible Parking",
+    "accessibleRestroom": "Accessible Restroom",
+    "brailleGuide": "Braille Guide",
+    "audioGuide": "Audio Guide",
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "unknown": "Unknown"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Enter search term",
+    "results": "Search Results",
+    "travel": "Travel",
+    "restaurants": "Restaurants",
+    "camping": "Camping",
+    "specialties": "Specialties"
+  },
+  "error": {
+    "notFound": "Page Not Found",
+    "notFoundDesc": "The page you requested does not exist.",
+    "serverError": "Server Error",
+    "serverErrorDesc": "Please try again later.",
+    "retry": "Try Again"
+  }
+}
