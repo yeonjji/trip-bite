@@ -59,6 +59,14 @@ const nextConfig: NextConfig = {
       // 고캠핑 API
       {
         protocol: "https",
+        hostname: "gocamping.or.kr",
+      },
+      {
+        protocol: "http",
+        hostname: "gocamping.or.kr",
+      },
+      {
+        protocol: "https",
         hostname: "*.gocamping.or.kr",
       },
       {
