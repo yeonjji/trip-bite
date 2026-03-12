@@ -11,7 +11,7 @@ import type {
   TourPetInfo,
 } from "@/types/tour-api";
 
-const BASE_URL = "https://apis.data.go.kr/B551011/KorService1";
+const BASE_URL = "https://apis.data.go.kr/B551011/KorService2";
 
 function getCommonParams(): URLSearchParams {
   const key = process.env.TOUR_API_KEY;
@@ -49,12 +49,12 @@ export const tourApi = {
     const searchParams = getCommonParams();
     if (params.numOfRows !== undefined) searchParams.set("numOfRows", String(params.numOfRows));
     if (params.pageNo !== undefined) searchParams.set("pageNo", String(params.pageNo));
-    if (params.areaCode) searchParams.set("areaCode", params.areaCode);
+    if (params.areaCode) searchParams.set("lDongRegnCd", params.areaCode);
     if (params.sigunguCode) searchParams.set("sigunguCode", params.sigunguCode);
     if (params.contentTypeId) searchParams.set("contentTypeId", params.contentTypeId);
     if (params.arrange) searchParams.set("arrange", params.arrange);
 
-    return fetchTourApi<TourSpotBase>("areaBasedList1", searchParams);
+    return fetchTourApi<TourSpotBase>("areaBasedList2", searchParams);
   },
 
   // P1-13: 키워드 검색
@@ -62,13 +62,13 @@ export const tourApi = {
     const searchParams = getCommonParams();
     if (params.numOfRows !== undefined) searchParams.set("numOfRows", String(params.numOfRows));
     if (params.pageNo !== undefined) searchParams.set("pageNo", String(params.pageNo));
-    if (params.areaCode) searchParams.set("areaCode", params.areaCode);
+    if (params.areaCode) searchParams.set("lDongRegnCd", params.areaCode);
     if (params.sigunguCode) searchParams.set("sigunguCode", params.sigunguCode);
     if (params.contentTypeId) searchParams.set("contentTypeId", params.contentTypeId);
     if (params.arrange) searchParams.set("arrange", params.arrange);
     if (params.keyword) searchParams.set("keyword", params.keyword);
 
-    return fetchTourApi<TourSpotBase>("searchKeyword1", searchParams);
+    return fetchTourApi<TourSpotBase>("searchKeyword2", searchParams);
   },
 
   // P1-14: 공통 상세 조회
@@ -82,7 +82,7 @@ export const tourApi = {
     searchParams.set("mapinfoYN", "Y");
     searchParams.set("overviewYN", "Y");
 
-    return fetchTourApi<TourDetailCommon>("detailCommon1", searchParams);
+    return fetchTourApi<TourDetailCommon>("detailCommon2", searchParams);
   },
 
   // P1-14: 소개 상세 조회
@@ -94,7 +94,7 @@ export const tourApi = {
     searchParams.set("contentId", contentId);
     searchParams.set("contentTypeId", contentTypeId);
 
-    return fetchTourApi<TourSpotDetail | RestaurantDetail>("detailIntro1", searchParams);
+    return fetchTourApi<TourSpotDetail | RestaurantDetail>("detailIntro2", searchParams);
   },
 
   // P1-14: 이미지 조회
@@ -104,7 +104,7 @@ export const tourApi = {
     searchParams.set("imageYN", "Y");
     searchParams.set("subImageYN", "Y");
 
-    return fetchTourApi<TourImage>("detailImage1", searchParams);
+    return fetchTourApi<TourImage>("detailImage2", searchParams);
   },
 
   // P1-14: 반려동물 여행 정보 조회
@@ -112,7 +112,7 @@ export const tourApi = {
     const searchParams = getCommonParams();
     searchParams.set("contentId", contentId);
 
-    return fetchTourApi<TourPetInfo>("detailPetTour1", searchParams);
+    return fetchTourApi<TourPetInfo>("detailPetTour2", searchParams);
   },
 
   // P3-02: 외국어 안내 정보 조회
@@ -120,6 +120,6 @@ export const tourApi = {
     const searchParams = getCommonParams();
     searchParams.set("contentId", contentId);
 
-    return fetchTourApi<Record<string, string>>("detailWithTour1", searchParams);
+    return fetchTourApi<Record<string, string>>("detailWithTour2", searchParams);
   },
 };

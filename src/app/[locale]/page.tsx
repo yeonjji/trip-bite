@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 const POPULAR_KEYWORDS = ["제주도", "경복궁", "설악산", "부산 해운대", "전주 한옥마을"]
 
 // 대표 지역 코드 (홈 그리드용 8개)
-const FEATURED_AREA_CODES = ["1", "31", "32", "6", "39", "36", "37", "38"]
+const FEATURED_AREA_CODES = ["11", "41", "51", "26", "50", "46", "47", "48"]
 
 export default async function HomePage({ params }: Props) {
   const { locale } = await params
