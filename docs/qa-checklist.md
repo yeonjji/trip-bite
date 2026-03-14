@@ -75,12 +75,12 @@
 
 | 카테고리 | 목표 | 측정값 |
 |---------|------|--------|
-| Performance | 90+ | |
-| Accessibility | 90+ | |
-| Best Practices | 90+ | |
-| SEO | 90+ | |
+| Performance | 90+ | **94** ✅ |
+| Accessibility | 90+ | **96** ✅ |
+| Best Practices | 90+ | **100** ✅ |
+| SEO | 90+ | **100** ✅ |
 
-- [ ] 모든 카테고리 90+
+- [x] 모든 카테고리 90+
 
 ---
 

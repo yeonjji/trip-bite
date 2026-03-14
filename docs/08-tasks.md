@@ -344,7 +344,7 @@
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
 | ✅ P5-14 | hreflang 태그 검증 | P5-04 | 전체 페이지 hreflang 확인 |
-| P5-15 | Lighthouse 감사 + 성능 최적화 | P5-04, P5-10, P4-18 | Lighthouse 90+ |
+| ✅ P5-15 | Lighthouse 감사 + 성능 최적화 | P5-04, P5-10, P4-18 | Lighthouse 90+ |
 | ✅ P5-16 | 프로덕션 환경 변수 설정 | P0-18 | Vercel Env Variables |
 | P5-17 | 프로덕션 도메인 연결 | P5-16 | DNS + HTTPS |
 | P5-18 | Google Search Console 등록 + sitemap 제출 | P5-17, P5-04 | GSC 등록 완료 |

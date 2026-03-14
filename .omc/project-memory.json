@@ -195,8 +195,8 @@
     },
     {
       "path": "docs/08-tasks.md",
-      "accessCount": 5,
-      "lastAccessed": 1773451207605,
+      "accessCount": 6,
+      "lastAccessed": 1773452019629,
       "type": "file"
     },
     {
@@ -209,6 +209,12 @@
       "path": "src/app/[locale]/camping/page.tsx",
       "accessCount": 4,
       "lastAccessed": 1773450725445,
+      "type": "file"
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1773451738273,
       "type": "file"
     },
     {
@@ -302,9 +308,9 @@
       "type": "file"
     },
     {
-      "path": "src/app/layout.tsx",
+      "path": "docs/qa-checklist.md",
       "accessCount": 2,
-      "lastAccessed": 1773451061159,
+      "lastAccessed": 1773452050917,
       "type": "file"
     },
     {
@@ -323,12 +329,6 @@
       "path": "src/lib/utils/metadata.ts",
       "accessCount": 1,
       "lastAccessed": 1773450692672,
-      "type": "file"
-    },
-    {
-      "path": "docs/qa-checklist.md",
-      "accessCount": 1,
-      "lastAccessed": 1773451233399,
       "type": "file"
     }
   ],
