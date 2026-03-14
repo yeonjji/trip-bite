@@ -2,8 +2,10 @@
 
 import { Suspense } from "react"
 import { setRequestLocale } from "next-intl/server"
+import type { Metadata } from "next"
 
 import RestaurantCard from "@/components/cards/RestaurantCard"
+import { buildAlternates } from "@/lib/utils/metadata"
 import EmptyState from "@/components/shared/EmptyState"
 import { getRestaurants } from "@/lib/data/restaurants"
 import type { RestaurantDetail } from "@/types/tour-api"
@@ -17,6 +19,18 @@ const PAGE_SIZE = 12
 type Props = {
   params: Promise<{ locale: string }>
   searchParams: Promise<{ areaCode?: string; page?: string }>
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  return {
+    title: locale === "en" ? "Restaurants" : "맛집",
+    description:
+      locale === "en"
+        ? "Discover local restaurants across Korea."
+        : "전국의 맛집을 탐색하세요.",
+    alternates: buildAlternates("/restaurants"),
+  }
 }
 
 function toRestaurantDetail(destination: Destination): RestaurantDetail {

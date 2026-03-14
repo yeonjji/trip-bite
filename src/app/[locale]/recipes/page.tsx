@@ -1,6 +1,8 @@
 import { Suspense } from "react"
+import type { Metadata } from "next"
 
 import RecipeCard from "@/components/cards/RecipeCard"
+import { buildAlternates } from "@/lib/utils/metadata"
 import EmptyState from "@/components/shared/EmptyState"
 import { getRecipes } from "@/lib/data/recipes"
 
@@ -17,6 +19,18 @@ interface PageProps {
 }
 
 const PAGE_SIZE = 12
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  return {
+    title: locale === "en" ? "Recipes" : "레시피",
+    description:
+      locale === "en"
+        ? "Discover Korean recipes made with local specialties."
+        : "지역 특산품으로 만드는 한국 레시피를 탐색하세요.",
+    alternates: buildAlternates("/recipes"),
+  }
+}
 
 export default async function RecipesPage({ params, searchParams }: PageProps) {
   const { locale } = await params

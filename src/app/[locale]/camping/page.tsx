@@ -1,6 +1,8 @@
 import { Suspense } from "react"
+import type { Metadata } from "next"
 
 import CampingCard from "@/components/cards/CampingCard"
+import { buildAlternates } from "@/lib/utils/metadata"
 import { getCampingSites } from "@/lib/data/camping"
 import type { CampingSite } from "@/types/database"
 
@@ -18,6 +20,18 @@ interface PageProps {
 }
 
 const PAGE_SIZE = 12
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  return {
+    title: locale === "en" ? "Camping Sites" : "캠핑장",
+    description:
+      locale === "en"
+        ? "Find camping sites across Korea."
+        : "전국의 캠핑장을 탐색하세요.",
+    alternates: buildAlternates("/camping"),
+  }
+}
 
 function toCardItem(site: CampingSite) {
   return {

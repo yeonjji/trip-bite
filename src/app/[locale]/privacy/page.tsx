@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
+import { buildAlternates } from "@/lib/utils/metadata";
 
-export const metadata: Metadata = {
-  title: "개인정보처리방침 | 여행한입",
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === "en" ? "Privacy Policy | Trip Bite" : "개인정보처리방침 | 여행한입",
+    alternates: buildAlternates("/privacy"),
+  };
+}
 
 export default function PrivacyPage() {
   return (

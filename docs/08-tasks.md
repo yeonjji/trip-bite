@@ -3,7 +3,7 @@
 > **프로젝트**: 여행한입 (Trip Bite)
 > **작성일**: 2026-03-12
 > **총 태스크**: 128개 (6 Phase)
-> **상태**: 진행 중 (120/128 완료) — Phase 0~4 ✅, Phase 5 P5-01~13 ✅
+> **상태**: 진행 중 (125/128 완료) — Phase 0~5 (P5-01~16) ✅
 
 ---
 
@@ -11,20 +11,20 @@
 
 | # | 태스크 | Phase |
 |---|--------|-------|
-| P0-01 | Next.js 15 + TypeScript + pnpm 초기화 | 0 |
-| P0-18 | Vercel 배포 설정 | 0 |
-| P0-19 | 환경변수 템플릿 (.env.example) | 0 |
-| P1-01 | TourAPI 공통 응답 타입 정의 | 1 |
-| P1-03 | 지역코드 + contentType 상수 정의 | 1 |
-| P1-04 | 캠핑장 타입 정의 | 1 |
-| P1-05 | 특산품 타입 정의 | 1 |
-| P1-06 | 레시피 타입 정의 | 1 |
-| P1-08 | regions 테이블 마이그레이션 + 시드 | 1 |
-| P1-25 | NaverMap 컴포넌트 | 1 |
-| P1-28 | Rating 컴포넌트 | 1 |
-| P5-05 | robots.txt | 5 |
-| P5-06 | OG 이미지 생성 | 5 |
-| P5-10 | CSP 헤더 + 보안 헤더 | 5 |
+| ✅ P0-01 | Next.js 15 + TypeScript + pnpm 초기화 | 0 |
+| ✅ P0-18 | Vercel 배포 설정 | 0 |
+| ✅ P0-19 | 환경변수 템플릿 (.env.example) | 0 |
+| ✅ P1-01 | TourAPI 공통 응답 타입 정의 | 1 |
+| ✅ P1-03 | 지역코드 + contentType 상수 정의 | 1 |
+| ✅ P1-04 | 캠핑장 타입 정의 | 1 |
+| ✅ P1-05 | 특산품 타입 정의 | 1 |
+| ✅ P1-06 | 레시피 타입 정의 | 1 |
+| ✅ P1-08 | regions 테이블 마이그레이션 + 시드 | 1 |
+| ✅ P1-25 | NaverMap 컴포넌트 | 1 |
+| ✅ P1-28 | Rating 컴포넌트 | 1 |
+| ✅ P5-05 | robots.txt | 5 |
+| ✅ P5-06 | OG 이미지 생성 | 5 |
+| ✅ P5-10 | CSP 헤더 + 보안 헤더 | 5 |
 
 ---
 
@@ -32,25 +32,25 @@
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P0-01 | Next.js 15 + TypeScript + pnpm 초기화 | - | `package.json`, `tsconfig.json`, `next.config.ts` |
-| P0-02 | Tailwind CSS v4 warm theme 설정 | P0-01 | `globals.css`, CSS 변수, Pretendard + Inter |
-| P0-03 | shadcn/ui 설치 + warm theme | P0-02 | `src/components/ui/*` (Button, Card, Input 등 10종) |
-| P0-04 | next-intl 설정 (locale 라우팅) | P0-01 | `src/i18n/*`, `messages/ko.json`, `messages/en.json` |
-| P0-05 | Supabase 연결 (@supabase/ssr) | P0-01 | `src/lib/supabase/*`, `.env.local` |
-| P0-06 | Supabase 확장 (PostGIS, pg_cron, pg_net) | P0-05 | `supabase/migrations/001_extensions.sql` |
-| P0-07 | 공통 SQL 함수 (updated_at 트리거 + 평점 집계) | P0-06 | `supabase/migrations/002_helper_functions.sql` |
-| P0-08 | next-intl 미들웨어 | P0-04 | `middleware.ts` (locale 감지/리다이렉트) |
-| P0-09 | Supabase 세션 미들웨어 | P0-08, P0-05 | `middleware.ts` (쿠키 기반 세션 갱신) |
-| P0-10 | Header 컴포넌트 | P0-03, P0-04 | `src/components/layout/Header.tsx` |
-| P0-11 | Footer 컴포넌트 | P0-03, P0-04 | `src/components/layout/Footer.tsx` |
-| P0-12 | MobileNav 컴포넌트 | P0-10 | `src/components/layout/MobileNav.tsx` |
-| P0-13 | LanguageSwitcher 컴포넌트 | P0-04 | `src/components/layout/LanguageSwitcher.tsx` |
-| P0-14 | 여행지/맛집/캠핑장 라우트 placeholder | P0-04 | `travel/`, `restaurants/`, `camping/` page.tsx |
-| P0-15 | 특산품/레시피/지역/검색 라우트 placeholder | P0-04 | `specialties/`, `recipes/`, `region/`, `search/` page.tsx |
-| P0-16 | 홈/소개/법적 라우트 placeholder | P0-04 | `page.tsx`, `about/`, `privacy/`, `terms/` |
-| P0-17 | ESLint + Prettier 설정 | P0-01 | `.eslintrc.json`, `.prettierrc` |
-| P0-18 | Vercel 배포 설정 | - | `vercel.json` |
-| P0-19 | 환경변수 템플릿 (.env.example) | - | `.env.example` |
+| ✅ P0-01 | Next.js 15 + TypeScript + pnpm 초기화 | - | `package.json`, `tsconfig.json`, `next.config.ts` |
+| ✅ P0-02 | Tailwind CSS v4 warm theme 설정 | P0-01 | `globals.css`, CSS 변수, Pretendard + Inter |
+| ✅ P0-03 | shadcn/ui 설치 + warm theme | P0-02 | `src/components/ui/*` (Button, Card, Input 등 10종) |
+| ✅ P0-04 | next-intl 설정 (locale 라우팅) | P0-01 | `src/i18n/*`, `messages/ko.json`, `messages/en.json` |
+| ✅ P0-05 | Supabase 연결 (@supabase/ssr) | P0-01 | `src/lib/supabase/*`, `.env.local` |
+| ✅ P0-06 | Supabase 확장 (PostGIS, pg_cron, pg_net) | P0-05 | `supabase/migrations/001_extensions.sql` |
+| ✅ P0-07 | 공통 SQL 함수 (updated_at 트리거 + 평점 집계) | P0-06 | `supabase/migrations/002_helper_functions.sql` |
+| ✅ P0-08 | next-intl 미들웨어 | P0-04 | `middleware.ts` (locale 감지/리다이렉트) |
+| ✅ P0-09 | Supabase 세션 미들웨어 | P0-08, P0-05 | `middleware.ts` (쿠키 기반 세션 갱신) |
+| ✅ P0-10 | Header 컴포넌트 | P0-03, P0-04 | `src/components/layout/Header.tsx` |
+| ✅ P0-11 | Footer 컴포넌트 | P0-03, P0-04 | `src/components/layout/Footer.tsx` |
+| ✅ P0-12 | MobileNav 컴포넌트 | P0-10 | `src/components/layout/MobileNav.tsx` |
+| ✅ P0-13 | LanguageSwitcher 컴포넌트 | P0-04 | `src/components/layout/LanguageSwitcher.tsx` |
+| ✅ P0-14 | 여행지/맛집/캠핑장 라우트 placeholder | P0-04 | `travel/`, `restaurants/`, `camping/` page.tsx |
+| ✅ P0-15 | 특산품/레시피/지역/검색 라우트 placeholder | P0-04 | `specialties/`, `recipes/`, `region/`, `search/` page.tsx |
+| ✅ P0-16 | 홈/소개/법적 라우트 placeholder | P0-04 | `page.tsx`, `about/`, `privacy/`, `terms/` |
+| ✅ P0-17 | ESLint + Prettier 설정 | P0-01 | `.eslintrc.json`, `.prettierrc` |
+| ✅ P0-18 | Vercel 배포 설정 | - | `vercel.json` |
+| ✅ P0-19 | 환경변수 템플릿 (.env.example) | - | `.env.example` |
 
 ### Phase 0 검증 기준
 - `pnpm dev` 로컬 개발 서버 정상 실행
@@ -68,111 +68,111 @@
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P1-01 | TourAPI 공통 응답 타입 정의 | - | `src/types/tour-api.ts` (ApiResponse\<T\>, ApiHeader, ApiBody) |
-| P1-02 | TourAPI 여행지/맛집 엔티티 타입 | P1-01 | `src/types/tour-api.ts` (TourSpotBase, RestaurantDetail) |
-| P1-03 | 지역코드 + contentType 상수 정의 | - | `src/lib/constants/area-codes.ts`, `content-types.ts` |
-| P1-04 | 캠핑장 타입 정의 | - | `src/types/camping.ts` (CampingSiteBase, CampingSiteDetail) |
-| P1-05 | 특산품 타입 정의 | - | `src/types/specialty.ts` (Specialty, SpecialtyCategory) |
-| P1-06 | 레시피 타입 정의 | - | `src/types/recipe.ts` (Recipe, RecipeStep, CookRcpApiResponse) |
-| P1-07 | DB 공통 타입 (Supabase Row 타입) | P1-01, P1-04 | `src/types/database.ts` (Database interface) |
+| ✅ P1-01 | TourAPI 공통 응답 타입 정의 | - | `src/types/tour-api.ts` (ApiResponse\<T\>, ApiHeader, ApiBody) |
+| ✅ P1-02 | TourAPI 여행지/맛집 엔티티 타입 | P1-01 | `src/types/tour-api.ts` (TourSpotBase, RestaurantDetail) |
+| ✅ P1-03 | 지역코드 + contentType 상수 정의 | - | `src/lib/constants/area-codes.ts`, `content-types.ts` |
+| ✅ P1-04 | 캠핑장 타입 정의 | - | `src/types/camping.ts` (CampingSiteBase, CampingSiteDetail) |
+| ✅ P1-05 | 특산품 타입 정의 | - | `src/types/specialty.ts` (Specialty, SpecialtyCategory) |
+| ✅ P1-06 | 레시피 타입 정의 | - | `src/types/recipe.ts` (Recipe, RecipeStep, CookRcpApiResponse) |
+| ✅ P1-07 | DB 공통 타입 (Supabase Row 타입) | P1-01, P1-04 | `src/types/database.ts` (Database interface) |
 
 ### 1-B. DB 마이그레이션 (P1-08 ~ P1-11)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P1-08 | regions 테이블 마이그레이션 + 시드 | - | `003_regions.sql` (17개 시도 시드) |
-| P1-09 | destinations 테이블 마이그레이션 | P1-08 | `004_destinations.sql` (PostGIS, GIST 인덱스) |
-| P1-10 | camping_sites 테이블 마이그레이션 | P1-08 | `005_camping_sites.sql` (PostGIS) |
-| P1-11 | reviews 테이블 마이그레이션 | P1-09, P1-10 | `008_reviews.sql` (평점 집계 트리거) |
+| ✅ P1-08 | regions 테이블 마이그레이션 + 시드 | - | `003_regions.sql` (17개 시도 시드) |
+| ✅ P1-09 | destinations 테이블 마이그레이션 | P1-08 | `004_destinations.sql` (PostGIS, GIST 인덱스) |
+| ✅ P1-10 | camping_sites 테이블 마이그레이션 | P1-08 | `005_camping_sites.sql` (PostGIS) |
+| ✅ P1-11 | reviews 테이블 마이그레이션 | P1-09, P1-10 | `008_reviews.sql` (평점 집계 트리거) |
 
 ### 1-C. API 클라이언트 (P1-12 ~ P1-17)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P1-12 | TourApiClient 베이스 클래스 | P1-01, P1-03 | `src/lib/api/tour-api.ts` (fetch\<T\>, 에러 핸들링) |
-| P1-13 | TourApiClient 목록 조회 메서드 | P1-12 | areaBasedList, searchKeyword |
-| P1-14 | TourApiClient 상세 조회 메서드 | P1-12, P1-02 | detailCommon, detailIntro, detailImage |
-| P1-15 | CampingApiClient 베이스 + 목록 | P1-04, P1-03 | `src/lib/api/camping-api.ts` (basedList, searchList) |
-| P1-16 | CampingApiClient 상세 + 이미지 | P1-15 | detailList, imageList |
-| P1-17 | 데이터 캐시 유틸리티 | P1-09 | `src/lib/utils/cache.ts` (isCacheValid, getCachedOrFetch) |
+| ✅ P1-12 | TourApiClient 베이스 클래스 | P1-01, P1-03 | `src/lib/api/tour-api.ts` (fetch\<T\>, 에러 핸들링) |
+| ✅ P1-13 | TourApiClient 목록 조회 메서드 | P1-12 | areaBasedList, searchKeyword |
+| ✅ P1-14 | TourApiClient 상세 조회 메서드 | P1-12, P1-02 | detailCommon, detailIntro, detailImage |
+| ✅ P1-15 | CampingApiClient 베이스 + 목록 | P1-04, P1-03 | `src/lib/api/camping-api.ts` (basedList, searchList) |
+| ✅ P1-16 | CampingApiClient 상세 + 이미지 | P1-15 | detailList, imageList |
+| ✅ P1-17 | 데이터 캐시 유틸리티 | P1-09 | `src/lib/utils/cache.ts` (isCacheValid, getCachedOrFetch) |
 
 ### 1-D. Edge Functions (P1-18 ~ P1-19)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P1-18 | sync-destinations Edge Function | P1-13, P1-09 | `supabase/functions/sync-destinations/` |
-| P1-19 | sync-camping Edge Function | P1-15, P1-10 | `supabase/functions/sync-camping/` |
+| ✅ P1-18 | sync-destinations Edge Function | P1-13, P1-09 | `scripts/sync-destinations.mjs` |
+| ✅ P1-19 | sync-camping Edge Function | P1-15, P1-10 | `scripts/sync-camping.mjs` |
 
 ### 1-E. UI 컴포넌트 - 카드 (P1-20 ~ P1-22)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P1-20 | TravelCard 컴포넌트 | P0-03 | `src/components/cards/TravelCard.tsx` |
-| P1-21 | RestaurantCard 컴포넌트 | P0-03 | `src/components/cards/RestaurantCard.tsx` |
-| P1-22 | CampingCard 컴포넌트 | P0-03 | `src/components/cards/CampingCard.tsx` |
+| ✅ P1-20 | TravelCard 컴포넌트 | P0-03 | `src/components/cards/TravelCard.tsx` |
+| ✅ P1-21 | RestaurantCard 컴포넌트 | P0-03 | `src/components/cards/RestaurantCard.tsx` |
+| ✅ P1-22 | CampingCard 컴포넌트 | P0-03 | `src/components/cards/CampingCard.tsx` |
 
 ### 1-F. UI 컴포넌트 - 필터 (P1-23 ~ P1-24)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P1-23 | RegionFilter 컴포넌트 | P1-03, P0-03 | `src/components/filters/RegionFilter.tsx` |
-| P1-24 | ThemeFilter 컴포넌트 | P1-03, P0-03 | `src/components/filters/ThemeFilter.tsx` |
+| ✅ P1-23 | RegionFilter 컴포넌트 | P1-03, P0-03 | `src/components/filters/RegionFilter.tsx` |
+| ✅ P1-24 | ThemeFilter 컴포넌트 | P1-03, P0-03 | `src/components/filters/ThemeFilter.tsx` |
 
 ### 1-G. UI 컴포넌트 - 지도/공용 (P1-25 ~ P1-31)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P1-25 | NaverMap 컴포넌트 | - | `src/components/maps/NaverMap.tsx` |
-| P1-26 | MapMarker 컴포넌트 | P1-25 | `src/components/maps/MapMarker.tsx` |
-| P1-27 | ImageGallery 컴포넌트 | P0-03 | `src/components/shared/ImageGallery.tsx` |
-| P1-28 | Rating 컴포넌트 | - | `src/components/shared/Rating.tsx` |
-| P1-29 | Pagination 컴포넌트 | P0-03 | `src/components/shared/Pagination.tsx` |
-| P1-30 | CampingFilter 컴포넌트 | P0-03 | `src/components/filters/CampingFilter.tsx` |
-| P1-31 | EmptyState 컴포넌트 | P0-03 | `src/components/shared/EmptyState.tsx` |
+| ✅ P1-25 | NaverMap 컴포넌트 | - | `src/components/maps/NaverMap.tsx` |
+| ✅ P1-26 | MapMarker 컴포넌트 | P1-25 | `src/components/maps/MapMarker.tsx` |
+| ✅ P1-27 | ImageGallery 컴포넌트 | P0-03 | `src/components/shared/ImageGallery.tsx` |
+| ✅ P1-28 | Rating 컴포넌트 | - | `src/components/shared/Rating.tsx` |
+| ✅ P1-29 | Pagination 컴포넌트 | P0-03 | `src/components/shared/Pagination.tsx` |
+| ✅ P1-30 | CampingFilter 컴포넌트 | P0-03 | `src/components/filters/CampingFilter.tsx` |
+| ✅ P1-31 | EmptyState 컴포넌트 | P0-03 | `src/components/shared/EmptyState.tsx` |
 
 ### 1-H. 여행지 페이지 (P1-32 ~ P1-36)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P1-32 | 여행지 데이터 fetch 유틸 | P1-09, P1-17, P1-07 | `src/lib/data/destinations.ts` |
-| P1-33 | 여행지 목록 페이지 | P1-32, P1-20, P1-23, P1-24, P1-29 | `[locale]/travel/page.tsx` |
-| P1-34 | 여행지 상세 페이지 기본 정보 | P1-32, P1-14, P1-28 | `[locale]/travel/[id]/page.tsx` |
-| P1-35 | 여행지 상세 지도 + 갤러리 섹션 | P1-34, P1-25, P1-26, P1-27 | 지도+이미지 통합 |
-| P1-36 | 여행지 SEO 메타데이터 | P1-34 | generateMetadata + OG tags |
+| ✅ P1-32 | 여행지 데이터 fetch 유틸 | P1-09, P1-17, P1-07 | `src/lib/data/destinations.ts` |
+| ✅ P1-33 | 여행지 목록 페이지 | P1-32, P1-20, P1-23, P1-24, P1-29 | `[locale]/travel/page.tsx` |
+| ✅ P1-34 | 여행지 상세 페이지 기본 정보 | P1-32, P1-14, P1-28 | `[locale]/travel/[id]/page.tsx` |
+| ✅ P1-35 | 여행지 상세 지도 + 갤러리 섹션 | P1-34, P1-25, P1-26, P1-27 | 지도+이미지 통합 |
+| ✅ P1-36 | 여행지 SEO 메타데이터 | P1-34 | generateMetadata + OG tags |
 
 ### 1-I. 맛집 페이지 (P1-37 ~ P1-39)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P1-37 | 맛집 데이터 fetch 유틸 | P1-32 | `src/lib/data/restaurants.ts` |
-| P1-38 | 맛집 목록 페이지 | P1-37, P1-21, P1-23, P1-29 | `[locale]/restaurants/page.tsx` |
-| P1-39 | 맛집 상세 페이지 | P1-37, P1-14, P1-25, P1-27, P1-28 | `[locale]/restaurants/[id]/page.tsx` |
+| ✅ P1-37 | 맛집 데이터 fetch 유틸 | P1-32 | `src/lib/data/restaurants.ts` |
+| ✅ P1-38 | 맛집 목록 페이지 | P1-37, P1-21, P1-23, P1-29 | `[locale]/restaurants/page.tsx` |
+| ✅ P1-39 | 맛집 상세 페이지 | P1-37, P1-14, P1-25, P1-27, P1-28 | `[locale]/restaurants/[id]/page.tsx` |
 
 ### 1-J. 캠핑장 페이지 (P1-40 ~ P1-43)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P1-40 | 캠핑장 데이터 fetch 유틸 | P1-10, P1-17, P1-07 | `src/lib/data/camping.ts` |
-| P1-41 | 캠핑장 목록 페이지 | P1-40, P1-22, P1-23, P1-30, P1-29 | `[locale]/camping/page.tsx` |
-| P1-42 | 캠핑장 상세 페이지 기본 정보 | P1-40, P1-16 | `[locale]/camping/[id]/page.tsx` |
-| P1-43 | 캠핑장 상세 지도 + 이미지 + SEO | P1-42, P1-25, P1-27, P1-28 | 지도+이미지+메타데이터 |
+| ✅ P1-40 | 캠핑장 데이터 fetch 유틸 | P1-10, P1-17, P1-07 | `src/lib/data/camping.ts` |
+| ✅ P1-41 | 캠핑장 목록 페이지 | P1-40, P1-22, P1-23, P1-30, P1-29 | `[locale]/camping/page.tsx` |
+| ✅ P1-42 | 캠핑장 상세 페이지 기본 정보 | P1-40, P1-16 | `[locale]/camping/[id]/page.tsx` |
+| ✅ P1-43 | 캠핑장 상세 지도 + 이미지 + SEO | P1-42, P1-25, P1-27, P1-28 | 지도+이미지+메타데이터 |
 
 ### 1-K. 리뷰 시스템 (P1-44 ~ P1-47)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P1-44 | ReviewForm 컴포넌트 | P1-28, P0-03 | `src/components/reviews/ReviewForm.tsx` |
-| P1-45 | ReviewList 컴포넌트 | P1-28 | `src/components/reviews/ReviewList.tsx` |
-| P1-46 | 리뷰 API Route | P1-11 | `src/app/api/reviews/route.ts` |
-| P1-47 | 리뷰 섹션 상세 페이지 통합 | P1-44, P1-45, P1-46, P1-35, P1-39, P1-43 | 3개 상세 페이지에 리뷰 추가 |
+| ✅ P1-44 | ReviewForm 컴포넌트 | P1-28, P0-03 | `src/components/reviews/ReviewForm.tsx` |
+| ✅ P1-45 | ReviewList 컴포넌트 | P1-28 | `src/components/reviews/ReviewList.tsx` |
+| ✅ P1-46 | 리뷰 API Route | P1-11 | `src/app/api/reviews/route.ts` |
+| ✅ P1-47 | 리뷰 섹션 상세 페이지 통합 | P1-44, P1-45, P1-46, P1-35, P1-39, P1-43 | 3개 상세 페이지에 리뷰 추가 |
 
 ### 1-L. 통합 검색 (P1-48 ~ P1-50)
 
 | # | 태스크 | 의존성 | 산출물 |
 |---|--------|--------|--------|
-| P1-48 | SearchBar 컴포넌트 | P0-03 | `src/components/search/SearchBar.tsx` |
-| P1-49 | 검색 API Route | P1-09, P1-10 | `src/app/api/search/route.ts` |
-| P1-50 | 검색 결과 페이지 | P1-49, P1-48, P1-20, P1-21, P1-22, P1-31 | `[locale]/search/page.tsx` |
+| ✅ P1-48 | SearchBar 컴포넌트 | P0-03 | `src/components/search/SearchBar.tsx` |
+| ✅ P1-49 | 검색 API Route | P1-09, P1-10 | `src/app/api/search/route.ts` |
+| ✅ P1-50 | 검색 결과 페이지 | P1-49, P1-48, P1-20, P1-21, P1-22, P1-31 | `[locale]/search/page.tsx` |
 
 ### Phase 1 검증 기준
 - TourAPI 실제 데이터로 여행지/맛집 목록 로딩
@@ -345,7 +345,7 @@
 |---|--------|--------|--------|
 | P5-14 | hreflang 태그 검증 | P5-04 | 전체 페이지 hreflang 확인 |
 | P5-15 | Lighthouse 감사 + 성능 최적화 | P5-04, P5-10, P4-18 | Lighthouse 90+ |
-| P5-16 | 프로덕션 환경 변수 설정 | P0-18 | Vercel Env Variables |
+| ✅ P5-16 | 프로덕션 환경 변수 설정 | P0-18 | Vercel Env Variables |
 | P5-17 | 프로덕션 도메인 연결 | P5-16 | DNS + HTTPS |
 | P5-18 | Google Search Console 등록 + sitemap 제출 | P5-17, P5-04 | GSC 등록 완료 |
 | P5-19 | 최종 QA 체크리스트 | P5-15, P5-11, P5-12, P5-13, P5-08, P5-09 | QA 전체 통과 |

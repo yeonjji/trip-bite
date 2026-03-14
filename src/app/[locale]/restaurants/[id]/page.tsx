@@ -5,6 +5,7 @@ import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 
 import ImageGallery from "@/components/shared/ImageGallery"
+import { buildAlternates } from "@/lib/utils/metadata"
 import Rating from "@/components/shared/Rating"
 import NaverMap from "@/components/maps/NaverMap"
 import { getRestaurantDetail } from "@/lib/data/restaurants"
@@ -29,6 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       ...(ogImage ? { images: [{ url: ogImage }] } : {}),
     },
+    alternates: buildAlternates(`/restaurants/${id}`),
   }
 }
 

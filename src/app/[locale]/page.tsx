@@ -11,6 +11,7 @@ import { getSpecialties } from "@/lib/data/specialties"
 import { getRecipes } from "@/lib/data/recipes"
 import { AREA_CODES } from "@/lib/constants/area-codes"
 import { getCurrentSeason, getCurrentSeasonLabel, getWeatherRecommendation } from "@/lib/utils/recommendation"
+import { buildAlternates } from "@/lib/utils/metadata"
 import SearchBar from "@/components/search/SearchBar"
 import TravelCard from "@/components/cards/TravelCard"
 import RestaurantCard from "@/components/cards/RestaurantCard"
@@ -33,6 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       locale === "en"
         ? "Discover travel destinations, restaurants, camping sites and local specialties across Korea."
         : "한국의 여행지, 맛집, 캠핑장, 특산품을 한눈에 탐색하세요.",
+    alternates: buildAlternates(""),
   }
 }
 

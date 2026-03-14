@@ -7,6 +7,7 @@ import type { Metadata } from "next"
 
 import { Badge } from "@/components/ui/badge"
 import { getSpecialtyDetail } from "@/lib/data/specialties"
+import { buildAlternates } from "@/lib/utils/metadata"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -28,6 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       ...(ogImage ? { images: [{ url: ogImage }] } : {}),
     },
+    alternates: buildAlternates(`/specialties/${id}`),
   }
 }
 

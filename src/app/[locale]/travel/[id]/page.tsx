@@ -3,6 +3,7 @@ import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 
 import { getDestinationDetail } from "@/lib/data/destinations"
+import { buildAlternates } from "@/lib/utils/metadata"
 import { getAccessibilityInfo } from "@/lib/data/accessibility"
 import Rating from "@/components/shared/Rating"
 import ImageGallery from "@/components/shared/ImageGallery"
@@ -35,6 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         : undefined,
       images: detail.firstimage ? [{ url: detail.firstimage }] : [],
     },
+    alternates: buildAlternates(`/travel/${id}`),
   }
 }
 

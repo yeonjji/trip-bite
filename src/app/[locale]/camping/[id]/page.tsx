@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
 import ImageGallery from "@/components/shared/ImageGallery"
+import { buildAlternates } from "@/lib/utils/metadata"
 import Rating from "@/components/shared/Rating"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -32,6 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
           ? [{ url: site.first_image_url }]
           : [],
     },
+    alternates: buildAlternates(`/camping/${id}`),
   }
 }
 

@@ -2,8 +2,10 @@
 
 import { Suspense } from "react"
 import { setRequestLocale } from "next-intl/server"
+import type { Metadata } from "next"
 
 import SpecialtyCard from "@/components/cards/SpecialtyCard"
+import { buildAlternates } from "@/lib/utils/metadata"
 import EmptyState from "@/components/shared/EmptyState"
 import { getSpecialties } from "@/lib/data/specialties"
 
@@ -15,6 +17,18 @@ const PAGE_SIZE = 12
 type Props = {
   params: Promise<{ locale: string }>
   searchParams: Promise<{ areaCode?: string; category?: string; season?: string; page?: string }>
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  return {
+    title: locale === "en" ? "Local Specialties" : "특산품",
+    description:
+      locale === "en"
+        ? "Explore local specialties from regions across Korea."
+        : "전국의 지역 특산품을 탐색하세요.",
+    alternates: buildAlternates("/specialties"),
+  }
 }
 
 export default async function SpecialtiesPage({ params, searchParams }: Props) {

@@ -4,6 +4,7 @@ import type { Metadata } from "next"
 
 import { Badge } from "@/components/ui/badge"
 import { getRecipeDetail } from "@/lib/data/recipes"
+import { buildAlternates } from "@/lib/utils/metadata"
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>
@@ -24,6 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: recipe.name,
       images: recipe.main_image_url ? [recipe.main_image_url] : [],
     },
+    alternates: buildAlternates(`/recipes/${id}`),
   }
 }
 

@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
+import { buildAlternates } from "@/lib/utils/metadata";
 
-export const metadata: Metadata = {
-  title: "소개 | 여행한입",
-  description: "여행한입 서비스 소개 — 대한민국 여행지, 맛집, 캠핑장, 특산품, 레시피를 한입에.",
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === "en" ? "About | Trip Bite" : "소개 | 여행한입",
+    description:
+      locale === "en"
+        ? "About Trip Bite — Korea travel destinations, restaurants, camping, specialties and recipes."
+        : "여행한입 서비스 소개 — 대한민국 여행지, 맛집, 캠핑장, 특산품, 레시피를 한입에.",
+    alternates: buildAlternates("/about"),
+  };
+}
 
 export default function AboutPage() {
   return (

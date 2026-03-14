@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
+import { buildAlternates } from "@/lib/utils/metadata";
 
-export const metadata: Metadata = {
-  title: "이용약관 | 여행한입",
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === "en" ? "Terms of Service | Trip Bite" : "이용약관 | 여행한입",
+    alternates: buildAlternates("/terms"),
+  };
+}
 
 export default function TermsPage() {
   return (

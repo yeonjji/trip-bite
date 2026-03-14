@@ -1,7 +1,9 @@
 import { Suspense } from "react"
 import { setRequestLocale } from "next-intl/server"
+import type { Metadata } from "next"
 
 import { getDestinations } from "@/lib/data/destinations"
+import { buildAlternates } from "@/lib/utils/metadata"
 import TravelCard from "@/components/cards/TravelCard"
 import TravelFilters from "./_components/TravelFilters"
 import TravelPagination from "./_components/TravelPagination"
@@ -18,6 +20,18 @@ type Props = {
 }
 
 const PAGE_SIZE = 12
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  return {
+    title: locale === "en" ? "Travel Destinations" : "여행지",
+    description:
+      locale === "en"
+        ? "Explore travel destinations across Korea."
+        : "전국의 여행지를 탐색하세요.",
+    alternates: buildAlternates("/travel"),
+  }
+}
 
 function destinationToSpotBase(d: Destination): TourSpotBase {
   return {

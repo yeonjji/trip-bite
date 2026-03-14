@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 
 import { createClient } from "@/lib/supabase/server"
+import { buildAlternates } from "@/lib/utils/metadata"
 import SearchBar from "@/components/search/SearchBar"
 import TravelCard from "@/components/cards/TravelCard"
 import CampingCard from "@/components/cards/CampingCard"
@@ -20,6 +21,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   return {
     title: q ? `"${q}" 검색 결과` : "검색",
     description: q ? `"${q}"에 대한 여행지 및 캠핑장 검색 결과입니다.` : "여행지, 캠핑장을 검색하세요.",
+    alternates: buildAlternates("/search"),
   }
 }
 

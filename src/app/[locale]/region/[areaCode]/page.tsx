@@ -10,6 +10,7 @@ import { getRestaurants } from "@/lib/data/restaurants"
 import { getCampingSites } from "@/lib/data/camping"
 import { getSpecialties } from "@/lib/data/specialties"
 import { getAreaName, AREA_CODE_MAP } from "@/lib/constants/area-codes"
+import { buildAlternates } from "@/lib/utils/metadata"
 import TravelCard from "@/components/cards/TravelCard"
 import RestaurantCard from "@/components/cards/RestaurantCard"
 import CampingCard from "@/components/cards/CampingCard"
@@ -35,6 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${name} 여행 정보`,
     description: `${name}의 여행지, 맛집, 캠핑장, 특산품을 한눈에 확인하세요.`,
+    alternates: buildAlternates(`/region/${areaCode}`),
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1773312461916,
+  "lastScanned": 1773450524339,
   "projectRoot": "/Users/jiyeonjeong/project/trip-bite",
   "techStack": {
     "languages": [
@@ -24,7 +24,7 @@
     "frameworks": [
       {
         "name": "next",
-        "version": "16.1.6",
+        "version": "15.5.12",
         "category": "fullstack"
       },
       {
@@ -54,10 +54,10 @@
     }
   },
   "conventions": {
-    "namingStyle": null,
-    "importStyle": null,
+    "namingStyle": "camelCase",
+    "importStyle": "ES modules",
     "testPattern": null,
-    "fileOrganization": null
+    "fileOrganization": "type-based"
   },
   "structure": {
     "isMonorepo": true,
@@ -65,6 +65,7 @@
     "mainDirectories": [
       "docs",
       "public",
+      "scripts",
       "src"
     ],
     "gitBranches": null
@@ -75,7 +76,7 @@
       "path": "docs",
       "purpose": "Documentation",
       "fileCount": 10,
-      "lastAccessed": 1773312461893,
+      "lastAccessed": 1773450524322,
       "keyFiles": [
         "01-PRD.md",
         "02-TRD.md",
@@ -84,11 +85,21 @@
         "05-design-system.md"
       ]
     },
+    "messages": {
+      "path": "messages",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1773450524322,
+      "keyFiles": [
+        "en.json",
+        "ko.json"
+      ]
+    },
     "public": {
       "path": "public",
       "purpose": "Public files",
       "fileCount": 5,
-      "lastAccessed": 1773312461894,
+      "lastAccessed": 1773450524325,
       "keyFiles": [
         "file.svg",
         "globe.svg",
@@ -97,48 +108,203 @@
         "window.svg"
       ]
     },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 2,
+      "lastAccessed": 1773450524326,
+      "keyFiles": [
+        "sync-camping.mjs",
+        "sync-destinations.mjs"
+      ]
+    },
     "src": {
       "path": "src",
       "purpose": "Source code",
-      "fileCount": 0,
-      "lastAccessed": 1773312461894,
-      "keyFiles": []
+      "fileCount": 1,
+      "lastAccessed": 1773450524326,
+      "keyFiles": [
+        "middleware.ts"
+      ]
+    },
+    "supabase": {
+      "path": "supabase",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1773450524326,
+      "keyFiles": [
+        "seed-specialties.sql"
+      ]
     },
     "src/app": {
       "path": "src/app",
       "purpose": "Application code",
-      "fileCount": 4,
-      "lastAccessed": 1773312461905,
+      "fileCount": 8,
+      "lastAccessed": 1773450524330,
       "keyFiles": [
         "favicon.ico",
         "globals.css",
         "layout.tsx"
       ]
+    },
+    "src/components": {
+      "path": "src/components",
+      "purpose": "UI components",
+      "fileCount": 0,
+      "lastAccessed": 1773450524330,
+      "keyFiles": []
+    },
+    "src/lib": {
+      "path": "src/lib",
+      "purpose": "Library code",
+      "fileCount": 1,
+      "lastAccessed": 1773450524331,
+      "keyFiles": [
+        "utils.ts"
+      ]
+    },
+    "src/types": {
+      "path": "src/types",
+      "purpose": "Type definitions",
+      "fileCount": 5,
+      "lastAccessed": 1773450524331,
+      "keyFiles": [
+        "camping.ts",
+        "database.ts",
+        "recipe.ts"
+      ]
+    },
+    "supabase/migrations": {
+      "path": "supabase/migrations",
+      "purpose": "Database migrations",
+      "fileCount": 13,
+      "lastAccessed": 1773450524332,
+      "keyFiles": [
+        "001_extensions.sql",
+        "002_helper_functions.sql",
+        "003_regions.sql"
+      ]
     }
   },
   "hotPaths": [
     {
-      "path": "src/app/layout.tsx",
+      "path": "src/app/[locale]/page.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1773450715125,
+      "type": "file"
+    },
+    {
+      "path": "src/app/[locale]/travel/page.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1773450720317,
+      "type": "file"
+    },
+    {
+      "path": "src/app/[locale]/camping/page.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1773450725445,
+      "type": "file"
+    },
+    {
+      "path": "src/app/[locale]/restaurants/page.tsx",
       "accessCount": 3,
-      "lastAccessed": 1773312674149,
+      "lastAccessed": 1773450723412,
       "type": "file"
     },
     {
-      "path": "src/app/globals.css",
+      "path": "src/app/[locale]/specialties/page.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1773450728234,
+      "type": "file"
+    },
+    {
+      "path": "src/app/[locale]/recipes/page.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1773450730133,
+      "type": "file"
+    },
+    {
+      "path": "src/app/[locale]/search/page.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1773450738105,
+      "type": "file"
+    },
+    {
+      "path": "src/app/[locale]/travel/[id]/page.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1773450768952,
+      "type": "file"
+    },
+    {
+      "path": "src/app/[locale]/restaurants/[id]/page.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1773450770836,
+      "type": "file"
+    },
+    {
+      "path": "src/app/[locale]/camping/[id]/page.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1773450773484,
+      "type": "file"
+    },
+    {
+      "path": "src/app/[locale]/specialties/[id]/page.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1773450775369,
+      "type": "file"
+    },
+    {
+      "path": "src/app/[locale]/recipes/[id]/page.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1773450777646,
+      "type": "file"
+    },
+    {
+      "path": "src/app/[locale]/region/[areaCode]/page.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1773450779717,
+      "type": "file"
+    },
+    {
+      "path": "src/app/[locale]/about/page.tsx",
       "accessCount": 2,
-      "lastAccessed": 1773312649071,
+      "lastAccessed": 1773450746906,
       "type": "file"
     },
     {
-      "path": "docs/05-design-system.md",
-      "accessCount": 1,
-      "lastAccessed": 1773312617404,
+      "path": "src/app/[locale]/privacy/page.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1773450748628,
       "type": "file"
     },
     {
-      "path": "next.config.ts",
+      "path": "src/app/[locale]/terms/page.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1773450750366,
+      "type": "file"
+    },
+    {
+      "path": "src/app/[locale]/layout.tsx",
       "accessCount": 1,
-      "lastAccessed": 1773312687739,
+      "lastAccessed": 1773450594160,
+      "type": "file"
+    },
+    {
+      "path": "src/app/sitemap.ts",
+      "accessCount": 1,
+      "lastAccessed": 1773450594417,
+      "type": "file"
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1773450598739,
+      "type": "file"
+    },
+    {
+      "path": "src/lib/utils/metadata.ts",
+      "accessCount": 1,
+      "lastAccessed": 1773450692672,
       "type": "file"
     }
   ],
