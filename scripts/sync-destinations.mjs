@@ -17,8 +17,8 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 // KorService2 지역 코드 (lDongRegnCd)
 const AREA_CODES = ["11","26","27","28","29","30","31","41","43","44","46","47","48","50","51","52","36110"];
 
-// 콘텐츠 타입 (관광지, 문화시설, 레포츠)
-const CONTENT_TYPES = ["12", "14", "28"];
+// 콘텐츠 타입 (관광지, 문화시설, 레포츠, 음식점)
+const CONTENT_TYPES = ["12", "14", "28", "39"];
 
 const BASE_URL = "https://apis.data.go.kr/B551011/KorService2";
 

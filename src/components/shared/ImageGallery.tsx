@@ -29,6 +29,7 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
           className="object-cover"
           sizes="(max-width: 768px) 100vw, 800px"
           priority
+          unoptimized
         />
       </div>
       {images.length > 1 && (
@@ -49,6 +50,7 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
                 fill
                 className="object-cover"
                 sizes="120px"
+                unoptimized
               />
             </button>
           ))}
