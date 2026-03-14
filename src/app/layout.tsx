@@ -18,6 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={cn("font-sans", geist.variable)}>
+      <head>
+        <meta name="description" content="여행지, 맛집, 캠핑장, 특산품, 레시피를 한입에" />
+      </head>
       <body className="antialiased">{children}</body>
     </html>
   );
