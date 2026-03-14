@@ -50,9 +50,7 @@ export default function KoreaMapSvg({
       <rect
         x="25" y="10" width="70" height="85"
         rx="8"
-        fill="hsl(var(--muted))"
-        stroke="hsl(var(--border))"
-        strokeWidth="0.5"
+        style={{ fill: "var(--muted)", stroke: "var(--border)", strokeWidth: 0.5 }}
       />
 
       {Object.entries(REGION_POSITIONS).map(([code, { cx, cy, label }]) => {
@@ -70,17 +68,11 @@ export default function KoreaMapSvg({
               cx={cx}
               cy={cy}
               r={isSelected ? 7 : 5.5}
-              fill={
-                isSelected
-                  ? "hsl(var(--primary))"
-                  : "hsl(var(--background))"
-              }
-              stroke={
-                isSelected
-                  ? "hsl(var(--primary))"
-                  : "hsl(var(--border))"
-              }
-              strokeWidth={isSelected ? 1.5 : 1}
+              style={{
+                fill: isSelected ? "var(--primary)" : "var(--background)",
+                stroke: isSelected ? "var(--primary)" : "var(--border)",
+                strokeWidth: isSelected ? 1.5 : 1,
+              }}
             />
             <text
               x={cx}
@@ -89,11 +81,7 @@ export default function KoreaMapSvg({
               dominantBaseline="middle"
               fontSize={isSelected ? "3.5" : "3"}
               fontWeight={isSelected ? "700" : "400"}
-              fill={
-                isSelected
-                  ? "hsl(var(--primary-foreground))"
-                  : "hsl(var(--foreground))"
-              }
+              style={{ fill: isSelected ? "var(--primary-foreground)" : "var(--foreground)" }}
             >
               {label}
             </text>
