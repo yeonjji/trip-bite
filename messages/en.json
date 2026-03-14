@@ -15,8 +15,11 @@
   },
   "nav": {
     "travel": "Travel",
-    "restaurants": "Restaurants",
+    "allDestinations": "All Destinations",
     "camping": "Camping",
+    "barrierFree": "Barrier-Free",
+    "petFriendly": "Pet-Friendly",
+    "restaurants": "Restaurants",
     "specialties": "Specialties",
     "recipes": "Recipes",
     "region": "Region",
@@ -36,6 +39,29 @@
   "travel": {
     "title": "Travel Spots",
     "description": "Explore beautiful destinations across Korea"
+  },
+  "pet": {
+    "title": "Pet-Friendly Travel",
+    "description": "Find travel destinations you can enjoy with your pet",
+    "companionInfo": "Companion Info",
+    "petRules": "Pet Rules",
+    "acmpnyType": "Allowed Animals",
+    "indoor": "Indoor",
+    "outdoor": "Outdoor",
+    "indoorOutdoor": "Indoor & Outdoor"
+  },
+  "barrierFree": {
+    "title": "Barrier-Free Travel",
+    "description": "Find destinations accessible to everyone",
+    "accessibilityInfo": "Accessibility Info",
+    "wheelchair": "Wheelchair Rental",
+    "exitAccessible": "Accessible Entrance",
+    "restroomWh": "Accessible Restroom",
+    "elevator": "Elevator",
+    "parkingWh": "Accessible Parking",
+    "braileBlock": "Braille Block",
+    "signGuide": "Braille Guide",
+    "audioGuide": "Audio Guide"
   },
   "restaurants": {
     "title": "Restaurants",

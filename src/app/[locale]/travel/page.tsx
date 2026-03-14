@@ -14,10 +14,13 @@ type Props = {
   params: Promise<{ locale: string }>
   searchParams: Promise<{
     areaCode?: string
+    sigunguCode?: string
     contentTypeId?: string
     page?: string
   }>
 }
+
+export const dynamic = "force-dynamic"
 
 const PAGE_SIZE = 12
 
@@ -54,7 +57,7 @@ function destinationToSpotBase(d: Destination): TourSpotBase {
 
 export default async function TravelPage({ params, searchParams }: Props) {
   const { locale } = await params
-  const { areaCode = "", contentTypeId = "", page: pageStr = "1" } = await searchParams
+  const { areaCode = "", sigunguCode = "", contentTypeId = "", page: pageStr = "1" } = await searchParams
 
   setRequestLocale(locale)
 
@@ -62,6 +65,7 @@ export default async function TravelPage({ params, searchParams }: Props) {
 
   const { items, totalCount } = await getDestinations({
     areaCode: areaCode || undefined,
+    sigunguCode: sigunguCode || undefined,
     contentTypeId: contentTypeId || undefined,
     page,
     pageSize: PAGE_SIZE,
@@ -77,6 +81,7 @@ export default async function TravelPage({ params, searchParams }: Props) {
       <div className="mb-6">
         <TravelFilters
           areaCode={areaCode}
+          sigunguCode={sigunguCode}
           contentTypeId={contentTypeId}
           locale={locale}
         />

@@ -9,7 +9,6 @@ import { getRestaurants } from "@/lib/data/restaurants"
 import { getCampingSites } from "@/lib/data/camping"
 import { getSpecialties } from "@/lib/data/specialties"
 import { getRecipes } from "@/lib/data/recipes"
-import { AREA_CODES } from "@/lib/constants/area-codes"
 import { getCurrentSeason, getCurrentSeasonLabel, getWeatherRecommendation } from "@/lib/utils/recommendation"
 import { buildAlternates } from "@/lib/utils/metadata"
 import SearchBar from "@/components/search/SearchBar"
@@ -18,7 +17,7 @@ import RestaurantCard from "@/components/cards/RestaurantCard"
 import CampingCard from "@/components/cards/CampingCard"
 import SpecialtyCard from "@/components/cards/SpecialtyCard"
 import RecipeCard from "@/components/cards/RecipeCard"
-import KoreaMapSvg from "@/components/maps/KoreaMapSvg"
+import RegionExplorer from "@/components/home/RegionExplorer"
 import type { Destination } from "@/types/database"
 import type { TourSpotBase, RestaurantDetail } from "@/types/tour-api"
 
@@ -41,8 +40,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // 인기 검색어
 const POPULAR_KEYWORDS = ["제주도", "경복궁", "설악산", "부산 해운대", "전주 한옥마을"]
 
-// 대표 지역 코드 (홈 그리드용 8개)
-const FEATURED_AREA_CODES = ["11", "41", "51", "26", "50", "46", "47", "48"]
 
 export default async function HomePage({ params }: Props) {
   const { locale } = await params
@@ -134,36 +131,7 @@ export default async function HomePage({ params }: Props) {
       </section>
 
       {/* 3. 인기 지역 그리드 */}
-      <section className="bg-muted/30 px-4 py-10">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="mb-6 text-xl font-semibold text-foreground">
-            {locale === "en" ? "Explore by Region" : "지역별 탐색"}
-          </h2>
-          <div className="flex flex-col gap-6 md:flex-row md:items-start">
-            {/* SVG 지도 */}
-            <div className="flex-none md:w-64">
-              <KoreaMapSvg className="h-72 w-full" />
-            </div>
-            {/* 지역 카드 그리드 */}
-            <div className="grid flex-1 grid-cols-2 gap-3 sm:grid-cols-4">
-              {FEATURED_AREA_CODES.map((code) => {
-                const area = AREA_CODES.find((a) => a.code === code)
-                if (!area) return null
-                const name = locale === "en" ? area.nameEn : area.nameKo
-                return (
-                  <Link
-                    key={code}
-                    href={`/${locale}/region/${code}`}
-                    className="flex items-center justify-center rounded-lg border border-border bg-background p-4 text-center font-medium text-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
-                  >
-                    {name}
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
+      <RegionExplorer locale={locale} />
 
       {/* 4. 제철 특산품 */}
       <section className="px-4 py-10">

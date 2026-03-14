@@ -2,18 +2,12 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Search } from "lucide-react";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { NavDropdown } from "./NavDropdown";
 
 type Props = { locale: string };
 
 export function Header({ locale }: Props) {
   const t = useTranslations("nav");
-
-  const navLinks = [
-    { href: `/${locale}/travel`, label: t("travel") },
-    { href: `/${locale}/restaurants`, label: t("restaurants") },
-    { href: `/${locale}/specialties`, label: t("specialties") },
-    { href: `/${locale}/recipes`, label: t("recipes") },
-  ];
 
   return (
     <header className="sticky top-0 z-50 h-16 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md">
@@ -26,15 +20,34 @@ export function Header({ locale }: Props) {
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-gray-700 hover:text-primary-500 transition-colors"
-            >
-              {link.label}
-            </Link>
-          ))}
+          <NavDropdown
+            label={t("travel")}
+            locale={locale}
+            items={[
+              { href: "/travel", label: t("allDestinations") },
+              { href: "/camping", label: t("camping") },
+              { href: "/travel/barrier-free", label: t("barrierFree") },
+              { href: "/travel/pet", label: t("petFriendly") },
+            ]}
+          />
+          <Link
+            href={`/${locale}/restaurants`}
+            className="text-sm font-medium text-gray-700 hover:text-primary-500 transition-colors"
+          >
+            {t("restaurants")}
+          </Link>
+          <Link
+            href={`/${locale}/recipes`}
+            className="text-sm font-medium text-gray-700 hover:text-primary-500 transition-colors"
+          >
+            {t("recipes")}
+          </Link>
+          <Link
+            href={`/${locale}/specialties`}
+            className="text-sm font-medium text-gray-700 hover:text-primary-500 transition-colors"
+          >
+            {t("specialties")}
+          </Link>
         </nav>
 
         <div className="flex items-center gap-3">

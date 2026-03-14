@@ -10,12 +10,13 @@ const DESTINATION_TTL_HOURS = 24;
 
 export async function getDestinations(params: {
   areaCode?: string;
+  sigunguCode?: string;
   contentTypeId?: string;
   page?: number;
   pageSize?: number;
   sort?: "rating" | "created";
 }): Promise<{ items: Destination[]; totalCount: number }> {
-  const { areaCode, contentTypeId, page = 1, pageSize = 12, sort = "rating" } = params;
+  const { areaCode, sigunguCode, contentTypeId, page = 1, pageSize = 12, sort = "rating" } = params;
 
   const supabase = await createClient();
 
@@ -25,6 +26,10 @@ export async function getDestinations(params: {
 
   if (areaCode) {
     query = query.eq("area_code", areaCode);
+  }
+
+  if (sigunguCode) {
+    query = query.eq("sigungu_code", sigunguCode);
   }
 
   if (contentTypeId) {

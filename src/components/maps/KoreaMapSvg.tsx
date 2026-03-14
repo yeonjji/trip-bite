@@ -1,90 +1,173 @@
 "use client"
 
-// P4-06: 한국 17개 시도 SVG 지도 (원+텍스트 단순 표현)
+import { useState } from "react"
+import koreaMap from "@/lib/constants/korea-map-data"
 
-interface RegionPosition {
-  cx: number
-  cy: number
-  label: string
+// Map from svg-map id → 법정동 area code
+const ID_TO_AREA_CODE: Record<string, string> = {
+  "seoul": "11",
+  "busan": "26",
+  "daegu": "27",
+  "incheon": "28",
+  "gwangju": "29",
+  "daejeon": "30",
+  "ulsan": "31",
+  "gyeonggi": "41",
+  "north-chungcheong": "43",
+  "south-chungcheong": "44",
+  "south-jeolla": "46",
+  "north-gyeongsang": "47",
+  "south-gyeongsang": "48",
+  "jeju": "50",
+  "gangwon": "51",
+  "north-jeolla": "52",
+  "sejong": "36110",
 }
 
-const REGION_POSITIONS: Record<string, RegionPosition> = {
-  "1":  { cx: 52,  cy: 28,  label: "서울" },
-  "2":  { cx: 38,  cy: 30,  label: "인천" },
-  "3":  { cx: 52,  cy: 52,  label: "대전" },
-  "4":  { cx: 72,  cy: 58,  label: "대구" },
-  "5":  { cx: 38,  cy: 70,  label: "광주" },
-  "6":  { cx: 80,  cy: 72,  label: "부산" },
-  "7":  { cx: 84,  cy: 65,  label: "울산" },
-  "8":  { cx: 56,  cy: 46,  label: "세종" },
-  "31": { cx: 52,  cy: 36,  label: "경기" },
-  "32": { cx: 70,  cy: 22,  label: "강원" },
-  "33": { cx: 60,  cy: 50,  label: "충북" },
-  "34": { cx: 44,  cy: 54,  label: "충남" },
-  "35": { cx: 46,  cy: 66,  label: "전북" },
-  "36": { cx: 40,  cy: 78,  label: "전남" },
-  "37": { cx: 76,  cy: 46,  label: "경북" },
-  "38": { cx: 68,  cy: 68,  label: "경남" },
-  "39": { cx: 52,  cy: 92,  label: "제주" },
+// Reverse mapping
+const AREA_CODE_TO_ID: Record<string, string> = Object.fromEntries(
+  Object.entries(ID_TO_AREA_CODE).map(([id, code]) => [code, id])
+)
+
+// Korean labels for each region
+const ID_TO_LABEL: Record<string, string> = {
+  "seoul": "서울",
+  "busan": "부산",
+  "daegu": "대구",
+  "incheon": "인천",
+  "gwangju": "광주",
+  "daejeon": "대전",
+  "ulsan": "울산",
+  "gyeonggi": "경기",
+  "north-chungcheong": "충북",
+  "south-chungcheong": "충남",
+  "south-jeolla": "전남",
+  "north-gyeongsang": "경북",
+  "south-gyeongsang": "경남",
+  "jeju": "제주",
+  "gangwon": "강원",
+  "north-jeolla": "전북",
+  "sejong": "세종",
+}
+
+const LABEL_POSITIONS: Record<string, { x: number; y: number } | null> = {
+  "seoul": null,
+  "busan": null,
+  "daegu": null,
+  "incheon": null,
+  "gwangju": null,
+  "daejeon": null,
+  "ulsan": null,
+  "sejong": null,
+  "gyeonggi": { x: 155, y: 115 },
+  "gangwon": { x: 350, y: 100 },
+  "north-chungcheong": { x: 260, y: 230 },
+  "south-chungcheong": { x: 140, y: 280 },
+  "north-jeolla": { x: 160, y: 380 },
+  "south-jeolla": { x: 130, y: 490 },
+  "north-gyeongsang": { x: 370, y: 280 },
+  "south-gyeongsang": { x: 320, y: 430 },
+  "jeju": { x: 130, y: 590 },
 }
 
 interface KoreaMapSvgProps {
   selectedAreaCode?: string
-  onAreaClick?: (code: string) => void
+  onAreaClick?: (areaCode: string) => void
+  onAreaHover?: (areaCode: string | null) => void
   className?: string
 }
 
 export default function KoreaMapSvg({
   selectedAreaCode,
   onAreaClick,
+  onAreaHover,
   className,
 }: KoreaMapSvgProps) {
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
+
+  const selectedId = selectedAreaCode ? AREA_CODE_TO_ID[selectedAreaCode] : undefined
+
   return (
     <svg
-      viewBox="0 0 110 110"
+      viewBox={koreaMap.viewBox}
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      aria-label="대한민국 지역 지도"
+      aria-label={koreaMap.label}
     >
-      {/* 한반도 외곽 배경 */}
-      <rect
-        x="25" y="10" width="70" height="85"
-        rx="8"
-        style={{ fill: "var(--muted)", stroke: "var(--border)", strokeWidth: 0.5 }}
-      />
+      {koreaMap.locations.map((location) => {
+        const { id, path, name } = location
+        const isHovered = hoveredId === id
+        const isSelected = selectedId === id
+        const label = ID_TO_LABEL[id]
+        const labelPos = LABEL_POSITIONS[id]
 
-      {Object.entries(REGION_POSITIONS).map(([code, { cx, cy, label }]) => {
-        const isSelected = selectedAreaCode === code
+        let fill: string
+        let stroke: string
+        let strokeWidth: number
+
+        if (isSelected) {
+          fill = "hsl(25 95% 53% / 0.25)"
+          stroke = "hsl(25 95% 53%)"
+          strokeWidth = 1.5
+        } else if (isHovered) {
+          fill = "hsl(25 95% 53% / 0.15)"
+          stroke = "hsl(25 95% 53%)"
+          strokeWidth = 1.2
+        } else {
+          fill = "hsl(210 20% 96%)"
+          stroke = "hsl(210 10% 80%)"
+          strokeWidth = 0.8
+        }
+
         return (
-          <g
-            key={code}
-            onClick={() => onAreaClick?.(code)}
-            style={{ cursor: onAreaClick ? "pointer" : "default" }}
-            role={onAreaClick ? "button" : undefined}
-            aria-label={label}
-            aria-pressed={isSelected}
-          >
-            <circle
-              cx={cx}
-              cy={cy}
-              r={isSelected ? 7 : 5.5}
+          <g key={id}>
+            <path
+              d={path}
+              role="button"
+              aria-label={label ?? name}
+              tabIndex={0}
               style={{
-                fill: isSelected ? "var(--primary)" : "var(--background)",
-                stroke: isSelected ? "var(--primary)" : "var(--border)",
-                strokeWidth: isSelected ? 1.5 : 1,
+                fill,
+                stroke,
+                strokeWidth,
+                cursor: "pointer",
+                transition: "fill 0.2s ease, stroke 0.2s ease, stroke-width 0.2s ease",
               }}
-            />
-            <text
-              x={cx}
-              y={cy + 0.5}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fontSize={isSelected ? "3.5" : "3"}
-              fontWeight={isSelected ? "700" : "400"}
-              style={{ fill: isSelected ? "var(--primary-foreground)" : "var(--foreground)" }}
+              onClick={() => {
+                const code = ID_TO_AREA_CODE[id]
+                if (code) onAreaClick?.(code)
+              }}
+              onMouseEnter={() => {
+                setHoveredId(id)
+                const code = ID_TO_AREA_CODE[id]
+                if (code) onAreaHover?.(code)
+              }}
+              onMouseLeave={() => {
+                setHoveredId(null)
+                onAreaHover?.(null)
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  const code = ID_TO_AREA_CODE[id]
+                  if (code) onAreaClick?.(code)
+                }
+              }}
             >
-              {label}
-            </text>
+              <title>{label ?? name}</title>
+            </path>
+            {labelPos && label && (
+              <text
+                x={labelPos.x}
+                y={labelPos.y}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fontSize={11}
+                fontWeight={500}
+                style={{ fill: "hsl(var(--foreground))", pointerEvents: "none" }}
+              >
+                {label}
+              </text>
+            )}
           </g>
         )
       })}

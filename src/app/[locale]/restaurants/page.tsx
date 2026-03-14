@@ -14,11 +14,13 @@ import type { Destination } from "@/types/database"
 import PaginationClient from "./_components/PaginationClient"
 import RestaurantFilters from "./_components/RestaurantFilters"
 
+export const dynamic = "force-dynamic"
+
 const PAGE_SIZE = 12
 
 type Props = {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ areaCode?: string; page?: string }>
+  searchParams: Promise<{ areaCode?: string; sigunguCode?: string; page?: string }>
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -54,7 +56,7 @@ function toRestaurantDetail(destination: Destination): RestaurantDetail {
 
 export default async function RestaurantsPage({ params, searchParams }: Props) {
   const { locale } = await params
-  const { areaCode, page: pageStr } = await searchParams
+  const { areaCode, sigunguCode, page: pageStr } = await searchParams
 
   setRequestLocale(locale)
 
@@ -62,6 +64,7 @@ export default async function RestaurantsPage({ params, searchParams }: Props) {
 
   const { items, totalCount } = await getRestaurants({
     areaCode,
+    sigunguCode,
     page,
     pageSize: PAGE_SIZE,
     sort: "rating",

@@ -8,14 +8,17 @@ import { TourSpotBase } from "@/types/tour-api"
 interface TravelCardProps {
   item: TourSpotBase
   locale: string
+  /** 기본값: /${locale}/travel/${contentid} */
+  detailPath?: string
 }
 
-export default function TravelCard({ item, locale }: TravelCardProps) {
+export default function TravelCard({ item, locale, detailPath }: TravelCardProps) {
   const { contentid, title, addr1, areacode, firstimage } = item
   const areaName = getAreaName(areacode)
+  const href = detailPath ?? `/${locale}/travel/${contentid}`
 
   return (
-    <Link href={`/${locale}/travel/${contentid}`} className="block">
+    <Link href={href} className="block">
       <Card className="h-full cursor-pointer transition-shadow hover:shadow-md">
         <div className="relative aspect-video w-full overflow-hidden rounded-t-xl bg-muted">
           {firstimage ? (

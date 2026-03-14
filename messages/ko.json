@@ -14,9 +14,12 @@
     "close": "닫기"
   },
   "nav": {
-    "travel": "여행지",
+    "travel": "여행",
+    "allDestinations": "전체 여행지",
+    "camping": "캠핑",
+    "barrierFree": "무장애 여행",
+    "petFriendly": "반려동물 여행",
     "restaurants": "맛집",
-    "camping": "캠핑장",
     "specialties": "특산품",
     "recipes": "레시피",
     "region": "지역",
@@ -36,6 +39,29 @@
   "travel": {
     "title": "여행지",
     "description": "전국의 아름다운 여행지를 탐색해보세요"
+  },
+  "pet": {
+    "title": "반려동물 여행",
+    "description": "반려동물과 함께할 수 있는 여행지를 찾아보세요",
+    "companionInfo": "동반 정보",
+    "petRules": "반려동물 규정",
+    "acmpnyType": "동반 가능 동물",
+    "indoor": "실내",
+    "outdoor": "실외",
+    "indoorOutdoor": "실내외"
+  },
+  "barrierFree": {
+    "title": "무장애 여행",
+    "description": "누구나 편리하게 즐길 수 있는 여행지를 찾아보세요",
+    "accessibilityInfo": "접근성 정보",
+    "wheelchair": "휠체어 대여",
+    "exitAccessible": "출입구 접근",
+    "restroomWh": "장애인 화장실",
+    "elevator": "엘리베이터",
+    "parkingWh": "장애인 주차",
+    "braileBlock": "점자블록",
+    "signGuide": "점자 안내판",
+    "audioGuide": "오디오 가이드"
   },
   "restaurants": {
     "title": "맛집",

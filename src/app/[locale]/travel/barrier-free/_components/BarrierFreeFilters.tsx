@@ -1,36 +1,27 @@
 "use client"
 
-import { useRouter, useSearchParams } from "next/navigation"
-
+import { useRouter, usePathname } from "next/navigation"
 import RegionFilter from "@/components/filters/RegionFilter"
 import SigunguFilter from "@/components/filters/SigunguFilter"
 
-interface RestaurantFiltersProps {
+interface BarrierFreeFiltersProps {
+  areaCode: string
+  sigunguCode: string
   locale: string
 }
 
-export default function RestaurantFilters({ locale }: RestaurantFiltersProps) {
+export default function BarrierFreeFilters({ areaCode, sigunguCode, locale }: BarrierFreeFiltersProps) {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const areaCode = searchParams.get("areaCode") ?? ""
-  const sigunguCode = searchParams.get("sigunguCode") ?? ""
+  const pathname = usePathname()
 
   function buildUrl(params: { areaCode?: string; sigunguCode?: string }) {
-    const next = new URLSearchParams(searchParams.toString())
+    const sp = new URLSearchParams()
     const nextArea = params.areaCode ?? areaCode
     const nextSigungu = params.sigunguCode ?? sigunguCode
-    if (nextArea) {
-      next.set("areaCode", nextArea)
-    } else {
-      next.delete("areaCode")
-    }
-    if (nextSigungu) {
-      next.set("sigunguCode", nextSigungu)
-    } else {
-      next.delete("sigunguCode")
-    }
-    next.delete("page")
-    return `/${locale}/restaurants?${next.toString()}`
+    if (nextArea) sp.set("areaCode", nextArea)
+    if (nextSigungu) sp.set("sigunguCode", nextSigungu)
+    const qs = sp.toString()
+    return qs ? `${pathname}?${qs}` : pathname
   }
 
   return (
