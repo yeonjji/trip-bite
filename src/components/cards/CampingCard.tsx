@@ -24,7 +24,7 @@ export default function CampingCard({ item, locale }: CampingCardProps) {
               alt={facltNm}
               fill
               className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
           ) : (
             <div className="flex h-full items-center justify-center text-muted-foreground">

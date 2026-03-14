@@ -110,7 +110,7 @@ export default async function HomePage({ params }: Props) {
             <h2 className="text-xl font-semibold text-foreground">
               {locale === "en" ? "Top Destinations" : "추천 여행지"}
             </h2>
-            <Link href={`/${locale}/travel`} className="text-sm text-primary hover:underline">
+            <Link href={`/${locale}/travel`} className="text-sm text-primary hover:underline" aria-label={locale === "en" ? "View all destinations" : "여행지 전체 보기"}>
               {locale === "en" ? "View all" : "전체 보기"}
             </Link>
           </div>
@@ -172,7 +172,7 @@ export default async function HomePage({ params }: Props) {
             <h2 className="text-xl font-semibold text-foreground">
               {locale === "en" ? `${season} Specialties` : `${seasonLabel} 제철 특산품`}
             </h2>
-            <Link href={`/${locale}/specialties`} className="text-sm text-primary hover:underline">
+            <Link href={`/${locale}/specialties`} className="text-sm text-primary hover:underline" aria-label={locale === "en" ? "View all specialties" : "특산품 전체 보기"}>
               {locale === "en" ? "View all" : "전체 보기"}
             </Link>
           </div>
@@ -199,7 +199,7 @@ export default async function HomePage({ params }: Props) {
                 ? `${season} Recommended Destinations`
                 : `${seasonLabel} 추천 여행지`}
             </h2>
-            <Link href={`/${locale}/travel`} className="text-sm text-primary hover:underline">
+            <Link href={`/${locale}/travel`} className="text-sm text-primary hover:underline" aria-label={locale === "en" ? "View all recommended destinations" : "추천 여행지 전체 보기"}>
               {locale === "en" ? "View all" : "전체 보기"}
             </Link>
           </div>
@@ -234,7 +234,7 @@ export default async function HomePage({ params }: Props) {
             <h2 className="text-xl font-semibold text-foreground">
               {locale === "en" ? "Latest Recipes" : "최신 레시피"}
             </h2>
-            <Link href={`/${locale}/recipes`} className="text-sm text-primary hover:underline">
+            <Link href={`/${locale}/recipes`} className="text-sm text-primary hover:underline" aria-label={locale === "en" ? "View all recipes" : "레시피 전체 보기"}>
               {locale === "en" ? "View all" : "전체 보기"}
             </Link>
           </div>
@@ -259,7 +259,7 @@ export default async function HomePage({ params }: Props) {
             <h2 className="text-xl font-semibold text-foreground">
               {locale === "en" ? "Top Camping Sites" : "추천 캠핑장"}
             </h2>
-            <Link href={`/${locale}/camping`} className="text-sm text-primary hover:underline">
+            <Link href={`/${locale}/camping`} className="text-sm text-primary hover:underline" aria-label={locale === "en" ? "View all camping sites" : "캠핑장 전체 보기"}>
               {locale === "en" ? "View all" : "전체 보기"}
             </Link>
           </div>

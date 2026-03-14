@@ -189,8 +189,8 @@
   "hotPaths": [
     {
       "path": "src/app/[locale]/page.tsx",
-      "accessCount": 4,
-      "lastAccessed": 1773450715125,
+      "accessCount": 10,
+      "lastAccessed": 1773450984691,
       "type": "file"
     },
     {
@@ -203,6 +203,12 @@
       "path": "src/app/[locale]/camping/page.tsx",
       "accessCount": 4,
       "lastAccessed": 1773450725445,
+      "type": "file"
+    },
+    {
+      "path": "docs/08-tasks.md",
+      "accessCount": 4,
+      "lastAccessed": 1773450869004,
       "type": "file"
     },
     {
@@ -284,6 +290,24 @@
       "type": "file"
     },
     {
+      "path": "src/components/cards/TravelCard.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1773451029773,
+      "type": "file"
+    },
+    {
+      "path": "src/components/cards/CampingCard.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1773451035174,
+      "type": "file"
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1773451061159,
+      "type": "file"
+    },
+    {
       "path": "src/app/[locale]/layout.tsx",
       "accessCount": 1,
       "lastAccessed": 1773450594160,
@@ -293,12 +317,6 @@
       "path": "src/app/sitemap.ts",
       "accessCount": 1,
       "lastAccessed": 1773450594417,
-      "type": "file"
-    },
-    {
-      "path": "src/app/layout.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1773450598739,
       "type": "file"
     },
     {
