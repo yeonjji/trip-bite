@@ -87,6 +87,15 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "foodsafetykorea.go.kr",
       },
+      // KCISA API
+      {
+        protocol: "https",
+        hostname: "api.kcisa.kr",
+      },
+      {
+        protocol: "http",
+        hostname: "api.kcisa.kr",
+      },
     ],
   },
   async headers() {
