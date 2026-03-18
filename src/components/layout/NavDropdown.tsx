@@ -43,7 +43,7 @@ export function NavDropdown({ label, items, locale }: NavDropdownProps) {
   return (
     <div
       ref={ref}
-      className="relative"
+      className="relative pb-1"
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
@@ -66,7 +66,7 @@ export function NavDropdown({ label, items, locale }: NavDropdownProps) {
       {open && (
         <div
           role="menu"
-          className="absolute left-0 top-full z-50 mt-1 min-w-44 rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+          className="absolute left-0 top-full z-50 min-w-44 rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
         >
           {items.map((item) => {
             const fullHref = `/${locale}${item.href}`
