@@ -28,6 +28,7 @@ export function Header({ locale }: Props) {
               { href: "/camping", label: t("camping") },
               { href: "/travel/barrier-free", label: t("barrierFree") },
               { href: "/travel/pet", label: t("petFriendly") },
+              { href: "/travel/comfortable", label: t("comfortableTravel") },
             ]}
           />
           <Link

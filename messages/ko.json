@@ -29,7 +29,8 @@
     "autoCamping": "자동차야영장",
     "amenities": "편의시설",
     "evCharging": "전기차충전소",
-    "audioGuide": "오디오 가이드"
+    "audioGuide": "오디오 가이드",
+    "comfortableTravel": "편한여행"
   },
   "home": {
     "heroTitle": "대한민국의 맛과 멋을",
@@ -54,6 +55,14 @@
     "indoor": "실내",
     "outdoor": "실외",
     "indoorOutdoor": "실내외"
+  },
+  "comfortableTravel": {
+    "title": "편한여행 - 오디오 가이드",
+    "description": "강원도 관광지 오디오 가이드로 더 깊이 있는 여행을 즐겨보세요",
+    "audioGuideInfo": "오디오 가이드 정보",
+    "listenAudio": "오디오 듣기",
+    "audioScript": "오디오 스크립트",
+    "gangwonOnly": "강원도 전용 서비스"
   },
   "barrierFree": {
     "title": "무장애 여행",

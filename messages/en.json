@@ -29,7 +29,8 @@
     "autoCamping": "Auto Camping",
     "amenities": "Amenities",
     "evCharging": "EV Charging",
-    "audioGuide": "Audio Guide"
+    "audioGuide": "Audio Guide",
+    "comfortableTravel": "Easy Travel"
   },
   "home": {
     "heroTitle": "Discover Korea's",
@@ -54,6 +55,14 @@
     "indoor": "Indoor",
     "outdoor": "Outdoor",
     "indoorOutdoor": "Indoor & Outdoor"
+  },
+  "comfortableTravel": {
+    "title": "Easy Travel - Audio Guide",
+    "description": "Explore Gangwon attractions with audio guides for a richer travel experience",
+    "audioGuideInfo": "Audio Guide Info",
+    "listenAudio": "Listen to Audio",
+    "audioScript": "Audio Script",
+    "gangwonOnly": "Gangwon Exclusive Service"
   },
   "barrierFree": {
     "title": "Barrier-Free Travel",
