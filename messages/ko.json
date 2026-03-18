@@ -24,12 +24,7 @@
     "recipes": "레시피",
     "region": "지역",
     "search": "검색",
-    "home": "홈",
-    "recreation": "휴양시설",
-    "autoCamping": "자동차야영장",
-    "amenities": "편의시설",
-    "evCharging": "전기차충전소",
-    "audioGuide": "오디오 가이드"
+    "home": "홈"
   },
   "home": {
     "heroTitle": "대한민국의 맛과 멋을",

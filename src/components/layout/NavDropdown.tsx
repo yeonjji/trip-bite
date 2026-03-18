@@ -62,10 +62,9 @@ export function NavDropdown({ label, items, locale }: NavDropdownProps) {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 pt-2">
         <div
           role="menu"
-          className="min-w-44 rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+          className="absolute left-0 top-full z-50 mt-1 min-w-44 rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
         >
           {items.map((item) => {
             const fullHref = `/${locale}${item.href}`
@@ -88,7 +87,6 @@ export function NavDropdown({ label, items, locale }: NavDropdownProps) {
               </Link>
             )
           })}
-        </div>
         </div>
       )}
     </div>

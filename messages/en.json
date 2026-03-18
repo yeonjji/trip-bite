@@ -24,12 +24,7 @@
     "recipes": "Recipes",
     "region": "Region",
     "search": "Search",
-    "home": "Home",
-    "recreation": "Recreation",
-    "autoCamping": "Auto Camping",
-    "amenities": "Amenities",
-    "evCharging": "EV Charging",
-    "audioGuide": "Audio Guide"
+    "home": "Home"
   },
   "home": {
     "heroTitle": "Discover Korea's",
