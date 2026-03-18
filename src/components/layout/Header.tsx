@@ -43,9 +43,7 @@ export function Header({ locale }: Props) {
           <NavDropdown
             label={t("easyTravel")}
             locale={locale}
-            items={[
-              { href: "/easy-travel/audio-guide", label: t("audioGuide") },
-            ]}
+            items={[]}
           />
           <Link
             href={`/${locale}/restaurants`}
