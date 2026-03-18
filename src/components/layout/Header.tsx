@@ -40,6 +40,13 @@ export function Header({ locale }: Props) {
               { href: "/camping?induty=글램핑", label: t("glamping") },
             ]}
           />
+          <NavDropdown
+            label={t("easyTravel")}
+            locale={locale}
+            items={[
+              { href: "/easy-travel/audio-guide", label: t("audioGuide") },
+            ]}
+          />
           <Link
             href={`/${locale}/restaurants`}
             className="text-sm font-medium text-gray-700 hover:text-primary-500 transition-colors"
