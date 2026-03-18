@@ -25,9 +25,19 @@ export function Header({ locale }: Props) {
             locale={locale}
             items={[
               { href: "/travel", label: t("allDestinations") },
-              { href: "/camping", label: t("camping") },
               { href: "/travel/barrier-free", label: t("barrierFree") },
               { href: "/travel/pet", label: t("petFriendly") },
+            ]}
+          />
+          <NavDropdown
+            label={t("camping")}
+            locale={locale}
+            items={[
+              { href: "/camping", label: t("allCamping") },
+              { href: "/camping?induty=일반야영장", label: t("generalCamping") },
+              { href: "/camping?induty=자동차야영장", label: t("carCamping") },
+              { href: "/camping?induty=카라반", label: t("caravan") },
+              { href: "/camping?induty=글램핑", label: t("glamping") },
             ]}
           />
           <Link

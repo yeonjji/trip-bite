@@ -22,10 +22,12 @@ export function NavDropdown({ label, items, locale }: NavDropdownProps) {
   const pathname = usePathname()
   const ref = useRef<HTMLDivElement>(null)
 
-  const isActive = items.some((item) =>
-    pathname === `/${locale}${item.href}` ||
-    pathname.startsWith(`/${locale}${item.href}/`)
-  )
+  const getItemPath = (href: string) => href.split("?")[0]
+
+  const isActive = items.some((item) => {
+    const itemPath = `/${locale}${getItemPath(item.href)}`
+    return pathname === itemPath || pathname.startsWith(itemPath + "/")
+  })
 
   // 외부 클릭 시 닫기
   useEffect(() => {
@@ -68,8 +70,9 @@ export function NavDropdown({ label, items, locale }: NavDropdownProps) {
         >
           {items.map((item) => {
             const fullHref = `/${locale}${item.href}`
+            const itemPathOnly = `/${locale}${getItemPath(item.href)}`
             const itemActive =
-              pathname === fullHref || pathname.startsWith(fullHref + "/")
+              pathname === itemPathOnly || pathname.startsWith(itemPathOnly + "/")
             return (
               <Link
                 key={item.href}
