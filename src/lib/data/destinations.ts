@@ -75,19 +75,30 @@ export async function getDestinationDetail(contentId: string): Promise<{
   const destination = (row as Destination) ?? null;
 
   // 24시간 캐시: 유효하면 null 반환, 만료/없으면 fetch 결과 반환
-  const freshDetail = await getCachedOrFetch(
-    destination?.cached_at ?? null,
-    DESTINATION_TTL_HOURS,
-    () => tourApi.detailCommon(contentId)
-  );
+  let freshDetail = null;
+  try {
+    freshDetail = await getCachedOrFetch(
+      destination?.cached_at ?? null,
+      DESTINATION_TTL_HOURS,
+      () => tourApi.detailCommon(contentId)
+    );
+  } catch {
+    // TourAPI 실패 시 Supabase 데이터로 fallback
+  }
 
   let detail: TourDetailCommon | null = null;
   let images: TourImage[] = [];
 
   if (freshDetail !== null) {
     // TourAPI에서 새로 가져온 경우
-    const items = freshDetail.response.body.items;
-    detail = items !== "" && items.item.length > 0 ? items.item[0] : null;
+    try {
+      const items = freshDetail.response.body.items;
+      detail = items !== "" && Array.isArray(items.item) && items.item.length > 0
+        ? items.item[0]
+        : null;
+    } catch {
+      detail = null;
+    }
 
     // 이미지 fetch
     try {
