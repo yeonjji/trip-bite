@@ -9,6 +9,8 @@ import { AREA_CODES } from "@/lib/constants/area-codes"
 
 interface CampingFiltersProps {
   locale: string
+  basePath?: string
+  hideInduty?: boolean
 }
 
 // area code → doNm 매핑 (고캠핑 API doNm 기준)
@@ -36,7 +38,7 @@ const DONM_TO_CODE: Record<string, string> = Object.fromEntries(
   Object.entries(CODE_TO_DONM).map(([code, doNm]) => [doNm, code])
 )
 
-export default function CampingFilters({ locale }: CampingFiltersProps) {
+export default function CampingFilters({ locale, basePath = "/camping", hideInduty = false }: CampingFiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -57,9 +59,9 @@ export default function CampingFilters({ locale }: CampingFiltersProps) {
         }
       })
       params.delete("page")
-      router.push(`/${locale}/camping?${params.toString()}`)
+      router.push(`/${locale}${basePath}?${params.toString()}`)
     },
-    [router, searchParams, locale]
+    [router, searchParams, locale, basePath]
   )
 
   const handleRegionChange = (code: string) => {
@@ -82,6 +84,7 @@ export default function CampingFilters({ locale }: CampingFiltersProps) {
         animal={animalCmgCl}
         onIndutyChange={handleIndutyChange}
         onAnimalChange={handleAnimalChange}
+        hideInduty={hideInduty}
       />
     </div>
   )

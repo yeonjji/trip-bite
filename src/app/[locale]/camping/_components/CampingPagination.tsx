@@ -9,6 +9,7 @@ interface CampingPaginationProps {
   currentPage: number
   totalCount: number
   pageSize: number
+  basePath?: string
 }
 
 export default function CampingPagination({
@@ -16,6 +17,7 @@ export default function CampingPagination({
   currentPage,
   totalCount,
   pageSize,
+  basePath = "/camping",
 }: CampingPaginationProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -23,7 +25,7 @@ export default function CampingPagination({
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set("page", String(page))
-    router.push(`/${locale}/camping?${params.toString()}`)
+    router.push(`/${locale}${basePath}?${params.toString()}`)
   }
 
   return (

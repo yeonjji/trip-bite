@@ -19,9 +19,19 @@ export const NAV_GROUPS: NavGroup[] = [
     labelEn: "Travel",
     items: [
       { labelKo: "전체 여행지", labelEn: "All Destinations", href: "/travel" },
-      { labelKo: "캠핑", labelEn: "Camping", href: "/camping" },
       { labelKo: "무장애 여행", labelEn: "Barrier-Free", href: "/travel/barrier-free" },
       { labelKo: "반려동물 여행", labelEn: "Pet-Friendly", href: "/travel/pet" },
+    ],
+  },
+  {
+    labelKo: "캠핑",
+    labelEn: "Camping",
+    items: [
+      { labelKo: "전체 캠핑", labelEn: "All Camping", href: "/camping" },
+      { labelKo: "일반야영지", labelEn: "General Camping", href: "/camping/general" },
+      { labelKo: "자동차야영지", labelEn: "Car Camping", href: "/camping/car" },
+      { labelKo: "글램핑", labelEn: "Glamping", href: "/camping/glamping" },
+      { labelKo: "카라반", labelEn: "Caravan", href: "/camping/caravan" },
     ],
   },
   { labelKo: "맛집", labelEn: "Restaurants", href: "/restaurants" },
