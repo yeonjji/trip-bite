@@ -4,10 +4,11 @@ import type { BarrierFreePlace } from "@/types/barrier-free";
 export async function getBarrierFreePlaces(params: {
   areaCode?: string;
   sigunguCode?: string;
+  features?: string[];
   page?: number;
   pageSize?: number;
 }): Promise<{ items: BarrierFreePlace[]; totalCount: number }> {
-  const { areaCode, sigunguCode, page = 1, pageSize = 12 } = params;
+  const { areaCode, sigunguCode, features, page = 1, pageSize = 12 } = params;
 
   const supabase = await createClient();
 
@@ -22,6 +23,12 @@ export async function getBarrierFreePlaces(params: {
 
   if (sigunguCode) {
     query = query.eq("sigungu_code", sigunguCode);
+  }
+
+  if (features && features.length > 0) {
+    for (const feature of features) {
+      query = query.not(feature, "is", null)
+    }
   }
 
   const from = (page - 1) * pageSize;

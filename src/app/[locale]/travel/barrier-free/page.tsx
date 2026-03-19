@@ -4,15 +4,18 @@ import type { Metadata } from "next"
 
 import { getBarrierFreePlaces } from "@/lib/data/barrier-free-places"
 import { buildAlternates } from "@/lib/utils/metadata"
-import TravelCard from "@/components/cards/TravelCard"
+import BarrierFreeCard from "@/components/cards/BarrierFreeCard"
 import BarrierFreeFilters from "./_components/BarrierFreeFilters"
 import BarrierFreePagination from "./_components/BarrierFreePagination"
-import type { BarrierFreePlace } from "@/types/barrier-free"
-import type { TourSpotBase } from "@/types/tour-api"
 
 type Props = {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ areaCode?: string; sigunguCode?: string; page?: string }>
+  searchParams: Promise<{
+    areaCode?: string
+    sigunguCode?: string
+    features?: string
+    page?: string
+  }>
 }
 
 export const dynamic = "force-dynamic"
@@ -31,41 +34,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-function barrierFreePlaceToSpotBase(p: BarrierFreePlace): TourSpotBase {
-  return {
-    contentid: p.content_id,
-    contenttypeid: p.content_type_id ?? "12",
-    title: p.title,
-    addr1: p.addr1,
-    addr2: p.addr2,
-    areacode: p.area_code,
-    sigungucode: p.sigungu_code,
-    mapx: p.mapx !== undefined ? String(p.mapx) : undefined,
-    mapy: p.mapy !== undefined ? String(p.mapy) : undefined,
-    firstimage: p.first_image,
-    firstimage2: p.first_image2,
-    tel: p.tel,
-    homepage: p.homepage,
-    overview: p.overview,
-  }
-}
-
 export default async function BarrierFreePage({ params, searchParams }: Props) {
   const { locale } = await params
-  const { areaCode = "", sigunguCode = "", page: pageStr = "1" } = await searchParams
+  const {
+    areaCode = "",
+    sigunguCode = "",
+    features: featuresStr = "",
+    page: pageStr = "1",
+  } = await searchParams
 
   setRequestLocale(locale)
 
   const page = Math.max(1, parseInt(pageStr, 10) || 1)
+  const features = featuresStr ? featuresStr.split(",").filter(Boolean) : []
+  const isKo = locale === "ko"
 
   const { items, totalCount } = await getBarrierFreePlaces({
     areaCode: areaCode || undefined,
     sigunguCode: sigunguCode || undefined,
+    features: features.length > 0 ? features : undefined,
     page,
     pageSize: PAGE_SIZE,
   })
-
-  const isKo = locale === "ko"
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
@@ -79,7 +69,12 @@ export default async function BarrierFreePage({ params, searchParams }: Props) {
       </p>
 
       <div className="mb-6">
-        <BarrierFreeFilters areaCode={areaCode} sigunguCode={sigunguCode} locale={locale} />
+        <BarrierFreeFilters
+          areaCode={areaCode}
+          sigunguCode={sigunguCode}
+          features={features}
+          locale={locale}
+        />
       </div>
 
       {items.length === 0 ? (
@@ -90,14 +85,14 @@ export default async function BarrierFreePage({ params, searchParams }: Props) {
         </div>
       ) : (
         <>
+          <p className="mb-4 text-sm text-muted-foreground">
+            {isKo
+              ? `총 ${totalCount.toLocaleString()}개`
+              : `${totalCount.toLocaleString()} results`}
+          </p>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((place) => (
-              <TravelCard
-                key={place.id}
-                item={barrierFreePlaceToSpotBase(place)}
-                locale={locale}
-                detailPath={`/${locale}/travel/barrier-free/${place.content_id}`}
-              />
+              <BarrierFreeCard key={place.id} item={place} locale={locale} />
             ))}
           </div>
 

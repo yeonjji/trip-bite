@@ -1,18 +1,25 @@
 import { Suspense } from "react"
+import Link from "next/link"
 import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 
 import { getPetPlaces } from "@/lib/data/pet-places"
+import { getCampingSites } from "@/lib/data/camping"
 import { buildAlternates } from "@/lib/utils/metadata"
-import TravelCard from "@/components/cards/TravelCard"
+import PetCard from "@/components/cards/PetCard"
+import CampingCard from "@/components/cards/CampingCard"
 import PetFilters from "./_components/PetFilters"
 import PetPagination from "./_components/PetPagination"
-import type { PetFriendlyPlace } from "@/types/pet-friendly"
-import type { TourSpotBase } from "@/types/tour-api"
+import type { CampingSite } from "@/types/database"
 
 type Props = {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ areaCode?: string; sigunguCode?: string; page?: string }>
+  searchParams: Promise<{
+    areaCode?: string
+    sigunguCode?: string
+    petCl?: string
+    page?: string
+  }>
 }
 
 export const dynamic = "force-dynamic"
@@ -31,41 +38,44 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-function petPlaceToSpotBase(p: PetFriendlyPlace): TourSpotBase {
+function toCampingCardItem(site: CampingSite) {
   return {
-    contentid: p.content_id,
-    contenttypeid: "12",
-    title: p.title,
-    addr1: p.addr1,
-    addr2: p.addr2,
-    areacode: p.area_code,
-    sigungucode: p.sigungu_code,
-    mapx: p.mapx !== undefined ? String(p.mapx) : undefined,
-    mapy: p.mapy !== undefined ? String(p.mapy) : undefined,
-    firstimage: p.first_image,
-    firstimage2: p.first_image2,
-    tel: p.tel,
-    homepage: p.homepage,
-    overview: p.overview,
+    contentId: site.content_id,
+    facltNm: site.faclt_nm,
+    lineIntro: site.line_intro,
+    doNm: site.do_nm,
+    sigunguNm: site.sigungu_nm,
+    addr1: site.addr1,
+    firstImageUrl: site.first_image_url,
+    induty: site.induty,
+    animalCmgCl: site.animal_cmg_cl,
   }
 }
 
 export default async function PetTravelPage({ params, searchParams }: Props) {
   const { locale } = await params
-  const { areaCode = "", sigunguCode = "", page: pageStr = "1" } = await searchParams
+  const {
+    areaCode = "",
+    sigunguCode = "",
+    petCl = "",
+    page: pageStr = "1",
+  } = await searchParams
 
   setRequestLocale(locale)
 
   const page = Math.max(1, parseInt(pageStr, 10) || 1)
-
-  const { items, totalCount } = await getPetPlaces({
-    areaCode: areaCode || undefined,
-    sigunguCode: sigunguCode || undefined,
-    page,
-    pageSize: PAGE_SIZE,
-  })
-
   const isKo = locale === "ko"
+
+  const [{ items, totalCount }, { items: campingSites }] = await Promise.all([
+    getPetPlaces({
+      areaCode: areaCode || undefined,
+      sigunguCode: sigunguCode || undefined,
+      petCl: petCl || undefined,
+      page,
+      pageSize: PAGE_SIZE,
+    }),
+    getCampingSites({ animalCmgCl: "가능", pageSize: 4 }),
+  ])
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
@@ -79,7 +89,12 @@ export default async function PetTravelPage({ params, searchParams }: Props) {
       </p>
 
       <div className="mb-6">
-        <PetFilters areaCode={areaCode} sigunguCode={sigunguCode} locale={locale} />
+        <PetFilters
+          areaCode={areaCode}
+          sigunguCode={sigunguCode}
+          petCl={petCl}
+          locale={locale}
+        />
       </div>
 
       {items.length === 0 ? (
@@ -92,12 +107,7 @@ export default async function PetTravelPage({ params, searchParams }: Props) {
         <>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((place) => (
-              <TravelCard
-                key={place.id}
-                item={petPlaceToSpotBase(place)}
-                locale={locale}
-                detailPath={`/${locale}/travel/pet/${place.content_id}`}
-              />
+              <PetCard key={place.id} item={place} locale={locale} />
             ))}
           </div>
 
@@ -113,6 +123,28 @@ export default async function PetTravelPage({ params, searchParams }: Props) {
             </div>
           )}
         </>
+      )}
+
+      {/* 반려동물 동반 캠핑장 섹션 */}
+      {campingSites.length > 0 && (
+        <div className="mt-12">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-foreground">
+              {isKo ? "🏕️ 반려동물 동반 캠핑장" : "🏕️ Pet-Friendly Camping"}
+            </h2>
+            <Link
+              href={`/${locale}/camping?animalCmgCl=가능`}
+              className="text-sm text-primary hover:underline"
+            >
+              {isKo ? "전체보기" : "View All"}
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {campingSites.map((site) => (
+              <CampingCard key={site.id} item={toCampingCardItem(site)} locale={locale} />
+            ))}
+          </div>
+        </div>
       )}
     </div>
   )
