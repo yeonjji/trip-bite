@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
+import { tourApi } from "@/lib/api/tour-api";
 import type { PetFriendlyPlace } from "@/types/pet-friendly";
+import type { TourPetInfo } from "@/types/tour-api";
 
 export async function getPetPlaces(params: {
   areaCode?: string;
@@ -48,7 +50,7 @@ export async function getPetPlaces(params: {
 
 export async function getPetPlaceDetail(
   contentId: string
-): Promise<PetFriendlyPlace | null> {
+): Promise<{ place: PetFriendlyPlace | null; petTourInfo: TourPetInfo | null }> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -59,8 +61,17 @@ export async function getPetPlaceDetail(
 
   if (error) {
     console.error("pet_friendly_places detail fetch error:", error.message);
-    return null;
+    return { place: null, petTourInfo: null };
   }
 
-  return data as PetFriendlyPlace;
+  let petTourInfo: TourPetInfo | null = null;
+  try {
+    const petRes = await tourApi.detailPetTour(contentId);
+    const petItems = petRes.response.body.items;
+    petTourInfo = petItems !== "" && petItems.item.length > 0 ? petItems.item[0] : null;
+  } catch {
+    petTourInfo = null;
+  }
+
+  return { place: data as PetFriendlyPlace, petTourInfo };
 }

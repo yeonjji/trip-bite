@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { tourApi } from "@/lib/api/tour-api";
 import { getCachedOrFetch } from "@/lib/utils/cache";
 import type { Destination } from "@/types/database";
-import type { TourDetailCommon, TourImage } from "@/types/tour-api";
+import type { TourDetailCommon, TourImage, TourSpotDetail } from "@/types/tour-api";
 
 const DESTINATION_TTL_HOURS = 24;
 
@@ -62,6 +62,7 @@ export async function getDestinations(params: {
 export async function getDestinationDetail(contentId: string): Promise<{
   destination: Destination | null;
   detail: TourDetailCommon | null;
+  intro: TourSpotDetail | null;
   images: TourImage[];
 }> {
   const supabase = await createClient();
@@ -82,6 +83,7 @@ export async function getDestinationDetail(contentId: string): Promise<{
   );
 
   let detail: TourDetailCommon | null = null;
+  let intro: TourSpotDetail | null = null;
   let images: TourImage[] = [];
 
   if (freshDetail !== null) {
@@ -89,13 +91,22 @@ export async function getDestinationDetail(contentId: string): Promise<{
     const items = freshDetail.response.body.items;
     detail = items !== "" && items.item.length > 0 ? items.item[0] : null;
 
-    // 이미지 fetch
-    try {
-      const imgRes = await tourApi.detailImage(contentId);
-      const imgItems = imgRes.response.body.items;
+    // 상세 소개 + 이미지 병렬 fetch
+    const [introRes, imgRes] = await Promise.allSettled([
+      tourApi.detailIntro(contentId, "12"),
+      tourApi.detailImage(contentId),
+    ]);
+
+    if (introRes.status === "fulfilled") {
+      const introItems = introRes.value.response.body.items;
+      intro = introItems !== "" && introItems.item.length > 0
+        ? (introItems.item[0] as TourSpotDetail)
+        : null;
+    }
+
+    if (imgRes.status === "fulfilled") {
+      const imgItems = imgRes.value.response.body.items;
       images = imgItems !== "" ? imgItems.item : [];
-    } catch {
-      images = [];
     }
   } else if (destination) {
     // 캐시 유효: Supabase 데이터를 TourDetailCommon 형태로 변환
@@ -115,7 +126,18 @@ export async function getDestinationDetail(contentId: string): Promise<{
       firstimage: destination.first_image,
       firstimage2: destination.first_image2,
     };
+
+    // 캐시 유효 시에도 intro는 항상 최신 fetch
+    try {
+      const introRes = await tourApi.detailIntro(contentId, "12");
+      const introItems = introRes.response.body.items;
+      intro = introItems !== "" && introItems.item.length > 0
+        ? (introItems.item[0] as TourSpotDetail)
+        : null;
+    } catch {
+      intro = null;
+    }
   }
 
-  return { destination, detail, images };
+  return { destination, detail, intro, images };
 }
