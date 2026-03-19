@@ -4,10 +4,11 @@ import type { PetFriendlyPlace } from "@/types/pet-friendly";
 export async function getPetPlaces(params: {
   areaCode?: string;
   sigunguCode?: string;
+  petCl?: string;
   page?: number;
   pageSize?: number;
 }): Promise<{ items: PetFriendlyPlace[]; totalCount: number }> {
-  const { areaCode, sigunguCode, page = 1, pageSize = 12 } = params;
+  const { areaCode, sigunguCode, petCl, page = 1, pageSize = 12 } = params;
 
   const supabase = await createClient();
 
@@ -22,6 +23,10 @@ export async function getPetPlaces(params: {
 
   if (sigunguCode) {
     query = query.eq("sigungu_code", sigunguCode);
+  }
+
+  if (petCl) {
+    query = query.eq("pet_acmpny_cl", petCl);
   }
 
   const from = (page - 1) * pageSize;
