@@ -45,7 +45,7 @@ export default async function TravelDetailPage({ params }: Props) {
 
   setRequestLocale(locale)
 
-  const { destination, detail, images } = await getDestinationDetail(id)
+  const { destination, detail, intro, images } = await getDestinationDetail(id)
 
   if (!detail && !destination) {
     notFound()
@@ -54,6 +54,8 @@ export default async function TravelDetailPage({ params }: Props) {
   const accessibility = destination?.id
     ? await getAccessibilityInfo(destination.id)
     : null
+
+  const isKo = locale === "ko"
 
   const title = detail?.title ?? destination?.title ?? ""
   const addr1 = detail?.addr1 ?? destination?.addr1 ?? ""
@@ -80,6 +82,17 @@ export default async function TravelDetailPage({ params }: Props) {
   const ratingCount = destination?.rating_count ?? 0
   const areaCode = destination?.area_code
 
+  const isWorldHeritage =
+    intro?.heritage1 === "1" || intro?.heritage2 === "1" || intro?.heritage3 === "1"
+
+  const heritageLabels: string[] = []
+  if (intro?.heritage1 === "1")
+    heritageLabels.push(isKo ? "세계문화유산" : "World Cultural Heritage")
+  if (intro?.heritage2 === "1")
+    heritageLabels.push(isKo ? "세계자연유산" : "World Natural Heritage")
+  if (intro?.heritage3 === "1")
+    heritageLabels.push(isKo ? "세계기록유산" : "World Documentary Heritage")
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <h1 className="mb-2 text-2xl font-bold text-foreground">{title}</h1>
@@ -93,6 +106,7 @@ export default async function TravelDetailPage({ params }: Props) {
         )}
       </div>
 
+      {/* 접근성 뱃지 */}
       {accessibility && (
         accessibility.pet_possible ||
         accessibility.wheelchair ||
@@ -105,37 +119,151 @@ export default async function TravelDetailPage({ params }: Props) {
         </div>
       )}
 
+      {/* 세계유산 뱃지 */}
+      {isWorldHeritage && (
+        <div className="mb-4 flex flex-wrap gap-2">
+          {heritageLabels.map((label) => (
+            <span
+              key={label}
+              className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800"
+            >
+              🏛 {label}
+            </span>
+          ))}
+        </div>
+      )}
+
       {galleryImages.length > 0 && (
         <div className="mb-6">
           <ImageGallery images={galleryImages} />
         </div>
       )}
 
-      <div className="mb-6 flex flex-col gap-2 text-sm text-muted-foreground">
+      {/* 기본 정보 카드 */}
+      <div className="mb-6 space-y-3 rounded-xl border p-4">
         {addr1 && (
-          <p>
-            <span className="font-medium text-foreground">
-              {locale === "ko" ? "주소" : "Address"}
-            </span>{" "}
-            {addr1} {addr2}
-          </p>
+          <div className="flex gap-2 text-sm">
+            <span className="w-24 shrink-0 font-medium text-muted-foreground">
+              {isKo ? "주소" : "Address"}
+            </span>
+            <span className="text-foreground">{addr1} {addr2}</span>
+          </div>
         )}
         {tel && (
-          <p>
-            <span className="font-medium text-foreground">
-              {locale === "ko" ? "전화" : "Phone"}
-            </span>{" "}
-            <a href={`tel:${tel}`} className="hover:underline">
+          <div className="flex gap-2 text-sm">
+            <span className="w-24 shrink-0 font-medium text-muted-foreground">
+              {isKo ? "전화" : "Phone"}
+            </span>
+            <a href={`tel:${tel}`} className="text-primary hover:underline">
               {tel}
             </a>
-          </p>
+          </div>
+        )}
+        {intro?.infocenter && (
+          <div className="flex gap-2 text-sm">
+            <span className="w-24 shrink-0 font-medium text-muted-foreground">
+              {isKo ? "문의/안내" : "Info"}
+            </span>
+            <span className="text-foreground">{intro.infocenter}</span>
+          </div>
+        )}
+        {intro?.usetime && (
+          <div className="flex gap-2 text-sm">
+            <span className="w-24 shrink-0 font-medium text-muted-foreground">
+              {isKo ? "이용시간" : "Hours"}
+            </span>
+            <span className="whitespace-pre-line text-foreground">{intro.usetime}</span>
+          </div>
+        )}
+        {intro?.restdate && (
+          <div className="flex gap-2 text-sm">
+            <span className="w-24 shrink-0 font-medium text-muted-foreground">
+              {isKo ? "쉬는날" : "Closed"}
+            </span>
+            <span className="text-foreground">{intro.restdate}</span>
+          </div>
+        )}
+        {intro?.useseason && (
+          <div className="flex gap-2 text-sm">
+            <span className="w-24 shrink-0 font-medium text-muted-foreground">
+              {isKo ? "이용시기" : "Season"}
+            </span>
+            <span className="text-foreground">{intro.useseason}</span>
+          </div>
+        )}
+        {intro?.parking && (
+          <div className="flex gap-2 text-sm">
+            <span className="w-24 shrink-0 font-medium text-muted-foreground">
+              {isKo ? "주차시설" : "Parking"}
+            </span>
+            <span className="text-foreground">{intro.parking}</span>
+          </div>
+        )}
+        {intro?.accomcount && (
+          <div className="flex gap-2 text-sm">
+            <span className="w-24 shrink-0 font-medium text-muted-foreground">
+              {isKo ? "수용인원" : "Capacity"}
+            </span>
+            <span className="text-foreground">{intro.accomcount}</span>
+          </div>
+        )}
+        {intro?.chkpet && (
+          <div className="flex gap-2 text-sm">
+            <span className="w-24 shrink-0 font-medium text-muted-foreground">
+              {isKo ? "반려동물" : "Pets"}
+            </span>
+            <span className="text-foreground">{intro.chkpet}</span>
+          </div>
+        )}
+        {intro?.chkbabycarriage && (
+          <div className="flex gap-2 text-sm">
+            <span className="w-24 shrink-0 font-medium text-muted-foreground">
+              {isKo ? "유모차 대여" : "Stroller"}
+            </span>
+            <span className="text-foreground">{intro.chkbabycarriage}</span>
+          </div>
+        )}
+        {intro?.chkcreditcard && (
+          <div className="flex gap-2 text-sm">
+            <span className="w-24 shrink-0 font-medium text-muted-foreground">
+              {isKo ? "신용카드" : "Credit Card"}
+            </span>
+            <span className="text-foreground">{intro.chkcreditcard}</span>
+          </div>
         )}
       </div>
+
+      {/* 체험 안내 */}
+      {(intro?.expguide || intro?.expagerange) && (
+        <div className="mb-6 rounded-xl border p-4">
+          <h2 className="mb-3 text-base font-semibold text-foreground">
+            {isKo ? "체험 안내" : "Experience Guide"}
+          </h2>
+          <div className="space-y-2">
+            {intro?.expagerange && (
+              <div className="flex gap-2 text-sm">
+                <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                  {isKo ? "체험 연령" : "Age Range"}
+                </span>
+                <span className="text-foreground">{intro.expagerange}</span>
+              </div>
+            )}
+            {intro?.expguide && (
+              <div className="flex gap-2 text-sm">
+                <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                  {isKo ? "체험 안내" : "Guide"}
+                </span>
+                <span className="whitespace-pre-line text-foreground">{intro.expguide}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {overview && (
         <div className="mb-6">
           <h2 className="mb-2 text-lg font-semibold text-foreground">
-            {locale === "ko" ? "소개" : "Overview"}
+            {isKo ? "소개" : "Overview"}
           </h2>
           <p
             className="leading-relaxed text-muted-foreground"
@@ -147,7 +275,7 @@ export default async function TravelDetailPage({ params }: Props) {
       {lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng) && (
         <div className="mb-6">
           <h2 className="mb-2 text-lg font-semibold text-foreground">
-            {locale === "ko" ? "위치" : "Location"}
+            {isKo ? "위치" : "Location"}
           </h2>
           <TravelMap lat={lat} lng={lng} title={title} />
         </div>
@@ -156,7 +284,7 @@ export default async function TravelDetailPage({ params }: Props) {
       {areaCode && (
         <div className="mb-6">
           <h2 className="mb-2 text-lg font-semibold text-foreground">
-            {locale === "ko" ? "현재 날씨" : "Current Weather"}
+            {isKo ? "현재 날씨" : "Current Weather"}
           </h2>
           <WeatherWidget areaCode={areaCode} />
         </div>

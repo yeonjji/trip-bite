@@ -17,7 +17,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
-  const place = await getPetPlaceDetail(id)
+  const { place } = await getPetPlaceDetail(id)
 
   if (!place) return { title: "반려동물 여행" }
 
@@ -38,7 +38,7 @@ export default async function PetPlaceDetailPage({ params }: Props) {
   const { locale, id } = await params
   setRequestLocale(locale)
 
-  const place = await getPetPlaceDetail(id)
+  const { place, petTourInfo } = await getPetPlaceDetail(id)
   if (!place) notFound()
 
   // 이미지 fetch (에러 시 빈 배열)
@@ -94,29 +94,33 @@ export default async function PetPlaceDetailPage({ params }: Props) {
         </div>
       )}
 
-      <div className="mb-6 flex flex-col gap-2 text-sm text-muted-foreground">
+      {/* 기본 정보 카드 */}
+      <div className="mb-6 space-y-3 rounded-xl border p-4">
         {place.addr1 && (
-          <p>
-            <span className="font-medium text-foreground">
+          <div className="flex gap-2 text-sm">
+            <span className="w-24 shrink-0 font-medium text-muted-foreground">
               {isKo ? "주소" : "Address"}
-            </span>{" "}
-            {place.addr1} {place.addr2}
-          </p>
+            </span>
+            <span className="text-foreground">{place.addr1} {place.addr2}</span>
+          </div>
         )}
         {place.tel && (
-          <p>
-            <span className="font-medium text-foreground">
+          <div className="flex gap-2 text-sm">
+            <span className="w-24 shrink-0 font-medium text-muted-foreground">
               {isKo ? "전화" : "Phone"}
-            </span>{" "}
-            <a href={`tel:${place.tel}`} className="hover:underline">
+            </span>
+            <a href={`tel:${place.tel}`} className="text-primary hover:underline">
               {place.tel}
             </a>
-          </p>
+          </div>
         )}
       </div>
 
-      {/* 반려동물 동반 정보 */}
-      {(place.pet_acmpny_cl || place.acmpny_type_cd || place.rel_pet_info) && (
+      {/* 반려동물 동반 정보 (DB + TourAPI 통합) */}
+      {(place.pet_acmpny_cl || place.acmpny_type_cd || place.rel_pet_info ||
+        petTourInfo?.relafrpetspecies || petTourInfo?.acmpanypetsizerange ||
+        petTourInfo?.relaacmpanypetfee || petTourInfo?.acmpanypetcount ||
+        petTourInfo?.petaceptdivision || petTourInfo?.petinfo) && (
         <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
           <h2 className="mb-3 text-base font-semibold text-amber-800">
             🐾 {isKo ? "반려동물 동반 정보" : "Pet Companion Info"}
@@ -140,12 +144,60 @@ export default async function PetPlaceDetailPage({ params }: Props) {
                 <dd className="text-amber-900">{place.acmpny_type_cd}</dd>
               </div>
             )}
+            {petTourInfo?.relafrpetspecies && (
+              <div className="flex gap-2">
+                <dt className="min-w-24 font-medium text-amber-700">
+                  {isKo ? "반려동물 종류" : "Pet Species"}
+                </dt>
+                <dd className="text-amber-900">{petTourInfo.relafrpetspecies}</dd>
+              </div>
+            )}
+            {petTourInfo?.acmpanypetsizerange && (
+              <div className="flex gap-2">
+                <dt className="min-w-24 font-medium text-amber-700">
+                  {isKo ? "동반 가능 크기" : "Allowed Size"}
+                </dt>
+                <dd className="text-amber-900">{petTourInfo.acmpanypetsizerange}</dd>
+              </div>
+            )}
+            {petTourInfo?.acmpanypetcount && (
+              <div className="flex gap-2">
+                <dt className="min-w-24 font-medium text-amber-700">
+                  {isKo ? "최대 동반 수" : "Max Pets"}
+                </dt>
+                <dd className="text-amber-900">{petTourInfo.acmpanypetcount}</dd>
+              </div>
+            )}
+            {petTourInfo?.relaacmpanypetfee && (
+              <div className="flex gap-2">
+                <dt className="min-w-24 font-medium text-amber-700">
+                  {isKo ? "반려동물 비용" : "Pet Fee"}
+                </dt>
+                <dd className="text-amber-900">{petTourInfo.relaacmpanypetfee}</dd>
+              </div>
+            )}
+            {petTourInfo?.petaceptdivision && (
+              <div className="flex gap-2">
+                <dt className="min-w-24 font-medium text-amber-700">
+                  {isKo ? "수용 구분" : "Acceptance"}
+                </dt>
+                <dd className="text-amber-900">{petTourInfo.petaceptdivision}</dd>
+              </div>
+            )}
             {place.rel_pet_info && (
               <div className="flex gap-2">
                 <dt className="min-w-24 font-medium text-amber-700">
                   {isKo ? "동반 규정" : "Rules"}
                 </dt>
                 <dd className="text-amber-900 leading-relaxed">{place.rel_pet_info}</dd>
+              </div>
+            )}
+            {petTourInfo?.petinfo && (
+              <div className="flex gap-2">
+                <dt className="min-w-24 font-medium text-amber-700">
+                  {isKo ? "추가 안내" : "More Info"}
+                </dt>
+                <dd className="text-amber-900 leading-relaxed">{petTourInfo.petinfo}</dd>
               </div>
             )}
           </dl>
