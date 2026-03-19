@@ -73,7 +73,7 @@ async function fetchList(pageNo = 1, numOfRows = 100) {
 
   const url = `${BARRIER_FREE_BASE_URL}/areaBasedList2?${p.toString()}`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status} for areaCode=${areaCode}`);
+  if (!res.ok) throw new Error(`HTTP ${res.status} fetching page ${pageNo}`);
   const json = await res.json();
   const body = json.response?.body;
   if (!body) return { items: [], totalCount: 0 };
