@@ -15,7 +15,7 @@ export default function RecipeCard({ item, locale = "ko" }: RecipeCardProps) {
 
   return (
     <Link href={`/${locale}/recipes/${id}`} className="block">
-      <Card className="h-full cursor-pointer transition-shadow hover:shadow-md">
+      <Card className="h-full cursor-pointer transition-shadow hover:shadow-md pt-0">
         <div className="relative aspect-video w-full overflow-hidden rounded-t-xl bg-muted">
           {main_image_url ? (
             <Image

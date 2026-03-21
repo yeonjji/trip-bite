@@ -11,6 +11,7 @@ import ReviewSection from "@/components/reviews/ReviewSection"
 import AccessibilityBadge from "@/components/shared/AccessibilityBadge"
 import WeatherWidget from "@/components/weather/WeatherWidget"
 import TravelMap from "../_components/TravelMap"
+import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -45,7 +46,7 @@ export default async function TravelDetailPage({ params }: Props) {
 
   setRequestLocale(locale)
 
-  const { destination, detail, intro, images } = await getDestinationDetail(id)
+  const { destination, detail, intro, images, wiki, kakaoPlace } = await getDestinationDetail(id)
 
   if (!detail && !destination) {
     notFound()
@@ -172,7 +173,7 @@ export default async function TravelDetailPage({ params }: Props) {
             <span className="w-24 shrink-0 font-medium text-muted-foreground">
               {isKo ? "이용시간" : "Hours"}
             </span>
-            <span className="whitespace-pre-line text-foreground">{intro.usetime}</span>
+            <span className="whitespace-pre-line text-foreground" dangerouslySetInnerHTML={{ __html: intro.usetime }} />
           </div>
         )}
         {intro?.restdate && (
@@ -180,7 +181,7 @@ export default async function TravelDetailPage({ params }: Props) {
             <span className="w-24 shrink-0 font-medium text-muted-foreground">
               {isKo ? "쉬는날" : "Closed"}
             </span>
-            <span className="text-foreground">{intro.restdate}</span>
+            <span className="text-foreground" dangerouslySetInnerHTML={{ __html: intro.restdate }} />
           </div>
         )}
         {intro?.useseason && (
@@ -269,6 +270,69 @@ export default async function TravelDetailPage({ params }: Props) {
             className="leading-relaxed text-muted-foreground"
             dangerouslySetInnerHTML={{ __html: overview }}
           />
+        </div>
+      )}
+
+      {/* 위키백과 보충 설명 */}
+      {wiki && wiki.extract && (
+        <div className="mb-6 rounded-xl border bg-muted/30 p-4">
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-base font-semibold text-foreground">
+              {isKo ? "위키백과" : "Wikipedia"}
+            </h2>
+            {wiki.content_urls?.desktop?.page && (
+              <a
+                href={wiki.content_urls.desktop.page}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-primary hover:underline"
+              >
+                {isKo ? "전체 보기" : "Read more"}
+              </a>
+            )}
+          </div>
+          <div className="flex items-start gap-3">
+            {wiki.thumbnail && (
+              <img
+                src={wiki.thumbnail.source}
+                alt={wiki.title}
+                className="h-20 w-20 shrink-0 rounded-lg object-cover"
+              />
+            )}
+            <p className="text-sm leading-relaxed text-muted-foreground line-clamp-5">
+              {wiki.extract}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* 지도 바로가기 버튼 */}
+      {(kakaoPlace || (lat !== null && lng !== null)) && (
+        <div className="mb-6 flex flex-wrap gap-2">
+          {kakaoPlace?.place_url && (
+            <a
+              href={kakaoPlace.place_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-lg border bg-yellow-50 px-4 py-2 text-sm font-medium text-yellow-800 hover:bg-yellow-100 transition-colors"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+              </svg>
+              {isKo ? "카카오맵 보기" : "Kakao Map"}
+            </a>
+          )}
+          <a
+            href={buildNaverMapUrl(title, lat ?? undefined, lng ?? undefined)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg border bg-green-50 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-100 transition-colors"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+            {isKo ? "네이버 지도 보기" : "Naver Map"}
+          </a>
         </div>
       )}
 

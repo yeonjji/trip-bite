@@ -19,7 +19,7 @@ export default function SpecialtyCard({ item, locale = "ko", regionName }: Speci
 
   return (
     <Link href={`/${locale}/specialties/${id}`} className="block">
-      <Card className="h-full cursor-pointer transition-shadow hover:shadow-md">
+      <Card className="h-full cursor-pointer transition-shadow hover:shadow-md pt-0">
         <div className="relative aspect-video w-full overflow-hidden rounded-t-xl bg-muted">
           {image_url ? (
             <Image

@@ -16,7 +16,7 @@ export default function RestaurantCard({ item, locale }: RestaurantCardProps) {
 
   return (
     <Link href={`/${locale}/restaurants/${contentid}`} className="block">
-      <Card className="h-full cursor-pointer transition-shadow hover:shadow-md">
+      <Card className="h-full cursor-pointer transition-shadow hover:shadow-md pt-0">
         <div className="relative aspect-video w-full overflow-hidden rounded-t-xl bg-muted">
           {firstimage ? (
             <Image

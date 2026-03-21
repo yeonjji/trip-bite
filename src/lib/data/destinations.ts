@@ -3,6 +3,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { tourApi } from "@/lib/api/tour-api";
 import { getCachedOrFetch } from "@/lib/utils/cache";
+import { getWikiSummary, type WikiSummary } from "@/lib/api/wikipedia-api";
+import { searchKakaoPlace, type KakaoPlace } from "@/lib/api/kakao-api";
 import type { Destination } from "@/types/database";
 import type { TourDetailCommon, TourImage, TourSpotDetail } from "@/types/tour-api";
 
@@ -64,6 +66,8 @@ export async function getDestinationDetail(contentId: string): Promise<{
   detail: TourDetailCommon | null;
   intro: TourSpotDetail | null;
   images: TourImage[];
+  wiki: WikiSummary | null;
+  kakaoPlace: KakaoPlace | null;
 }> {
   const supabase = await createClient();
 
@@ -150,5 +154,24 @@ export async function getDestinationDetail(contentId: string): Promise<{
     }
   }
 
-  return { destination, detail, intro, images };
+  // title 확정 후 Wiki + Kakao 병렬 호출
+  const resolvedTitle = detail?.title ?? destination?.title ?? ""
+  const resolvedLat = detail?.mapy ? parseFloat(detail.mapy) : (destination?.mapy ?? undefined)
+  const resolvedLng = detail?.mapx ? parseFloat(detail.mapx) : (destination?.mapx ?? undefined)
+
+  const [wikiRes, kakaoRes] = await Promise.allSettled([
+    resolvedTitle ? getWikiSummary(resolvedTitle) : Promise.resolve(null),
+    resolvedTitle
+      ? searchKakaoPlace(
+          resolvedTitle,
+          typeof resolvedLat === "number" ? resolvedLat : undefined,
+          typeof resolvedLng === "number" ? resolvedLng : undefined
+        )
+      : Promise.resolve(null),
+  ])
+
+  const wiki = wikiRes.status === "fulfilled" ? wikiRes.value : null
+  const kakaoPlace = kakaoRes.status === "fulfilled" ? kakaoRes.value : null
+
+  return { destination, detail, intro, images, wiki, kakaoPlace };
 }
