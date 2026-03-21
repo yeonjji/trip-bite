@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trip Bite / 여행한입 - Experience Korea in a Bite</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#D84315", // Terracotta
+                        "on-primary": "#ffffff",
+                        "primary-container": "#FFEDE7",
+                        "on-primary-container": "#3E0E00",
+                        "secondary": "#5A413A", // Warm brown
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#F5F4EC",
+                        "on-secondary-container": "#1D1B16",
+                        "tertiary": "#845000",
+                        "on-tertiary": "#ffffff",
+                        "background": "#FFFDF5", // Soft Cream
+                        "surface": "#FFFDF5",
+                        "surface-variant": "#F5F4EC",
+                        "on-surface": "#1B1C1A",
+                        "on-surface-variant": "#5A413A",
+                        "outline": "#8F7068",
+                        "outline-variant": "#E3BEB5",
+                        "primary-fixed": "#FFDBCC",
+                        "primary-fixed-dim": "#FFB4A1",
+                        "surface-container-low": "#F9F7EF",
+                        "surface-container": "#F4F1E9",
+                        "surface-container-high": "#EEEBE1",
+                        "surface-container-highest": "#E8E5DB",
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem", // 16px
+                        "xl": "1.25rem",
+                        "2xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .text-shadow-sm {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .warm-shadow {
+            box-shadow: 0 12px 40px 0 rgba(87, 45, 32, 0.08);
+        }
+        .soft-card-shadow {
+            box-shadow: 0 8px 24px rgba(87, 45, 32, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed overflow-x-hidden">
+<!-- TopNavBar Component -->
+<nav class="fixed top-0 w-full z-50 bg-[#FBF9F1]/80 backdrop-blur-md">
+<div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+<div class="text-2xl font-bold text-[#AD2C00] tracking-tighter italic font-headline">
+            Trip Bite / 여행한입
+        </div>
+<div class="hidden md:flex gap-8 items-center font-['Plus_Jakarta_Sans'] text-sm tracking-wide font-medium">
+<a class="text-[#AD2C00] font-bold border-b-2 border-[#AD2C00] pb-1" href="#">Explore</a>
+<a class="text-[#5A413A] hover:text-[#AD2C00] transition-colors duration-200" href="#">Journal</a>
+<a class="text-[#5A413A] hover:text-[#AD2C00] transition-colors duration-200" href="#">Community</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-[#E4E3DB] rounded-full transition-all active:opacity-80 active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[#5A413A]" data-icon="language">language</span>
+</button>
+<button class="p-2 hover:bg-[#E4E3DB] rounded-full transition-all active:opacity-80 active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[#5A413A]" data-icon="search">search</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-[#E4E3DB] flex items-center justify-center cursor-pointer overflow-hidden border border-outline-variant/20">
+<img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgbLpmQqdzWSq8wg_tOSuhtisrRpQlj4LhA9azv6KPIlyyoSoE1BlGCYElQ0Sd2d_4FfHVWpq5vo39elSLev6x8uo53q6i9fCCKN7qlp9X4bd59SVDyPtJykWehyn6Smgjx2zIFGW4jwNz_Xc1sPTGBffFrSeDMbqvvImvpMVcxACi7QyA1EVY2S8D0smEuK6JLvm2VBm3hXm3grDny44_QJmPztXL16Ne5a6qZg2GOfGcMsL5YLzQHsC1u4raGI3dKWIkQ-XWXDc"/>
+</div>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="relative h-[800px] w-full flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img alt="Majestic Gyeongbokgung Palace at sunset in Seoul" class="w-full h-full object-cover brightness-[0.8]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSZRaEEzdC9p0NrGCNRFS5fNJKFRMOE9SORtjYFdfvssYUQf651YCKEuGOi9nuegjPzBTKav_cLgz3r9B3rN-Hvoe2smh_RitBGBqWa_2iF5KsBVo5Hpmvr1tGtSL_Ai3tprCylAcEJDUuF1SU3tvQa53QSjKHLbq-T6D_08kHyLCqgj42K-gtckaL_AuL6vmqP2ppITARzQAZL6LgEczH2nahiXqCu_WjkVmEp_GDOXUmTvuJEKs1ZyQo2g_KKnDVoqkecelYPNo"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent"></div>
+</div>
+<div class="relative z-10 text-center px-4 max-w-5xl">
+<h1 class="font-headline text-5xl md:text-[4rem] font-extrabold text-white text-shadow-sm leading-tight mb-4 tracking-tight">
+            대한민국 여행, 한 입에 담다<br/>
+<span class="text-primary-fixed-dim italic">Experience Korea in a Bite</span>
+</h1>
+<p class="text-white text-lg md:text-xl font-medium mb-12 max-w-2xl mx-auto opacity-95">
+            Discover the vibrant flavors and hidden horizons of the peninsula.
+        </p>
+<!-- Search Bar Widget -->
+<div class="bg-surface-container-lowest p-4 md:p-6 rounded-lg warm-shadow max-w-4xl mx-auto flex flex-col md:flex-row gap-4 items-center border border-outline-variant/10 bg-white/95 backdrop-blur-sm">
+<div class="flex-1 w-full flex items-center gap-3 px-6 py-3 bg-surface-container-low rounded-lg">
+<span class="material-symbols-outlined text-primary" data-icon="location_on">location_on</span>
+<input class="bg-transparent border-none focus:ring-0 w-full font-body text-on-surface font-semibold placeholder:text-on-surface-variant/50" placeholder="Where do you want to go?" type="text"/>
+</div>
+<div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+<button class="flex items-center gap-2 px-4 py-2 bg-secondary-container text-secondary rounded-lg text-sm font-bold whitespace-nowrap hover:bg-[#E4E3DB] transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="map">map</span> Destinations
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary-fixed text-primary rounded-lg text-sm font-bold whitespace-nowrap hover:brightness-105 transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="restaurant">restaurant</span> Food
+                </button>
+</div>
+<button class="bg-primary text-white px-8 py-3 rounded-lg font-bold soft-card-shadow hover:brightness-110 active:scale-95 transition-all w-full md:w-auto">
+                Explore
+            </button>
+</div>
+</div>
+</section>
+<!-- Weather Recommendation Widget -->
+<section class="max-w-7xl mx-auto px-8 py-24">
+<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+<div class="max-w-lg">
+<div class="flex items-center gap-2 text-primary font-bold mb-3">
+<span class="material-symbols-outlined" data-icon="wb_sunny">wb_sunny</span>
+<span class="uppercase tracking-widest text-xs font-headline">Perfect for Today's Weather</span>
+</div>
+<h2 class="font-headline text-3xl md:text-4xl font-extrabold text-on-surface tracking-tight">Sunny Skies in Seoul?</h2>
+<p class="text-on-surface-variant mt-4 font-body text-base">We've handpicked these destinations where the light is just right today.</p>
+</div>
+<button class="text-primary font-bold flex items-center gap-2 group hover:underline decoration-2 underline-offset-4">
+            View all recommendations <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+<!-- Weather Card 1 -->
+<div class="group cursor-pointer">
+<div class="relative overflow-hidden rounded-lg aspect-[4/5] mb-6 soft-card-shadow">
+<img alt="Namsan Tower overlook with clear blue sky" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdDY1GgmshLSicOFtlemJAmOgq4egzQxEVJXyH2pvUhgfIm8UtsBsTI_NEeFOIQ-8HYIZfYYRsWPcdSTWdOCw7vOda5CYtNj7xAoT4WOeG1yNyq1Yj2GD8190JOdHhpGYAayi3pF89rXRd0FAkt1zfU0lTAVnnaWVuHQ1nKy7jOpMNCKVi8A8vg1T8geG3_b3VDawFazqAUWge6VDHTEeoB7846AM5y0AycqjK8LZJwtBB2X1ETgz4FDJRMgoLeSKoogXHMwyoiPk"/>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="sunny">sunny</span>
+<span class="text-[12px] font-bold text-on-surface">24°C</span>
+</div>
+</div>
+<h3 class="font-headline text-xl font-bold mb-2">Namsan Seoul Tower</h3>
+<p class="text-on-surface-variant text-sm line-clamp-2">The best panoramic views are yours on a clear day like this.</p>
+</div>
+<!-- Weather Card 2 -->
+<div class="group cursor-pointer mt-0 md:mt-12">
+<div class="relative overflow-hidden rounded-lg aspect-[4/5] mb-6 soft-card-shadow">
+<img alt="Peaceful Secret Garden in Changdeokgung Palace" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFNx7WAJhl8SKU2OPvsV-UOKb3fvgS5eySLN3nnjKXUsv-PHQxOyCJmXXx6WeKGZEeyILRJtVzllElgOKO0TUI4ZPAr_J1o5rCj_6b0hfTujurWRuaskjBQYhZ7pGEh8MI6DZyxmYZ3zfmGYhg_pDaJFCZzO6aBmuENvTXqqg6NP0geFLYHFrB2ZFZuVPp7-m1oNwwvP60QKZ5zTYuO7kxJuasN-mag5VePb_ElDmAiF7KDrlnzKUG95f80znMIVoCpvZPcqoitEc"/>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="wb_cloudy">wb_cloudy</span>
+<span class="text-[12px] font-bold text-on-surface">21°C</span>
+</div>
+</div>
+<h3 class="font-headline text-xl font-bold mb-2">Secret Garden (Huwon)</h3>
+<p class="text-on-surface-variant text-sm line-clamp-2">Perfect dappled sunlight through the ancient maple trees.</p>
+</div>
+<!-- Weather Card 3 -->
+<div class="group cursor-pointer">
+<div class="relative overflow-hidden rounded-lg aspect-[4/5] mb-6 soft-card-shadow">
+<img alt="Traditional Hanok Village with vibrant blue sky" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgbLpmQqdzWSq8wg_tOSuhtisrRpQlj4LhA9azv6KPIlyyoSoE1BlGCYElQ0Sd2d_4FfHVWpq5vo39elSLev6x8uo53q6i9fCCKN7qlp9X4bd59SVDyPtJykWehyn6Smgjx2zIFGW4jwNz_Xc1sPTGBffFrSeDMbqvvImvpMVcxACi7QyA1EVY2S8D0smEuK6JLvm2VBm3hXm3grDny44_QJmPztXL16Ne5a6qZg2GOfGcMsL5YLzQHsC1u4raGI3dKWIkQ-XWXDc"/>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="partly_cloudy_day">partly_cloudy_day</span>
+<span class="text-[12px] font-bold text-on-surface">23°C</span>
+</div>
+</div>
+<h3 class="font-headline text-xl font-bold mb-2">Bukchon Hanok Village</h3>
+<p class="text-on-surface-variant text-sm line-clamp-2">Wander through history under the warm afternoon sun.</p>
+</div>
+</div>
+</section>
+<!-- Explore by Region (Map Section) -->
+<section class="bg-surface-container-low py-24">
+<div class="max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 items-center gap-16">
+<div class="relative bg-white rounded-lg p-12 warm-shadow aspect-square flex items-center justify-center">
+<div class="w-full h-full relative" data-location="South Korea">
+<svg class="w-full h-full" viewbox="0 0 200 280">
+<path class="fill-[#E8E5DB] hover:fill-primary/10 transition-colors" d="M50 20 C60 10 90 10 100 30 C110 50 140 60 150 80 C160 100 170 140 160 180 C150 220 120 250 80 260 C40 270 20 220 30 180 C40 140 30 100 40 60 Z"></path>
+<circle class="fill-primary cursor-pointer hover:scale-125 transition-transform" cx="70" cy="50" r="8"></circle>
+<circle class="fill-secondary cursor-pointer hover:scale-125 transition-transform" cx="130" cy="110" r="8"></circle>
+<circle class="fill-tertiary cursor-pointer hover:scale-125 transition-transform" cx="90" cy="180" r="8"></circle>
+<circle class="fill-orange-400 cursor-pointer hover:scale-125 transition-transform" cx="60" cy="230" r="10"></circle>
+</svg>
+<div class="absolute top-[15%] left-[30%] bg-white px-3 py-1 rounded-lg shadow-sm text-xs font-bold border border-primary/20">Seoul</div>
+<div class="absolute top-[40%] right-[25%] bg-white px-3 py-1 rounded-lg shadow-sm text-xs font-bold border border-secondary/20">Gangwon</div>
+<div class="absolute bottom-[20%] left-[25%] bg-white px-3 py-1 rounded-lg shadow-sm text-xs font-bold border border-orange-400/20">Jeju Island</div>
+</div>
+</div>
+<div>
+<h4 class="text-primary font-bold uppercase tracking-widest text-xs mb-4">Discover Local Secrets</h4>
+<h2 class="font-headline text-4xl md:text-5xl font-extrabold text-on-surface mb-6 tracking-tight">Explore by Region</h2>
+<p class="text-on-surface-variant text-lg leading-relaxed mb-10">
+                From the neon-lit streets of Seoul to the volcanic tranquility of Jeju, every province offers a unique "bite" of culture. Click a region to begin your curated itinerary.
+            </p>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-6 bg-white rounded-lg border border-outline-variant/10 hover:bg-primary/5 transition-colors cursor-pointer group soft-card-shadow">
+<span class="text-3xl font-black text-outline-variant/30 group-hover:text-primary transition-colors">01</span>
+<h5 class="font-bold mt-2">Metropolitan Area</h5>
+</div>
+<div class="p-6 bg-white rounded-lg border border-outline-variant/10 hover:bg-secondary/5 transition-colors cursor-pointer group soft-card-shadow">
+<span class="text-3xl font-black text-outline-variant/30 group-hover:text-secondary transition-colors">02</span>
+<h5 class="font-bold mt-2">East Sea Coast</h5>
+</div>
+<div class="p-6 bg-white rounded-lg border border-outline-variant/10 hover:bg-tertiary/5 transition-colors cursor-pointer group soft-card-shadow">
+<span class="text-3xl font-black text-outline-variant/30 group-hover:text-tertiary transition-colors">03</span>
+<h5 class="font-bold mt-2">Southern Islands</h5>
+</div>
+<div class="p-6 bg-white rounded-lg border border-outline-variant/10 hover:bg-primary/5 transition-colors cursor-pointer group soft-card-shadow">
+<span class="text-3xl font-black text-outline-variant/30 group-hover:text-primary transition-colors">04</span>
+<h5 class="font-bold mt-2">Historic West</h5>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Season's Best (Specialties & Recipes) -->
+<section class="max-w-7xl mx-auto px-8 py-24">
+<div class="text-center mb-16">
+<h2 class="font-headline text-4xl font-extrabold mb-4 tracking-tight">Specialties of the Season</h2>
+<p class="text-on-surface-variant max-w-xl mx-auto">The freshest produce and most comforting dishes for this time of year.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+<!-- Specialty Card -->
+<div class="relative bg-surface-container rounded-lg overflow-hidden flex flex-col md:flex-row h-full warm-shadow">
+<div class="md:w-1/2 h-64 md:h-auto relative">
+<img alt="Fresh vibrant red Korean strawberries in a bowl" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBM47LAf7NQw4v919nuPUxfUxHJEX1Wl-AjeFTWb2dUlZk4-QuCoIQampQ_QlgfThFSZ3pjKzL54th2iERp694VTdwkrENY86hwvTCPcnLTqGUqXdoSgCVrYguuoP4GmuHM6h4SBl7d4Dek65YFQwCWDApZjubBxi6kAOIdI7iHhamaaYxQWU7Ls2zR3rzSPzVP_9Pz39yQlLfNge80Lg3FKFYfP__tqR-x5hQKaDC6BefEPZA4l9b8PBtV_oV4hxABjWW_aUma2p0"/>
+<div class="absolute inset-0 bg-gradient-to-r from-transparent to-surface-container hidden md:block"></div>
+</div>
+<div class="md:w-1/2 p-10 flex flex-col justify-center">
+<span class="inline-block bg-primary text-white text-[10px] font-black uppercase px-2 py-1 rounded mb-4 w-fit">In Season Now</span>
+<h3 class="font-headline text-2xl font-bold mb-4">Winter Seolhyang Strawberries</h3>
+<p class="text-on-surface-variant text-sm mb-8 leading-relaxed">Renowned for their exceptional sweetness and floral aroma. Grown in Nonsan's rich soil.</p>
+<a class="flex items-center gap-2 text-primary font-bold text-sm hover:underline" href="#">
+                    Discover the region <span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</a>
+</div>
+</div>
+<!-- Recipe Highlight Card -->
+<div class="relative bg-surface-container rounded-lg overflow-hidden flex flex-col md:flex-row h-full warm-shadow">
+<div class="md:w-1/2 h-64 md:h-auto relative">
+<img alt="Steaming bowl of spicy Korean Tteokbokki" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuarL2gaNUzUUBC4Mw2OWqki7MO6-6fAiDXtyosTduTx7z9zSv7iidpYPIXR4dgQV7WeO2jFIvamA7r7wXnsObai4WWv3jGSkLqtTQ-BNKdf7bqg5beaXS65VY8c_liwNBSIfJpjiujyX4utC76Wlrlw1t_KwXvfwKO0VfD1xoAyhc9q2xumd1sdoI0Ori5f6mTKQWUG0tn3dNh1MOphgc64vgkFScPPOWPQNnTIPpSaoAF_615VNWCqYRtbq1knTb_s3BIXrzFoY"/>
+<div class="absolute inset-0 bg-gradient-to-r from-transparent to-surface-container hidden md:block"></div>
+</div>
+<div class="md:w-1/2 p-10 flex flex-col justify-center">
+<span class="inline-block bg-secondary text-white text-[10px] font-black uppercase px-2 py-1 rounded mb-4 w-fit">Kitchen Journey</span>
+<h3 class="font-headline text-2xl font-bold mb-4">Gochujang Medley Stew</h3>
+<p class="text-on-surface-variant text-sm mb-8 leading-relaxed">Learn to balance the 3 core spices of Korean winter cooking in this step-by-step masterclass.</p>
+<a class="flex items-center gap-2 text-secondary font-bold text-sm hover:underline" href="#">
+                    View Recipe <span class="material-symbols-outlined text-[18px]" data-icon="menu_book">menu_book</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Accessibility Highlights -->
+<section class="bg-surface-container-highest/30 py-24">
+<div class="max-w-7xl mx-auto px-8">
+<div class="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
+<div>
+<h2 class="font-headline text-4xl font-extrabold mb-4 tracking-tight">Travel with Confidence</h2>
+<p class="text-on-surface-variant max-w-lg">We believe Korea is for everyone. Discover verified barrier-free and pet-friendly gems.</p>
+</div>
+<div class="flex gap-4">
+<div class="bg-white p-4 rounded-lg flex items-center gap-4 soft-card-shadow border border-outline-variant/5">
+<span class="material-symbols-outlined text-secondary text-3xl" data-icon="accessible">accessible</span>
+<div>
+<p class="text-xs font-bold text-on-surface-variant uppercase">Barrier-Free</p>
+<p class="text-xl font-black">2,400+</p>
+</div>
+</div>
+<div class="bg-white p-4 rounded-lg flex items-center gap-4 soft-card-shadow border border-outline-variant/5">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="pets">pets</span>
+<div>
+<p class="text-xs font-bold text-on-surface-variant uppercase">Pet Friendly</p>
+<p class="text-xl font-black">1,800+</p>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<!-- Accessibility Card 1 -->
+<div class="bg-white p-2 rounded-lg soft-card-shadow hover:shadow-xl transition-all group overflow-hidden border border-outline-variant/10">
+<div class="aspect-square rounded-lg overflow-hidden mb-4 relative">
+<img alt="Accessible park boardwalk over water in Suncheon" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeQ8_0Epo3QnA9FiCsEG84g9gVQCZY8s2F0c-k4JRJWkESVQ5F6AJ4BH0uX3r9iS27SKWu278KGoDNLxXjNWmAVOts2aCdwFzZ6JFsAzPuyHTtUafkZjE3la3mZFLE6lCnJH98_UyPpNtCRiz_JhlCv65xLpSVoO_aJMAhvw2rWB1ZjpOgoX8XHcyQBykj8D32QE4i1EfBVwMaQFUbeMSnjd_QghwP7cE9m2xdIh-gejfrcAbTUVzW3DUlRI6X_GcYqRzTy9mierw"/>
+<div class="absolute top-3 left-3">
+<span class="bg-white/90 backdrop-blur px-2 py-1 rounded-lg material-symbols-outlined text-[16px] text-secondary" data-icon="accessible">accessible</span>
+</div>
+</div>
+<div class="px-4 pb-4">
+<h4 class="font-bold text-lg">Suncheon Bay Garden</h4>
+<p class="text-xs text-on-surface-variant mt-1">Full wheelchair access throughout the park.</p>
+</div>
+</div>
+<!-- Accessibility Card 2 -->
+<div class="bg-white p-2 rounded-lg soft-card-shadow hover:shadow-xl transition-all group overflow-hidden border border-outline-variant/10">
+<div class="aspect-square rounded-lg overflow-hidden mb-4 relative">
+<img alt="Golden beach on Jeju island with emerald water" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwjZgGMCpt2iW1bXKEEUtXIKHPZxLAkkp5IUq7OYMz0uuNKXv5CzIbXce8sZNtJXhBSVH5Glq0egGaa0B23j9_za9TL-Y8vpAIcJW2UeBJRsoLsAmFdNu9nJ9RZ3FyO_hMwuJONSE000kHsBh-V05H63M1RSJG7eGQZjZ7rLMTvFS9TDrSovUysUOcPhKru1iQWCHMyYimV3Kvsp3ZrHEFXcMschPDllNYas2XW-CXqXX47653Q_v1pQo4hL6ZxUnoJ1JR0fa92I4"/>
+<div class="absolute top-3 left-3">
+<span class="bg-white/90 backdrop-blur px-2 py-1 rounded-lg material-symbols-outlined text-[16px] text-primary" data-icon="pets">pets</span>
+</div>
+</div>
+<div class="px-4 pb-4">
+<h4 class="font-bold text-lg">Hyeopjae Beach Area</h4>
+<p class="text-xs text-on-surface-variant mt-1">Top-rated pet-friendly cafes and boardwalks.</p>
+</div>
+</div>
+<!-- Accessibility Card 3 -->
+<div class="bg-white p-2 rounded-lg soft-card-shadow hover:shadow-xl transition-all group overflow-hidden border border-outline-variant/10">
+<div class="aspect-square rounded-lg overflow-hidden mb-4 relative">
+<img alt="Historic fortress wall in Hwaseong" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAunpe5wE0neKVia659omN_VeQGgVQ6ZA84YtyHRvbfMHFYLKrF0sUjh349kp9U4iFnSN1q6xPk5fcUXvWlTXUfCOE0V36wP27s_Ta7tQcJaEjX9LSDgMKw6aKxzymq9_P9hB6OLZa-APd5IWdofgd2-PqUlzid0CqInPigSBOztXrxSipn8lZTw_1kzSAE8OdAWM_6zVTQ3VnRnKtODd6tFNRkR13uETSDRfF2tt44VK3Kg-SKce-p-Twd4saEXCGZ96xMRte7LlQ"/>
+<div class="absolute top-3 left-3">
+<span class="bg-white/90 backdrop-blur px-2 py-1 rounded-lg material-symbols-outlined text-[16px] text-secondary" data-icon="accessible">accessible</span>
+</div>
+</div>
+<div class="px-4 pb-4">
+<h4 class="font-bold text-lg">Suwon Hwaseong</h4>
+<p class="text-xs text-on-surface-variant mt-1">Barrier-free path along the UNESCO site.</p>
+</div>
+</div>
+<!-- Accessibility Card 4 -->
+<div class="bg-white p-2 rounded-lg soft-card-shadow hover:shadow-xl transition-all group overflow-hidden border border-outline-variant/10">
+<div class="aspect-square rounded-lg overflow-hidden mb-4 relative">
+<img alt="Modern museum building in Seoul" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEniSuVHaY-0Zpzxhb4J1jp7RQaPs7H7zijQh4a0s5N0-vTTNt9MYv0WVqdaOb3xBuSH8HmPwM3pYoTcNt61dT0yXdl55TN_apY4pDT99pA6ksz_V3lPChAIqgcbd2PEfOcoEEj8h0gg5_xfoqa0bjvbVZz_JJnM3j5iJbwjhLtjcjqiCO6L28EbzRu7xL63dEQL33PSsPTJXomlnMl3usWOINrmURQG7hkYDA3N265pWgop6B6leUsYXUyyypivEXbJqkt5_3prs"/>
+<div class="absolute top-3 left-3">
+<span class="bg-white/90 backdrop-blur px-2 py-1 rounded-lg material-symbols-outlined text-[16px] text-secondary" data-icon="accessible">accessible</span>
+</div>
+</div>
+<div class="px-4 pb-4">
+<h4 class="font-bold text-lg">MMCA Seoul</h4>
+<p class="text-xs text-on-surface-variant mt-1">Sensory-friendly exhibits and elevators.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer Component -->
+<footer class="w-full border-t border-[#E3BEB5]/15 bg-[#FBF9F1]">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 px-12 py-16 mt-20 max-w-7xl mx-auto">
+<div class="flex flex-col gap-4">
+<div class="text-lg font-black text-[#5A413A] font-headline uppercase tracking-widest">Trip Bite</div>
+<p class="text-[#5A413A] text-sm leading-relaxed max-w-xs">
+                Curating the essence of Korea for the sensory voyager. One bite, one view, one memory at a time.
+            </p>
+<div class="flex gap-4 mt-2">
+<span class="material-symbols-outlined text-[#5A413A] hover:text-[#AD2C00] cursor-pointer transition-colors" data-icon="language">language</span>
+<span class="material-symbols-outlined text-[#5A413A] hover:text-[#AD2C00] cursor-pointer transition-colors" data-icon="share">share</span>
+<span class="material-symbols-outlined text-[#5A413A] hover:text-[#AD2C00] cursor-pointer transition-colors" data-icon="mail">mail</span>
+</div>
+</div>
+<div>
+<h6 class="font-['Plus_Jakarta_Sans'] text-xs uppercase tracking-widest text-[#AD2C00] font-bold mb-6">Explore</h6>
+<ul class="space-y-4 font-['Plus_Jakarta_Sans'] text-xs uppercase tracking-widest text-[#5A413A]">
+<li><a class="hover:text-[#AD2C00] transition-colors" href="#">Sitemap</a></li>
+<li><a class="hover:text-[#AD2C00] transition-colors" href="#">Destinations</a></li>
+<li><a class="hover:text-[#AD2C00] transition-colors" href="#">Food</a></li>
+<li><a class="hover:text-[#AD2C00] transition-colors" href="#">Specialties</a></li>
+</ul>
+</div>
+<div>
+<h6 class="font-['Plus_Jakarta_Sans'] text-xs uppercase tracking-widest text-[#AD2C00] font-bold mb-6">Support</h6>
+<ul class="space-y-4 font-['Plus_Jakarta_Sans'] text-xs uppercase tracking-widest text-[#5A413A]">
+<li><a class="hover:text-[#AD2C00] transition-colors" href="#">Contact</a></li>
+<li><a class="hover:text-[#AD2C00] transition-colors underline" href="#">Accessibility Statement</a></li>
+<li><a class="hover:text-[#AD2C00] transition-colors" href="#">Help Center</a></li>
+<li><a class="hover:text-[#AD2C00] transition-colors" href="#">Terms of Use</a></li>
+</ul>
+</div>
+</div>
+<div class="px-12 py-8 border-t border-[#E3BEB5]/10 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="font-['Plus_Jakarta_Sans'] text-[10px] uppercase tracking-widest text-[#5A413A]">
+            © 2024 Trip Bite (여행한입). Jeong-inspired hospitality.
+        </p>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-bold text-[#5A413A]/50 tracking-[0.2em]">MADE IN KOREA</span>
+<span class="w-6 h-[1px] bg-outline-variant/30"></span>
+</div>
+</div>
+</footer>
+</body></html>

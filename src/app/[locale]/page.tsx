@@ -66,24 +66,28 @@ export default async function HomePage({ params }: Props) {
   return (
     <div className="flex flex-col">
       {/* 1. 히어로 섹션 */}
-      <section className="relative bg-gradient-to-br from-primary/20 via-primary/10 to-background px-4 py-16 text-center md:py-24">
-        <div className="mx-auto max-w-2xl">
-          <h1 className="mb-4 text-3xl font-bold text-foreground md:text-5xl">
-            {locale === "en" ? "Discover Korea" : "한국을 여행하다"}
+      <section className="relative min-h-[580px] bg-[#1B1C1A] flex items-center justify-center px-4 py-20 text-center overflow-hidden">
+        {/* 따뜻한 그라디언트 오버레이 */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#D84315]/40 via-[#8B3A2A]/20 to-transparent pointer-events-none" />
+        <div className="relative mx-auto max-w-2xl">
+          <h1 className="mb-4 font-headline text-4xl font-extrabold tracking-tight text-white md:text-6xl">
+            {locale === "en" ? "Discover Korea" : "대한민국 여행,\n한 입에 담다"}
           </h1>
-          <p className="mb-8 text-lg text-muted-foreground">
+          <p className="mb-8 text-lg text-white/70">
             {locale === "en"
               ? "Travel destinations, local food and camping across Korea"
               : "전국의 여행지, 맛집, 캠핑장을 한번에"}
           </p>
           <div className="mx-auto max-w-lg">
-            <SearchBar
-              placeholder={
-                locale === "en"
-                  ? "Search destinations, camping sites..."
-                  : "여행지, 캠핑장을 검색하세요"
-              }
-            />
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-3 warm-shadow">
+              <SearchBar
+                placeholder={
+                  locale === "en"
+                    ? "Search destinations, camping sites..."
+                    : "여행지, 캠핑장을 검색하세요"
+                }
+              />
+            </div>
           </div>
           {/* 인기 검색어 */}
           <div className="mt-6 flex flex-wrap justify-center gap-2">
@@ -91,7 +95,7 @@ export default async function HomePage({ params }: Props) {
               <Link
                 key={keyword}
                 href={`/${locale}/search?q=${encodeURIComponent(keyword)}`}
-                className="rounded-full border border-border bg-background/80 px-4 py-1.5 text-sm text-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
+                className="rounded-full bg-white/15 px-4 py-1.5 text-sm text-white/90 transition-colors hover:bg-white/25"
               >
                 {keyword}
               </Link>
@@ -101,14 +105,19 @@ export default async function HomePage({ params }: Props) {
       </section>
 
       {/* 2. 추천 여행지 캐러셀 */}
-      <section className="px-4 py-10">
+      <section className="bg-white px-4 py-20">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-foreground">
-              {locale === "en" ? "Top Destinations" : "추천 여행지"}
-            </h2>
-            <Link href={`/${locale}/travel`} className="text-sm text-primary hover:underline">
-              {locale === "en" ? "View all destinations" : "여행지 전체 보기"}
+          <div className="mb-8 flex items-end justify-between">
+            <div>
+              <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[#D84315]">
+                {locale === "en" ? "Featured" : "추천"}
+              </p>
+              <h2 className="font-headline text-3xl font-extrabold tracking-tight text-[#1B1C1A] md:text-4xl">
+                {locale === "en" ? "Top Destinations" : "추천 여행지"}
+              </h2>
+            </div>
+            <Link href={`/${locale}/travel`} className="text-sm text-[#D84315] hover:underline shrink-0">
+              {locale === "en" ? "View all" : "전체 보기"}
             </Link>
           </div>
           <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin">
@@ -131,17 +140,24 @@ export default async function HomePage({ params }: Props) {
       </section>
 
       {/* 3. 인기 지역 그리드 */}
-      <RegionExplorer locale={locale} />
+      <div className="bg-[#F9F7EF]">
+        <RegionExplorer locale={locale} />
+      </div>
 
       {/* 4. 제철 특산품 */}
-      <section className="px-4 py-10">
+      <section className="bg-white px-4 py-20">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-foreground">
-              {locale === "en" ? `${season} Specialties` : `${seasonLabel} 제철 특산품`}
-            </h2>
-            <Link href={`/${locale}/specialties`} className="text-sm text-primary hover:underline">
-              {locale === "en" ? "View all specialties" : "특산품 전체 보기"}
+          <div className="mb-8 flex items-end justify-between">
+            <div>
+              <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[#D84315]">
+                {locale === "en" ? "In Season" : "제철"}
+              </p>
+              <h2 className="font-headline text-3xl font-extrabold tracking-tight text-[#1B1C1A] md:text-4xl">
+                {locale === "en" ? `${season} Specialties` : `${seasonLabel} 제철 특산품`}
+              </h2>
+            </div>
+            <Link href={`/${locale}/specialties`} className="text-sm text-[#D84315] hover:underline shrink-0">
+              {locale === "en" ? "View all" : "전체 보기"}
             </Link>
           </div>
           {seasonalSpecialties.items.length > 0 ? (
@@ -151,7 +167,7 @@ export default async function HomePage({ params }: Props) {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-[#5A413A]">
               {locale === "en" ? "No specialties found." : "등록된 특산품이 없습니다."}
             </p>
           )}
@@ -159,16 +175,21 @@ export default async function HomePage({ params }: Props) {
       </section>
 
       {/* 5. 날씨별 추천 */}
-      <section className="bg-muted/30 px-4 py-10">
+      <section className="bg-[#F9F7EF] px-4 py-20">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-foreground">
-              {locale === "en"
-                ? `${season} Recommended Destinations`
-                : `${seasonLabel} 추천 여행지`}
-            </h2>
-            <Link href={`/${locale}/travel`} className="text-sm text-primary hover:underline">
-              {locale === "en" ? "View all destinations" : "여행지 전체 보기"}
+          <div className="mb-8 flex items-end justify-between">
+            <div>
+              <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[#D84315]">
+                {locale === "en" ? "Seasonal Picks" : "계절 추천"}
+              </p>
+              <h2 className="font-headline text-3xl font-extrabold tracking-tight text-[#1B1C1A] md:text-4xl">
+                {locale === "en"
+                  ? `${season} Recommended`
+                  : `${seasonLabel} 추천 여행지`}
+              </h2>
+            </div>
+            <Link href={`/${locale}/travel`} className="text-sm text-[#D84315] hover:underline shrink-0">
+              {locale === "en" ? "View all" : "전체 보기"}
             </Link>
           </div>
           {weatherDestinations.items.length > 0 ? (
@@ -188,7 +209,7 @@ export default async function HomePage({ params }: Props) {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-[#5A413A]">
               {locale === "en" ? "No destinations found." : "추천 여행지가 없습니다."}
             </p>
           )}
@@ -196,14 +217,19 @@ export default async function HomePage({ params }: Props) {
       </section>
 
       {/* 6. 최신 레시피 */}
-      <section className="px-4 py-10">
+      <section className="bg-white px-4 py-20">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-foreground">
-              {locale === "en" ? "Latest Recipes" : "최신 레시피"}
-            </h2>
-            <Link href={`/${locale}/recipes`} className="text-sm text-primary hover:underline">
-              {locale === "en" ? "View all recipes" : "레시피 전체 보기"}
+          <div className="mb-8 flex items-end justify-between">
+            <div>
+              <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[#D84315]">
+                {locale === "en" ? "Cook It" : "요리"}
+              </p>
+              <h2 className="font-headline text-3xl font-extrabold tracking-tight text-[#1B1C1A] md:text-4xl">
+                {locale === "en" ? "Latest Recipes" : "최신 레시피"}
+              </h2>
+            </div>
+            <Link href={`/${locale}/recipes`} className="text-sm text-[#D84315] hover:underline shrink-0">
+              {locale === "en" ? "View all" : "전체 보기"}
             </Link>
           </div>
           {latestRecipes.items.length > 0 ? (
@@ -213,7 +239,7 @@ export default async function HomePage({ params }: Props) {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-[#5A413A]">
               {locale === "en" ? "No recipes found." : "등록된 레시피가 없습니다."}
             </p>
           )}
@@ -221,14 +247,19 @@ export default async function HomePage({ params }: Props) {
       </section>
 
       {/* 7. 추천 캠핑장 */}
-      <section className="bg-muted/30 px-4 py-10">
+      <section className="bg-[#F9F7EF] px-4 py-20">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-foreground">
-              {locale === "en" ? "Top Camping Sites" : "추천 캠핑장"}
-            </h2>
-            <Link href={`/${locale}/camping`} className="text-sm text-primary hover:underline">
-              {locale === "en" ? "View all camping sites" : "캠핑장 전체 보기"}
+          <div className="mb-8 flex items-end justify-between">
+            <div>
+              <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[#D84315]">
+                {locale === "en" ? "Outdoors" : "캠핑"}
+              </p>
+              <h2 className="font-headline text-3xl font-extrabold tracking-tight text-[#1B1C1A] md:text-4xl">
+                {locale === "en" ? "Top Camping Sites" : "추천 캠핑장"}
+              </h2>
+            </div>
+            <Link href={`/${locale}/camping`} className="text-sm text-[#D84315] hover:underline shrink-0">
+              {locale === "en" ? "View all" : "전체 보기"}
             </Link>
           </div>
           {recommendedCamping.items.length > 0 ? (
@@ -249,7 +280,7 @@ export default async function HomePage({ params }: Props) {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-[#5A413A]">
               {locale === "en" ? "No camping sites found." : "등록된 캠핑장이 없습니다."}
             </p>
           )}

@@ -15,15 +15,15 @@ export default function CampingCard({ item, locale }: CampingCardProps) {
   const induty = "induty" in item ? item.induty : undefined
 
   return (
-    <Link href={`/${locale}/camping/${contentId}`} className="block">
-      <Card className="h-full cursor-pointer transition-shadow hover:shadow-md pt-0">
+    <Link href={`/${locale}/camping/${contentId}`} className="block group">
+      <Card className="h-full cursor-pointer border-0 bg-white soft-card-shadow hover:warm-shadow transition-all duration-300 pt-0">
         <div className="relative aspect-video w-full overflow-hidden rounded-t-xl bg-muted">
           {firstImageUrl ? (
             <Image
               src={firstImageUrl}
               alt={facltNm}
               fill
-              className="object-cover"
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
           ) : (

@@ -12,6 +12,7 @@ import AccessibilityBadge from "@/components/shared/AccessibilityBadge"
 import WeatherWidget from "@/components/weather/WeatherWidget"
 import TravelMap from "../_components/TravelMap"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
+import ImagePlaceholder from "@/components/shared/ImagePlaceholder"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -46,9 +47,11 @@ export default async function TravelDetailPage({ params }: Props) {
 
   setRequestLocale(locale)
 
-  const { destination, detail, intro, images, wiki, kakaoPlace } = await getDestinationDetail(id)
+  const { destination, detail, intro, images, wiki, kakaoPlace, petPlace, barrierFreePlace } = await getDestinationDetail(id)
 
-  if (!detail && !destination) {
+  const fallback = petPlace ?? barrierFreePlace ?? null
+
+  if (!detail && !destination && !fallback) {
     notFound()
   }
 
@@ -58,13 +61,13 @@ export default async function TravelDetailPage({ params }: Props) {
 
   const isKo = locale === "ko"
 
-  const title = detail?.title ?? destination?.title ?? ""
-  const addr1 = detail?.addr1 ?? destination?.addr1 ?? ""
-  const addr2 = detail?.addr2 ?? destination?.addr2
-  const tel = detail?.tel ?? destination?.tel
-  const overview = detail?.overview ?? destination?.overview
-  const mapx = detail?.mapx ?? (destination?.mapx !== undefined ? String(destination.mapx) : undefined)
-  const mapy = detail?.mapy ?? (destination?.mapy !== undefined ? String(destination.mapy) : undefined)
+  const title = detail?.title ?? destination?.title ?? fallback?.title ?? ""
+  const addr1 = detail?.addr1 ?? destination?.addr1 ?? fallback?.addr1 ?? ""
+  const addr2 = detail?.addr2 ?? destination?.addr2 ?? fallback?.addr2
+  const tel = detail?.tel ?? destination?.tel ?? fallback?.tel
+  const overview = detail?.overview ?? destination?.overview ?? fallback?.overview
+  const mapx = detail?.mapx ?? (destination?.mapx !== undefined ? String(destination.mapx) : undefined) ?? (fallback?.mapx !== undefined ? String(fallback.mapx) : undefined)
+  const mapy = detail?.mapy ?? (destination?.mapy !== undefined ? String(destination.mapy) : undefined) ?? (fallback?.mapy !== undefined ? String(fallback.mapy) : undefined)
 
   const lat = mapy ? parseFloat(mapy) : null
   const lng = mapx ? parseFloat(mapx) : null
@@ -74,13 +77,13 @@ export default async function TravelDetailPage({ params }: Props) {
     alt: img.imgname,
   }))
 
-  if (galleryImages.length === 0 && (detail?.firstimage || destination?.first_image)) {
-    const coverUrl = detail?.firstimage ?? destination?.first_image ?? ""
+  if (galleryImages.length === 0 && (detail?.firstimage || destination?.first_image || fallback?.first_image)) {
+    const coverUrl = detail?.firstimage ?? destination?.first_image ?? fallback?.first_image ?? ""
     galleryImages.push({ url: coverUrl, alt: title })
   }
 
-  const ratingAvg = destination?.rating_avg ?? 0
-  const ratingCount = destination?.rating_count ?? 0
+  const ratingAvg = destination?.rating_avg ?? fallback?.rating_avg ?? 0
+  const ratingCount = destination?.rating_count ?? fallback?.rating_count ?? 0
   const areaCode = destination?.area_code
 
   const isWorldHeritage =
@@ -96,12 +99,12 @@ export default async function TravelDetailPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="mb-2 text-2xl font-bold text-foreground">{title}</h1>
+      <h1 className="mb-2 font-headline text-3xl font-extrabold tracking-tight text-[#1B1C1A] md:text-4xl">{title}</h1>
 
       <div className="mb-4 flex items-center gap-3">
         <Rating value={ratingAvg} showValue readonly />
         {ratingCount > 0 && (
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-[#5A413A]">
             ({ratingCount.toLocaleString()})
           </span>
         )}
@@ -134,14 +137,20 @@ export default async function TravelDetailPage({ params }: Props) {
         </div>
       )}
 
-      {galleryImages.length > 0 && (
-        <div className="mb-6">
+      <div className="mb-6">
+        {galleryImages.length > 0 ? (
           <ImageGallery images={galleryImages} />
-        </div>
-      )}
+        ) : (
+          <ImagePlaceholder
+            type="travel"
+            contentTypeId={detail?.contenttypeid}
+            fullWidth
+          />
+        )}
+      </div>
 
       {/* 기본 정보 카드 */}
-      <div className="mb-6 space-y-3 rounded-xl border p-4">
+      <div className="mb-6 space-y-3 rounded-xl bg-[#F9F7EF] p-4 soft-card-shadow">
         {addr1 && (
           <div className="flex gap-2 text-sm">
             <span className="w-24 shrink-0 font-medium text-muted-foreground">
@@ -155,7 +164,7 @@ export default async function TravelDetailPage({ params }: Props) {
             <span className="w-24 shrink-0 font-medium text-muted-foreground">
               {isKo ? "전화" : "Phone"}
             </span>
-            <a href={`tel:${tel}`} className="text-primary hover:underline">
+            <a href={`tel:${tel}`} className="text-[#D84315] hover:underline">
               {tel}
             </a>
           </div>
@@ -216,6 +225,80 @@ export default async function TravelDetailPage({ params }: Props) {
             <span className="text-foreground">{intro.chkpet}</span>
           </div>
         )}
+        {petPlace && (
+          <>
+            {petPlace.pet_acmpny_cl && (
+              <div className="flex gap-2 text-sm">
+                <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                  {isKo ? "반려동물 동반" : "Pet Area"}
+                </span>
+                <span className="text-foreground">
+                  🐾 {({"1": "실내", "2": "실외", "3": "실내외"} as Record<string, string>)[petPlace.pet_acmpny_cl] ?? petPlace.pet_acmpny_cl}
+                </span>
+              </div>
+            )}
+            {petPlace.acmpny_type_cd && (
+              <div className="flex gap-2 text-sm">
+                <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                  {isKo ? "동반 동물" : "Pet Types"}
+                </span>
+                <span className="text-foreground">{petPlace.acmpny_type_cd}</span>
+              </div>
+            )}
+            {petPlace.rel_pet_info && (
+              <div className="flex gap-2 text-sm">
+                <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                  {isKo ? "반려동물 안내" : "Pet Info"}
+                </span>
+                <span className="text-foreground">{petPlace.rel_pet_info}</span>
+              </div>
+            )}
+          </>
+        )}
+        {barrierFreePlace && (
+          <>
+            {barrierFreePlace.wheelchair && (
+              <div className="flex gap-2 text-sm">
+                <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                  {isKo ? "휠체어 대여" : "Wheelchair"}
+                </span>
+                <span className="text-foreground">♿ {barrierFreePlace.wheelchair}</span>
+              </div>
+            )}
+            {barrierFreePlace.exit_accessible && (
+              <div className="flex gap-2 text-sm">
+                <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                  {isKo ? "출입구 접근" : "Entrance"}
+                </span>
+                <span className="text-foreground">🚪 {barrierFreePlace.exit_accessible}</span>
+              </div>
+            )}
+            {barrierFreePlace.restroom_wh && (
+              <div className="flex gap-2 text-sm">
+                <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                  {isKo ? "장애인 화장실" : "Restroom"}
+                </span>
+                <span className="text-foreground">🚻 {barrierFreePlace.restroom_wh}</span>
+              </div>
+            )}
+            {barrierFreePlace.elevator && (
+              <div className="flex gap-2 text-sm">
+                <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                  {isKo ? "엘리베이터" : "Elevator"}
+                </span>
+                <span className="text-foreground">🛗 {barrierFreePlace.elevator}</span>
+              </div>
+            )}
+            {barrierFreePlace.parking_wh && (
+              <div className="flex gap-2 text-sm">
+                <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                  {isKo ? "장애인 주차" : "Parking"}
+                </span>
+                <span className="text-foreground">🅿️ {barrierFreePlace.parking_wh}</span>
+              </div>
+            )}
+          </>
+        )}
         {intro?.chkbabycarriage && (
           <div className="flex gap-2 text-sm">
             <span className="w-24 shrink-0 font-medium text-muted-foreground">
@@ -236,8 +319,8 @@ export default async function TravelDetailPage({ params }: Props) {
 
       {/* 체험 안내 */}
       {(intro?.expguide || intro?.expagerange) && (
-        <div className="mb-6 rounded-xl border p-4">
-          <h2 className="mb-3 text-base font-semibold text-foreground">
+        <div className="mb-6 rounded-xl bg-[#F9F7EF] p-4 soft-card-shadow">
+          <h2 className="mb-3 font-headline text-base font-bold text-[#1B1C1A]">
             {isKo ? "체험 안내" : "Experience Guide"}
           </h2>
           <div className="space-y-2">
@@ -263,11 +346,11 @@ export default async function TravelDetailPage({ params }: Props) {
 
       {overview && (
         <div className="mb-6">
-          <h2 className="mb-2 text-lg font-semibold text-foreground">
+          <h2 className="mb-2 font-headline text-xl font-bold text-[#1B1C1A]">
             {isKo ? "소개" : "Overview"}
           </h2>
           <p
-            className="leading-relaxed text-muted-foreground"
+            className="leading-relaxed text-[#5A413A]"
             dangerouslySetInnerHTML={{ __html: overview }}
           />
         </div>
@@ -275,9 +358,9 @@ export default async function TravelDetailPage({ params }: Props) {
 
       {/* 위키백과 보충 설명 */}
       {wiki && wiki.extract && (
-        <div className="mb-6 rounded-xl border bg-muted/30 p-4">
+        <div className="mb-6 rounded-xl bg-[#F9F7EF] p-4 soft-card-shadow">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-base font-semibold text-foreground">
+            <h2 className="font-headline text-base font-bold text-[#1B1C1A]">
               {isKo ? "위키백과" : "Wikipedia"}
             </h2>
             {wiki.content_urls?.desktop?.page && (
@@ -299,7 +382,7 @@ export default async function TravelDetailPage({ params }: Props) {
                 className="h-20 w-20 shrink-0 rounded-lg object-cover"
               />
             )}
-            <p className="text-sm leading-relaxed text-muted-foreground line-clamp-5">
+            <p className="text-sm leading-relaxed text-[#5A413A] line-clamp-5">
               {wiki.extract}
             </p>
           </div>
@@ -314,7 +397,7 @@ export default async function TravelDetailPage({ params }: Props) {
               href={kakaoPlace.place_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-lg border bg-yellow-50 px-4 py-2 text-sm font-medium text-yellow-800 hover:bg-yellow-100 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#FFEDE7] px-4 py-2 text-sm font-medium text-[#D84315] hover:bg-[#D84315] hover:text-white transition-colors"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
@@ -326,7 +409,7 @@ export default async function TravelDetailPage({ params }: Props) {
             href={buildNaverMapUrl(title, lat ?? undefined, lng ?? undefined)}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg border bg-green-50 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-100 transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[#D84315] px-4 py-2 text-sm font-medium text-white hover:bg-[#B71C1C] transition-colors"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
@@ -338,7 +421,7 @@ export default async function TravelDetailPage({ params }: Props) {
 
       {lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng) && (
         <div className="mb-6">
-          <h2 className="mb-2 text-lg font-semibold text-foreground">
+          <h2 className="mb-2 font-headline text-xl font-bold text-[#1B1C1A]">
             {isKo ? "위치" : "Location"}
           </h2>
           <TravelMap lat={lat} lng={lng} title={title} />
@@ -347,7 +430,7 @@ export default async function TravelDetailPage({ params }: Props) {
 
       {areaCode && (
         <div className="mb-6">
-          <h2 className="mb-2 text-lg font-semibold text-foreground">
+          <h2 className="mb-2 font-headline text-xl font-bold text-[#1B1C1A]">
             {isKo ? "현재 날씨" : "Current Weather"}
           </h2>
           <WeatherWidget areaCode={areaCode} />

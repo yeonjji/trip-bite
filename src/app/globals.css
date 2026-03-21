@@ -5,21 +5,32 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  /* Primary (Orange) */
-  --color-primary-50: #fff7ed;
-  --color-primary-100: #ffedd5;
-  --color-primary-200: #fed7aa;
-  --color-primary-300: #fdba74;
-  --color-primary-400: #fb923c;
-  --color-primary-500: #f97316;
-  --color-primary-600: #ea580c;
-  --color-primary-700: #c2410c;
-  --color-primary-800: #9a3412;
-  --color-primary-900: #7c2d12;
+  /* Primary (Terracotta) */
+  --color-primary-50: #fdf3f0;
+  --color-primary-100: #FFEDE7;
+  --color-primary-200: #ffd0c0;
+  --color-primary-300: #ffac90;
+  --color-primary-400: #f07050;
+  --color-primary-500: #D84315;
+  --color-primary-600: #bf3a10;
+  --color-primary-700: #B71C1C;
+  --color-primary-800: #8b1515;
+  --color-primary-900: #6a1010;
+
+  /* Surface layers */
+  --color-surface-base: #FFFDF5;
+  --color-surface-low: #F9F7EF;
+  --color-surface-mid: #EEEBE1;
+  --color-surface-high: #E8E5DB;
+  --color-surface-container: #F4F1E9;
+
+  /* Text */
+  --color-text-warm: #5A413A;
+  --color-text-dark: #1B1C1A;
 
   /* Custom */
   --color-coral: #ff6b6b;
-  --color-warm-bg: #fffbf5;
+  --color-warm-bg: #FFFDF5;
   --color-accent: #14b8a6;
   --color-accent-light: #5eead4;
   --color-accent-dark: #0d9488;
@@ -30,11 +41,24 @@
 
   /* Font */
   --font-sans: var(--font-pretendard), system-ui, -apple-system, sans-serif;
+  --font-headline: var(--font-jakarta), var(--font-pretendard), system-ui, sans-serif;
 }
 
 body {
-  background-color: #fffbf5;
-  color: #1f2937;
+  background-color: #FFFDF5;
+  color: #1B1C1A;
+}
+
+.warm-shadow {
+  box-shadow: 0 12px 40px 0 rgba(87, 45, 32, 0.08);
+}
+
+.soft-card-shadow {
+  box-shadow: 0 8px 24px rgba(87, 45, 32, 0.04);
+}
+
+.font-headline {
+  font-family: var(--font-headline);
 }
 
 :root {
@@ -44,7 +68,7 @@ body {
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --primary: oklch(0.52 0.19 35);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);

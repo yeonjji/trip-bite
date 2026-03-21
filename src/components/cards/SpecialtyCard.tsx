@@ -18,15 +18,15 @@ export default function SpecialtyCard({ item, locale = "ko", regionName }: Speci
   const displayName = locale === "en" && name_en ? name_en : name_ko
 
   return (
-    <Link href={`/${locale}/specialties/${id}`} className="block">
-      <Card className="h-full cursor-pointer transition-shadow hover:shadow-md pt-0">
+    <Link href={`/${locale}/specialties/${id}`} className="block group">
+      <Card className="h-full cursor-pointer border-0 bg-white soft-card-shadow hover:warm-shadow transition-all duration-300 pt-0">
         <div className="relative aspect-video w-full overflow-hidden rounded-t-xl bg-muted">
           {image_url ? (
             <Image
               src={image_url}
               alt={displayName}
               fill
-              className="object-cover"
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
           ) : (

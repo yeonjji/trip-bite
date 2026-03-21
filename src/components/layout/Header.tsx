@@ -10,11 +10,11 @@ export function Header({ locale }: Props) {
   const t = useTranslations("nav");
 
   return (
-    <header className="sticky top-0 z-50 h-16 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 h-16 w-full shadow-sm bg-[#FFFDF5]/80 backdrop-blur-md">
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 md:px-6">
         <Link
           href={`/${locale}`}
-          className="text-xl font-bold text-primary-500 hover:text-primary-600 transition-colors"
+          className="text-xl font-bold text-[#D84315] hover:text-[#B71C1C] transition-colors"
         >
           여행한입
         </Link>
@@ -47,19 +47,19 @@ export function Header({ locale }: Props) {
           />
           <Link
             href={`/${locale}/restaurants`}
-            className="text-sm font-medium text-gray-700 hover:text-primary-500 transition-colors"
+            className="text-sm font-medium text-[#5A413A] hover:text-[#D84315] transition-colors"
           >
             {t("restaurants")}
           </Link>
           <Link
             href={`/${locale}/recipes`}
-            className="text-sm font-medium text-gray-700 hover:text-primary-500 transition-colors"
+            className="text-sm font-medium text-[#5A413A] hover:text-[#D84315] transition-colors"
           >
             {t("recipes")}
           </Link>
           <Link
             href={`/${locale}/specialties`}
-            className="text-sm font-medium text-gray-700 hover:text-primary-500 transition-colors"
+            className="text-sm font-medium text-[#5A413A] hover:text-[#D84315] transition-colors"
           >
             {t("specialties")}
           </Link>
@@ -69,7 +69,7 @@ export function Header({ locale }: Props) {
           <Link
             href={`/${locale}/search`}
             aria-label="검색"
-            className="p-2 text-gray-600 hover:text-primary-500 transition-colors"
+            className="p-2 text-[#5A413A] hover:text-[#D84315] transition-colors"
           >
             <Search size={20} />
           </Link>

@@ -39,15 +39,15 @@ export default function BarrierFreeCard({ item, locale }: BarrierFreeCardProps) 
   const availableCount = ACCESSIBILITY_FIELDS.filter((f) => item[f]).length
 
   return (
-    <Link href={`/${locale}/travel/barrier-free/${content_id}`} className="block">
-      <Card className="h-full cursor-pointer transition-shadow hover:shadow-md">
+    <Link href={`/${locale}/travel/barrier-free/${content_id}`} className="block group">
+      <Card className="h-full cursor-pointer border-0 bg-white soft-card-shadow hover:warm-shadow transition-all duration-300">
         <div className="relative aspect-video w-full overflow-hidden rounded-t-xl bg-muted">
           {first_image ? (
             <Image
               src={first_image}
               alt={title}
               fill
-              className="object-cover"
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               unoptimized
             />
