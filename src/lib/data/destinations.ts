@@ -7,6 +7,8 @@ import { getWikiSummary, type WikiSummary } from "@/lib/api/wikipedia-api";
 import { searchKakaoPlace, type KakaoPlace } from "@/lib/api/kakao-api";
 import type { Destination } from "@/types/database";
 import type { TourDetailCommon, TourImage, TourSpotDetail } from "@/types/tour-api";
+import type { PetFriendlyPlace } from "@/types/pet-friendly";
+import type { BarrierFreePlace } from "@/types/barrier-free";
 
 const DESTINATION_TTL_HOURS = 24;
 
@@ -68,6 +70,8 @@ export async function getDestinationDetail(contentId: string): Promise<{
   images: TourImage[];
   wiki: WikiSummary | null;
   kakaoPlace: KakaoPlace | null;
+  petPlace: PetFriendlyPlace | null;
+  barrierFreePlace: BarrierFreePlace | null;
 }> {
   const supabase = await createClient();
 
@@ -159,7 +163,7 @@ export async function getDestinationDetail(contentId: string): Promise<{
   const resolvedLat = detail?.mapy ? parseFloat(detail.mapy) : (destination?.mapy ?? undefined)
   const resolvedLng = detail?.mapx ? parseFloat(detail.mapx) : (destination?.mapx ?? undefined)
 
-  const [wikiRes, kakaoRes] = await Promise.allSettled([
+  const [wikiRes, kakaoRes, petRes, barrierFreeRes] = await Promise.allSettled([
     resolvedTitle ? getWikiSummary(resolvedTitle) : Promise.resolve(null),
     resolvedTitle
       ? searchKakaoPlace(
@@ -168,10 +172,14 @@ export async function getDestinationDetail(contentId: string): Promise<{
           typeof resolvedLng === "number" ? resolvedLng : undefined
         )
       : Promise.resolve(null),
+    supabase.from("pet_friendly_places").select("*").eq("content_id", contentId).maybeSingle(),
+    supabase.from("barrier_free_places").select("*").eq("content_id", contentId).maybeSingle(),
   ])
 
   const wiki = wikiRes.status === "fulfilled" ? wikiRes.value : null
   const kakaoPlace = kakaoRes.status === "fulfilled" ? kakaoRes.value : null
+  const petPlace = petRes.status === "fulfilled" ? (petRes.value.data as PetFriendlyPlace | null) : null
+  const barrierFreePlace = barrierFreeRes.status === "fulfilled" ? (barrierFreeRes.value.data as BarrierFreePlace | null) : null
 
-  return { destination, detail, intro, images, wiki, kakaoPlace };
+  return { destination, detail, intro, images, wiki, kakaoPlace, petPlace, barrierFreePlace };
 }
