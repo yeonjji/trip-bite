@@ -14,7 +14,6 @@ interface PageProps {
   searchParams: Promise<{
     doNm?: string
     induty?: string
-    animalCmgCl?: string
     page?: string
   }>
 }
@@ -55,13 +54,12 @@ function toCardItem(site: CampingSite) {
 
 export default async function CampingPage({ params, searchParams }: PageProps) {
   const { locale } = await params
-  const { doNm, induty, animalCmgCl, page: pageStr } = await searchParams
+  const { doNm, induty, page: pageStr } = await searchParams
   const page = Number(pageStr ?? "1") || 1
 
   const { items, totalCount } = await getCampingSites({
     doNm,
     induty,
-    animalCmgCl,
     page,
     pageSize: PAGE_SIZE,
     sort: "rating",

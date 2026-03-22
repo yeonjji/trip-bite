@@ -69,6 +69,7 @@ export interface Destination {
   mapy?: number;
   first_image?: string;
   first_image2?: string;
+  cat3?: string;
   tel?: string;
   homepage?: string;
   overview?: string;

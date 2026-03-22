@@ -64,6 +64,7 @@ async function upsertDestinations(items, areaCode) {
     mapy: item.mapy ? parseFloat(item.mapy) : null,
     first_image: item.firstimage || null,
     first_image2: item.firstimage2 || null,
+    cat3: item.cat3 || null,
     tel: item.tel || null,
     cached_at: new Date().toISOString(),
   }));

@@ -42,7 +42,6 @@ export default function CampingFilters({ locale }: CampingFiltersProps) {
 
   const doNm = searchParams.get("doNm") ?? ""
   const induty = searchParams.get("induty") ?? ""
-  const animalCmgCl = searchParams.get("animalCmgCl") ?? ""
 
   const regionCode = DONM_TO_CODE[doNm] ?? ""
 
@@ -70,18 +69,12 @@ export default function CampingFilters({ locale }: CampingFiltersProps) {
     pushParams({ induty: val })
   }
 
-  const handleAnimalChange = (val: string) => {
-    pushParams({ animalCmgCl: val })
-  }
-
   return (
     <div className="flex flex-col gap-6">
       <RegionFilter value={regionCode} onChange={handleRegionChange} locale={locale} />
       <CampingFilter
         induty={induty}
-        animal={animalCmgCl}
         onIndutyChange={handleIndutyChange}
-        onAnimalChange={handleAnimalChange}
       />
     </div>
   )

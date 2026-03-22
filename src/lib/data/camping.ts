@@ -8,7 +8,6 @@ import type { CampingSite } from "@/types/database";
 interface GetCampingSitesParams {
   doNm?: string;
   induty?: string;
-  animalCmgCl?: string;
   page?: number;
   pageSize?: number;
   sort?: "rating" | "created";
@@ -17,7 +16,7 @@ interface GetCampingSitesParams {
 export async function getCampingSites(
   params: GetCampingSitesParams
 ): Promise<{ items: CampingSite[]; totalCount: number }> {
-  const { doNm, induty, animalCmgCl, page = 1, pageSize = 12, sort = "rating" } = params;
+  const { doNm, induty, page = 1, pageSize = 12, sort = "rating" } = params;
 
   const supabase = await createClient();
 
@@ -28,9 +27,6 @@ export async function getCampingSites(
   }
   if (induty) {
     query = query.eq("induty", induty);
-  }
-  if (animalCmgCl) {
-    query = query.eq("animal_cmg_cl", animalCmgCl);
   }
 
   if (sort === "rating") {

@@ -8,11 +8,12 @@ import type { TourDetailCommon, RestaurantDetail, TourImage } from "@/types/tour
 export async function getRestaurants(params: {
   areaCode?: string;
   sigunguCode?: string;
+  cat3?: string;
   page?: number;
   pageSize?: number;
   sort?: "rating" | "created";
 }): Promise<{ items: Destination[]; totalCount: number }> {
-  const { areaCode, sigunguCode, page = 1, pageSize = 12, sort = "rating" } = params;
+  const { areaCode, sigunguCode, cat3, page = 1, pageSize = 12, sort = "rating" } = params;
 
   const supabase = await createClient();
 
@@ -27,6 +28,10 @@ export async function getRestaurants(params: {
 
   if (sigunguCode) {
     query = query.eq("sigungu_code", sigunguCode);
+  }
+
+  if (cat3) {
+    query = query.eq("cat3", cat3);
   }
 
   if (sort === "rating") {

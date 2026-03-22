@@ -42,18 +42,31 @@ export function NavDropdown({ label, items, locale }: NavDropdownProps) {
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
-      <button
-        className="flex items-center gap-1 text-sm font-medium transition-colors text-gray-700 hover:text-primary-500"
-        aria-expanded={open}
-        aria-haspopup="menu"
-        onClick={() => setOpen((v) => !v)}
-      >
-        {label}
-        <ChevronDown
-          size={14}
-          className={cn("transition-transform duration-150", open && "rotate-180")}
-        />
-      </button>
+      <div className="flex items-center gap-0.5">
+        {items.length > 0 ? (
+          <Link
+            href={`/${locale}${items[0].href}`}
+            className="text-sm font-medium transition-colors text-gray-700 hover:text-primary-500"
+          >
+            {label}
+          </Link>
+        ) : (
+          <span className="text-sm font-medium text-gray-700">{label}</span>
+        )}
+        {items.length > 0 && (
+          <button
+            className="flex items-center text-gray-700 hover:text-primary-500"
+            aria-expanded={open}
+            aria-haspopup="menu"
+            onClick={() => setOpen((v) => !v)}
+          >
+            <ChevronDown
+              size={14}
+              className={cn("transition-transform duration-150", open && "rotate-180")}
+            />
+          </button>
+        )}
+      </div>
 
       {open && (
         <div

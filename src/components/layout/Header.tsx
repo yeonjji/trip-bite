@@ -43,12 +43,18 @@ export function Header({ locale }: Props) {
             locale={locale}
             items={[]}
           />
-          <Link
-            href={`/${locale}/restaurants`}
-            className="text-sm font-medium text-[#5A413A] hover:text-[#D84315] transition-colors"
-          >
-            {t("restaurants")}
-          </Link>
+          <NavDropdown
+            label={t("restaurants")}
+            locale={locale}
+            items={[
+              { href: "/restaurants", label: t("allRestaurants") },
+              { href: "/restaurants?cat3=A05020100", label: t("korean") },
+              { href: "/restaurants?cat3=A05020200", label: t("western") },
+              { href: "/restaurants?cat3=A05020300", label: t("japanese") },
+              { href: "/restaurants?cat3=A05020400", label: t("chinese") },
+              { href: "/restaurants?cat3=A05020900", label: t("cafe") },
+            ]}
+          />
           <Link
             href={`/${locale}/recipes`}
             className="text-sm font-medium text-[#5A413A] hover:text-[#D84315] transition-colors"
