@@ -24,11 +24,6 @@ export function NavDropdown({ label, items, locale }: NavDropdownProps) {
 
   const getItemPath = (href: string) => href.split("?")[0]
 
-  const isActive = items.some((item) => {
-    const itemPath = `/${locale}${getItemPath(item.href)}`
-    return pathname === itemPath || pathname.startsWith(itemPath + "/")
-  })
-
   // 외부 클릭 시 닫기
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -48,10 +43,7 @@ export function NavDropdown({ label, items, locale }: NavDropdownProps) {
       onMouseLeave={() => setOpen(false)}
     >
       <button
-        className={cn(
-          "flex items-center gap-1 text-sm font-medium transition-colors",
-          isActive ? "text-primary-500" : "text-gray-700 hover:text-primary-500"
-        )}
+        className="flex items-center gap-1 text-sm font-medium transition-colors text-gray-700 hover:text-primary-500"
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
@@ -79,10 +71,8 @@ export function NavDropdown({ label, items, locale }: NavDropdownProps) {
                 href={fullHref}
                 role="menuitem"
                 className={cn(
-                  "block px-4 py-2 text-sm transition-colors hover:bg-gray-50",
-                  itemActive
-                    ? "font-medium text-primary-500"
-                    : "text-gray-700"
+                  "block px-4 py-2 text-sm transition-colors hover:bg-gray-50 hover:text-primary-500 text-gray-700",
+                  itemActive && "font-medium"
                 )}
                 onClick={() => setOpen(false)}
               >
