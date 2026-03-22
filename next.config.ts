@@ -89,6 +89,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      { source: "/:locale/travel/barrier-free", destination: "/:locale/travel", permanent: true },
+      { source: "/:locale/travel/pet", destination: "/:locale/travel", permanent: true },
+      { source: "/:locale/travel/barrier-free/:id", destination: "/:locale/travel/:id", permanent: true },
+      { source: "/:locale/travel/pet/:id", destination: "/:locale/travel/:id", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {
