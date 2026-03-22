@@ -94,6 +94,7 @@ export default function KoreaMapSvg({
       className={className}
       aria-label={koreaMap.label}
     >
+      <rect width="100%" height="100%" fill="hsl(200 40% 94%)" rx="8" />
       {koreaMap.locations.map((location) => {
         const { id, path, name } = location
         const isHovered = hoveredId === id
@@ -104,19 +105,23 @@ export default function KoreaMapSvg({
         let fill: string
         let stroke: string
         let strokeWidth: number
+        let filter: string
 
         if (isSelected) {
-          fill = "hsl(25 95% 53% / 0.25)"
-          stroke = "hsl(25 95% 53%)"
-          strokeWidth = 1.5
+          fill = "rgba(216,67,21,0.22)"
+          stroke = "#B71C1C"
+          strokeWidth = 2
+          filter = "none"
         } else if (isHovered) {
-          fill = "hsl(25 95% 53% / 0.15)"
-          stroke = "hsl(25 95% 53%)"
-          strokeWidth = 1.2
+          fill = "rgba(216,67,21,0.12)"
+          stroke = "#D84315"
+          strokeWidth = 1.5
+          filter = "drop-shadow(0 2px 6px rgba(216,67,21,0.3))"
         } else {
-          fill = "hsl(210 20% 96%)"
-          stroke = "hsl(210 10% 80%)"
+          fill = "#F0ECE4"
+          stroke = "#C8C3B8"
           strokeWidth = 0.8
+          filter = "none"
         }
 
         return (
@@ -130,8 +135,9 @@ export default function KoreaMapSvg({
                 fill,
                 stroke,
                 strokeWidth,
+                filter,
                 cursor: "pointer",
-                transition: "fill 0.2s ease, stroke 0.2s ease, stroke-width 0.2s ease",
+                transition: "fill 0.18s cubic-bezier(0.4,0,0.2,1), stroke 0.18s ease, stroke-width 0.18s ease, filter 0.18s ease",
               }}
               onClick={() => {
                 const code = ID_TO_AREA_CODE[id]
@@ -162,8 +168,8 @@ export default function KoreaMapSvg({
                 textAnchor="middle"
                 dominantBaseline="middle"
                 fontSize={11}
-                fontWeight={500}
-                style={{ fill: "hsl(var(--foreground))", pointerEvents: "none" }}
+                fontWeight={600}
+                style={{ fill: "#5A413A", pointerEvents: "none", letterSpacing: "0.02em" }}
               >
                 {label}
               </text>
