@@ -30,6 +30,8 @@ All pages live under `src/app/[locale]/`. Key routes: `/travel`, `/restaurants`,
 
 Sub-routes: `/travel/pet` (pet-friendly), `/travel/barrier-free` (accessible).
 
+`/easy-travel` is a reserved nav category (NavDropdown with empty items) for future sub-menus.
+
 ### Data Flow
 
 1. **Pages** are async server components that call data functions from `src/lib/data/*.ts`
@@ -60,6 +62,14 @@ Two code systems exist and must not be confused:
 
 The `destinations`, `pet_friendly_places`, and `barrier_free_places` tables use 법정동 codes for both `area_code` (시도) and `sigungu_code` (시군구, 5-digit 법정동).
 
+### Card Components
+
+Each content type has a dedicated card: `TravelCard`, `CampingCard`, `RestaurantCard`, `SpecialtyCard`, `RecipeCard`, `BarrierFreeCard`, `PetCard`. All live in `src/components/cards/`.
+
+### Data Sync Scripts
+
+`scripts/` contains Node.js ESM scripts for bulk-syncing external API data into Supabase (e.g. `sync-barrier-free.mjs`). Run directly with `node scripts/<name>.mjs`. These use `SUPABASE_SERVICE_ROLE_KEY` and the relevant API key.
+
 ### Key Patterns
 
 - `cn()` utility from `src/lib/utils.ts` for Tailwind class merging (clsx + tailwind-merge)
@@ -67,6 +77,7 @@ The `destinations`, `pet_friendly_places`, and `barrier_free_places` tables use 
 - `buildAlternates()` for SEO alternate language links
 - Filter components (RegionFilter, SigunguFilter, ThemeFilter) use URL search params via `router.push`
 - Korea map SVG data from `src/lib/constants/korea-map-data.js` (80KB geographic paths from svg-maps)
+- TourAPI detail pages call multiple endpoints in parallel: `detailCommon`, `detailIntro`, and type-specific calls like `detailPetTour` for pet-friendly places
 
 ### Environment Variables
 

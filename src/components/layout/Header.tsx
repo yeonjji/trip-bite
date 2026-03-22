@@ -25,8 +25,6 @@ export function Header({ locale }: Props) {
             locale={locale}
             items={[
               { href: "/travel", label: t("allDestinations") },
-              { href: "/travel/barrier-free", label: t("barrierFree") },
-              { href: "/travel/pet", label: t("petFriendly") },
             ]}
           />
           <NavDropdown
