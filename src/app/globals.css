@@ -44,6 +44,11 @@
   --font-headline: var(--font-jakarta), var(--font-pretendard), system-ui, sans-serif;
 }
 
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
 body {
   background-color: #FFFDF5;
   color: #1B1C1A;

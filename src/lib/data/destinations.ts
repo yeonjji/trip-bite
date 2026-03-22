@@ -12,6 +12,28 @@ import type { BarrierFreePlace } from "@/types/barrier-free";
 
 const DESTINATION_TTL_HOURS = 24;
 
+// 자연경관 + 고건물 위주, 신식건물 제외
+const HERO_KEYWORDS = [
+  "경복궁", "창덕궁", "불국사", "석굴암",
+  "하회마을", "수원화성", "종묘",
+  "통도사", "해인사", "부석사",
+  "성산일출봉", "한라산", "설악산",
+  "지리산", "순천만", "내장산", "덕유산",
+]
+
+export async function getHeroImages(): Promise<string[]> {
+  const supabase = await createClient()
+  const orFilter = HERO_KEYWORDS.map(k => `title.ilike.%${k}%`).join(",")
+  const { data } = await supabase
+    .from("destinations")
+    .select("first_image, title")
+    .or(orFilter)
+    .not("first_image", "is", null)
+    .not("title", "ilike", "%수유중%")
+    .limit(30)
+  return (data ?? []).map(d => d.first_image).filter(Boolean) as string[]
+}
+
 export async function getDestinations(params: {
   areaCode?: string;
   sigunguCode?: string;

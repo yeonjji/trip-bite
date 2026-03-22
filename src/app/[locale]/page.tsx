@@ -4,7 +4,7 @@ import Link from "next/link"
 import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 
-import { getDestinations } from "@/lib/data/destinations"
+import { getDestinations, getHeroImages } from "@/lib/data/destinations"
 import { getRestaurants } from "@/lib/data/restaurants"
 import { getCampingSites } from "@/lib/data/camping"
 import { getSpecialties } from "@/lib/data/specialties"
@@ -18,6 +18,7 @@ import CampingCard from "@/components/cards/CampingCard"
 import SpecialtyCard from "@/components/cards/SpecialtyCard"
 import RecipeCard from "@/components/cards/RecipeCard"
 import RegionExplorer from "@/components/home/RegionExplorer"
+import HeroSlideshow from "@/components/home/HeroSlideshow"
 import type { Destination } from "@/types/database"
 import type { TourSpotBase, RestaurantDetail } from "@/types/tour-api"
 
@@ -50,30 +51,32 @@ export default async function HomePage({ params }: Props) {
   const weatherContentTypes = getWeatherRecommendation("1", "0") // 맑음 기본값
 
   const emptyDest = { items: [] as Destination[], totalCount: 0 }
-  const [r0, r1, r2, r3, r4] = await Promise.allSettled([
+  const [r0, r1, r2, r3, r4, r5] = await Promise.allSettled([
     getDestinations({ pageSize: 6, sort: "rating" }),
     getSpecialties({ season: seasonLabel, pageSize: 4 }),
     getRecipes({ pageSize: 4 }),
     getCampingSites({ pageSize: 4, sort: "rating" }),
     getDestinations({ contentTypeId: weatherContentTypes[0], pageSize: 4, sort: "rating" }),
+    getHeroImages(),
   ])
   const featuredDestinations = r0.status === "fulfilled" ? r0.value : emptyDest
   const seasonalSpecialties = r1.status === "fulfilled" ? r1.value : { items: [] as import("@/types/database").SpecialtyRow[], totalCount: 0 }
   const latestRecipes = r2.status === "fulfilled" ? r2.value : { items: [] as import("@/types/database").RecipeRow[], totalCount: 0 }
   const recommendedCamping = r3.status === "fulfilled" ? r3.value : { items: [] as import("@/types/database").CampingSite[], totalCount: 0 }
   const weatherDestinations = r4.status === "fulfilled" ? r4.value : emptyDest
+  const heroImages = r5.status === "fulfilled" ? r5.value : []
 
   return (
     <div className="flex flex-col">
       {/* 1. 히어로 섹션 */}
-      <section className="relative min-h-[580px] bg-[#1B1C1A] flex items-center justify-center px-4 py-20 text-center overflow-hidden">
-        {/* 따뜻한 그라디언트 오버레이 */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#D84315]/40 via-[#8B3A2A]/20 to-transparent pointer-events-none" />
-        <div className="relative mx-auto max-w-2xl">
-          <h1 className="mb-4 font-headline text-4xl font-extrabold tracking-tight text-white md:text-6xl">
-            {locale === "en" ? "Discover Korea" : "대한민국 여행,\n한 입에 담다"}
+      <section className="relative min-h-[420px] bg-white flex items-center justify-center px-4 py-20 text-center overflow-hidden">
+        {/* 히어로 이미지 마퀴 */}
+        <HeroSlideshow images={heroImages} />
+        <div className="relative z-20 mx-auto max-w-2xl">
+          <h1 className="mb-4 font-headline text-4xl font-extrabold tracking-tight md:text-6xl" style={{color: '#b05a42'}}>
+            {locale === "en" ? "Delicious Travel, Korea" : "맛있는 여행, Korea"}
           </h1>
-          <p className="mb-8 text-lg text-white/70">
+          <p className="mb-8 text-lg text-stone-600">
             {locale === "en"
               ? "Travel destinations, local food and camping across Korea"
               : "전국의 여행지, 맛집, 캠핑장을 한번에"}
@@ -95,7 +98,7 @@ export default async function HomePage({ params }: Props) {
               <Link
                 key={keyword}
                 href={`/${locale}/search?q=${encodeURIComponent(keyword)}`}
-                className="rounded-full bg-white/15 px-4 py-1.5 text-sm text-white/90 transition-colors hover:bg-white/25"
+                className="rounded-full bg-gray-100 px-4 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-200"
               >
                 {keyword}
               </Link>
