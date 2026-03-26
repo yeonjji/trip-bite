@@ -13,7 +13,7 @@ if (!SUPABASE_URL || !SERVICE_ROLE_KEY || !NONGSARO_API_KEY) {
 }
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
-const BASE_URL = "https://api.nongsaro.go.kr/service/localSpcprd";
+const BASE_URL = "https://api.nongsaro.go.kr/service/localFood";
 const IMG_BASE = "https://www.nongsaro.go.kr";
 
 // XML 태그 값 추출 헬퍼
@@ -40,14 +40,14 @@ function buildImageUrl(path, name) {
 }
 
 async function fetchList(pageNo = 1, numOfRows = 100) {
-  const url = `${BASE_URL}/localSpcprdList?apiKey=${NONGSARO_API_KEY}&pageNo=${pageNo}&numOfRows=${numOfRows}`;
+  const url = `${BASE_URL}/localFoodList?apiKey=${NONGSARO_API_KEY}&pageNo=${pageNo}&numOfRows=${numOfRows}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.text();
 }
 
 async function fetchDetail(cntntsNo) {
-  const url = `${BASE_URL}/localSpcprdDtl?apiKey=${NONGSARO_API_KEY}&cntntsNo=${cntntsNo}`;
+  const url = `${BASE_URL}/localFoodDtl?apiKey=${NONGSARO_API_KEY}&cntntsNo=${cntntsNo}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status} (cntntsNo=${cntntsNo})`);
   return res.text();
