@@ -1,5 +1,5 @@
-// 농사로 지역특산물 향토음식 데이터 수집 스크립트
-// 실행: node --env-file=.env.local scripts/sync-nongsaro-local.mjs
+// 농사로 향토음식 데이터 수집 스크립트 (nvpcFdCkry)
+// 실행: node --env-file=.env.local scripts/sync-nongsaro-hyangtofood.mjs
 
 import { createClient } from "@supabase/supabase-js";
 
@@ -13,7 +13,7 @@ if (!SUPABASE_URL || !SERVICE_ROLE_KEY || !NONGSARO_API_KEY) {
 }
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
-const BASE_URL = "https://api.nongsaro.go.kr/service/localSpcprd";
+const BASE_URL = "https://api.nongsaro.go.kr/service/nvpcFdCkry";
 const IMG_BASE = "https://www.nongsaro.go.kr";
 
 // XML 태그 값 추출 헬퍼
@@ -31,23 +31,22 @@ function getItems(xml) {
   return items;
 }
 
-function buildImageUrl(path, name) {
-  // imgFilePath + imgFileNm 조합 또는 단독 경로
-  const combined = path && name ? `${path}/${name}` : (path ?? name ?? "");
-  if (!combined.trim()) return null;
-  if (combined.startsWith("http")) return combined;
-  return IMG_BASE + (combined.startsWith("/") ? combined : "/" + combined);
+function buildImageUrl(raw) {
+  if (!raw || raw.trim() === "") return null;
+  const v = raw.trim();
+  if (v.startsWith("http")) return v;
+  return IMG_BASE + (v.startsWith("/") ? v : "/" + v);
 }
 
 async function fetchList(pageNo = 1, numOfRows = 100) {
-  const url = `${BASE_URL}/localSpcprdList?apiKey=${NONGSARO_API_KEY}&pageNo=${pageNo}&numOfRows=${numOfRows}`;
+  const url = `${BASE_URL}/fdNmLst?apiKey=${NONGSARO_API_KEY}&pageNo=${pageNo}&numOfRows=${numOfRows}&schType=B`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.text();
 }
 
 async function fetchDetail(cntntsNo) {
-  const url = `${BASE_URL}/localSpcprdDtl?apiKey=${NONGSARO_API_KEY}&cntntsNo=${cntntsNo}`;
+  const url = `${BASE_URL}/fdDtl?apiKey=${NONGSARO_API_KEY}&cntntsNo=${cntntsNo}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status} (cntntsNo=${cntntsNo})`);
   return res.text();
@@ -56,13 +55,11 @@ async function fetchDetail(cntntsNo) {
 function parseListItem(itemXml) {
   return {
     cntnts_no: getTag(itemXml, "cntntsNo"),
-    food_name: getTag(itemXml, "foodNm") ?? "",
+    food_name: getTag(itemXml, "fdNm") ?? "",
     sido_name: getTag(itemXml, "sidoNm"),
-    sigun_name: getTag(itemXml, "sigunNm"),
-    summary: getTag(itemXml, "foodSumry"),
+    food_type: getTag(itemXml, "food_type_ctg01") ?? getTag(itemXml, "foodTypCtg01"),
     image_url: buildImageUrl(
-      getTag(itemXml, "imgFilePath"),
-      getTag(itemXml, "imgFileNm")
+      getTag(itemXml, "rtnFileUrl") ?? getTag(itemXml, "imgFileNm")
     ),
   };
 }
@@ -72,19 +69,26 @@ function parseDetail(xml, base) {
   const src = item || xml;
   return {
     ...base,
-    // 상세에서 더 풍부한 정보 덮어쓰기
-    summary: getTag(src, "foodSumry") ?? base.summary,
-    description: getTag(src, "foodDtl"),
+    food_name: getTag(src, "fdNm") ?? base.food_name,
+    sido_name: getTag(src, "sidoNm") ?? base.sido_name,
+    summary: getTag(src, "fdSumry") ?? getTag(src, "foodSumry"),
+    description: getTag(src, "fdDtl") ?? getTag(src, "foodDtl"),
     image_url:
-      buildImageUrl(getTag(src, "imgFilePath"), getTag(src, "imgFileNm")) ??
+      buildImageUrl(getTag(src, "rtnFileUrl") ?? getTag(src, "imgFileNm")) ??
       base.image_url,
     ingredients: getTag(src, "ingrdCn"),
-    recipe: getTag(src, "rcipeCn"),
+    recipe: getTag(src, "rcipeCn") ?? getTag(src, "ckryMth"),
+    food_type:
+      getTag(src, "food_type_ctg01") ??
+      getTag(src, "foodTypCtg01") ??
+      base.food_type,
+    cooking_method:
+      getTag(src, "ck_ry_ctg01") ?? getTag(src, "ckryCtg01"),
   };
 }
 
 async function main() {
-  console.log("🌾 농사로 지역특산물 향토음식 수집 시작...\n");
+  console.log("🌾 농사로 향토음식 수집 시작 (nvpcFdCkry)...\n");
 
   // 1페이지로 총 건수 파악
   console.log("  총 건수 파악 중...");
@@ -93,6 +97,11 @@ async function main() {
   const numOfRows = 100;
   const totalPages = Math.ceil(totalCount / numOfRows);
   console.log(`  총 ${totalCount}건, ${totalPages}페이지\n`);
+
+  if (totalCount === 0) {
+    console.warn("  ⚠️  데이터가 없습니다. 엔드포인트 또는 API 키를 확인하세요.");
+    process.exit(0);
+  }
 
   // 전체 목록 수집
   const listItems = [];
@@ -134,7 +143,7 @@ async function main() {
   for (let i = 0; i < allRows.length; i += BATCH) {
     const batch = allRows.slice(i, i + BATCH);
     const { error } = await supabase
-      .from("nongsaro_local_foods")
+      .from("nongsaro_hyangtofood")
       .upsert(batch, { onConflict: "cntnts_no" });
     if (error) throw new Error(`upsert 오류: ${error.message}`);
     upserted += batch.length;

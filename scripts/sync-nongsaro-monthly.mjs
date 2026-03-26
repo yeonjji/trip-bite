@@ -13,7 +13,7 @@ if (!SUPABASE_URL || !SERVICE_ROLE_KEY || !NONGSARO_API_KEY) {
 }
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
-const BASE_URL = "https://api.nongsaro.go.kr/service/montlyMenu";
+const BASE_URL = "https://api.nongsaro.go.kr/service/monthFd";
 // 농사로 이미지 기본 경로 (상대경로일 경우 앞에 붙임)
 const IMG_BASE = "https://www.nongsaro.go.kr";
 
@@ -40,14 +40,14 @@ function buildImageUrl(raw) {
 }
 
 async function fetchList(month, pageNo = 1, numOfRows = 100) {
-  const url = `${BASE_URL}/montlyMenuList?apiKey=${NONGSARO_API_KEY}&sMonth=${month}&pageNo=${pageNo}&numOfRows=${numOfRows}`;
+  const url = `${BASE_URL}/monthFdList?apiKey=${NONGSARO_API_KEY}&sMonth=${month}&pageNo=${pageNo}&numOfRows=${numOfRows}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status} (month=${month})`);
   return res.text();
 }
 
 async function fetchDetail(cntntsNo) {
-  const url = `${BASE_URL}/montlyMenuDtl?apiKey=${NONGSARO_API_KEY}&cntntsNo=${cntntsNo}`;
+  const url = `${BASE_URL}/monthFdDtl?apiKey=${NONGSARO_API_KEY}&cntntsNo=${cntntsNo}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status} (cntntsNo=${cntntsNo})`);
   return res.text();
