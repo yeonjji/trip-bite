@@ -25,6 +25,5 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   { labelKo: "맛집", labelEn: "Restaurants", href: "/restaurants" },
-  { labelKo: "레시피", labelEn: "Recipes", href: "/recipes" },
   { labelKo: "특산품", labelEn: "Specialties", href: "/specialties" },
 ]
