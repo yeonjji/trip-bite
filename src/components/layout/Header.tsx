@@ -55,12 +55,17 @@ export function Header({ locale }: Props) {
               { href: "/restaurants?cat3=A05020900", label: t("cafe") },
             ]}
           />
-          <Link
-            href={`/${locale}/recipes`}
-            className="text-sm font-medium text-[#5A413A] hover:text-[#D84315] transition-colors"
-          >
-            {t("recipes")}
-          </Link>
+          <NavDropdown
+            label={t("recipes")}
+            locale={locale}
+            items={[
+              { href: "/recipes", label: t("allRecipes") },
+              { href: "/recipes?cuisine=한식", label: t("koreanFood") },
+              { href: "/recipes?cuisine=양식", label: t("westernFood") },
+              { href: "/recipes?cuisine=일식", label: t("japaneseFood") },
+              { href: "/recipes?cuisine=중식", label: t("chineseFood") },
+            ]}
+          />
           <Link
             href={`/${locale}/specialties`}
             className="text-sm font-medium text-[#5A413A] hover:text-[#D84315] transition-colors"

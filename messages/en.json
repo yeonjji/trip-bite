@@ -34,6 +34,11 @@
     "cafe": "Cafe & Tea",
     "specialties": "Specialties",
     "recipes": "Recipes",
+    "allRecipes": "All Recipes",
+    "koreanFood": "Korean",
+    "westernFood": "Western",
+    "japaneseFood": "Japanese",
+    "chineseFood": "Chinese",
     "region": "Region",
     "search": "Search",
     "home": "Home"

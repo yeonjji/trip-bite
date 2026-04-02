@@ -87,6 +87,15 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "foodsafetykorea.go.kr",
       },
+      // 농촌진흥청 농사로 (향토음식 이미지)
+      {
+        protocol: "http",
+        hostname: "www.nongsaro.go.kr",
+      },
+      {
+        protocol: "https",
+        hostname: "www.nongsaro.go.kr",
+      },
     ],
   },
   async redirects() {

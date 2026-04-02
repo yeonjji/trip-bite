@@ -19,7 +19,7 @@ export async function getRecipes(params: {
   page?: number
   pageSize?: number
 }): Promise<{ items: RecipeRow[]; totalCount: number }> {
-  const { category, keyword, source, page = 1, pageSize = 12 } = params
+  const { category, keyword, source = "향토음식", page = 1, pageSize = 12 } = params
 
   const supabase = await createClient()
 
@@ -38,9 +38,7 @@ export async function getRecipes(params: {
     query = query.ilike("name", `%${keyword}%`)
   }
 
-  if (source) {
-    query = query.eq("source", source)
-  }
+  query = query.eq("source", source)
 
   query = query.order("created_at", { ascending: false })
 

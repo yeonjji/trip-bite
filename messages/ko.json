@@ -34,6 +34,11 @@
     "cafe": "카페/전통찻집",
     "specialties": "특산품",
     "recipes": "레시피",
+    "allRecipes": "전체 레시피",
+    "koreanFood": "한식",
+    "westernFood": "양식",
+    "japaneseFood": "일식",
+    "chineseFood": "중식",
     "region": "지역",
     "search": "검색",
     "home": "홈"

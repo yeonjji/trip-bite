@@ -20,22 +20,11 @@ const CATEGORY_GROUPS = [
   { value: "기타", label: "기타" },
 ]
 
-const SOURCES = [
-  { value: "", label: "전체" },
-  { value: "식약처", label: "식약처 레시피" },
-  { value: "향토음식", label: "향토음식" },
-]
-
 export default function RecipeFilters({ locale }: RecipeFiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
   const currentCategory = searchParams.get("category") ?? ""
-  const currentSource = searchParams.get("source") ?? ""
-
-  const handleCategoryGroupChange = (category: string) => {
-    pushParams({ category })
-  }
 
   const pushParams = useCallback(
     (updates: Record<string, string>) => {
@@ -53,40 +42,22 @@ export default function RecipeFilters({ locale }: RecipeFiltersProps) {
     [router, searchParams, locale]
   )
 
-  const handleCategoryChange = (category: string) => {
-    pushParams({ category: currentCategory === category ? "" : category })
-  }
-
-  const handleSourceChange = (source: string) => {
-    pushParams({ source, category: "" })
+  const handleCategoryGroupChange = (category: string) => {
+    pushParams({ category })
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap gap-2">
-        {SOURCES.map(({ value, label }) => (
-          <Button
-            key={value || "all-source"}
-            variant={currentSource === value ? "default" : "outline"}
-            size="sm"
-            onClick={() => handleSourceChange(value)}
-          >
-            {label}
-          </Button>
-        ))}
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {CATEGORY_GROUPS.map(({ value, label }) => (
-          <Button
-            key={value || "all-cat"}
-            variant={currentCategory === value ? "default" : "outline"}
-            size="sm"
-            onClick={() => handleCategoryGroupChange(value)}
-          >
-            {label}
-          </Button>
-        ))}
-      </div>
+    <div className="flex flex-wrap gap-2">
+      {CATEGORY_GROUPS.map(({ value, label }) => (
+        <Button
+          key={value || "all-cat"}
+          variant={currentCategory === value ? "default" : "outline"}
+          size="sm"
+          onClick={() => handleCategoryGroupChange(value)}
+        >
+          {label}
+        </Button>
+      ))}
     </div>
   )
 }
