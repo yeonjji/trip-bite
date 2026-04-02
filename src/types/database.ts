@@ -124,6 +124,8 @@ export interface SpecialtyRow {
   description?: string;
   image_url?: string;
   tags?: string[];
+  source?: string;
+  external_id?: string;
   created_at: string;
   updated_at: string;
 }
@@ -147,6 +149,8 @@ export interface RecipeRow {
   };
   hash_tags: string[];
   specialty_id?: string;
+  source?: string;
+  rural_food_id?: string;
   created_at: string;
   updated_at: string;
 }

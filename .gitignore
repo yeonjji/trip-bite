@@ -43,3 +43,15 @@ next-env.d.ts
 # oh-my-claudecode internal state
 .omc/sessions/
 .omc/state/
+
+# IDE
+.idea/
+
+# Playwright MCP
+/.playwright-mcp/
+
+# Supabase temp
+supabase/.temp/
+
+# Root-level screenshot captures
+/*.png

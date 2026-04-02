@@ -11,7 +11,9 @@ interface RecipeCardProps {
 }
 
 export default function RecipeCard({ item, locale = "ko" }: RecipeCardProps) {
-  const { id, name, category, cooking_method, main_image_url, hash_tags } = item
+  const { id, name, category, cooking_method, main_image_url, hash_tags, source } = item
+  const isTraditional = source === "향토음식"
+  const regionTag = isTraditional ? hash_tags[0] : null
 
   return (
     <Link href={`/${locale}/recipes/${id}`} className="block group">
@@ -30,6 +32,11 @@ export default function RecipeCard({ item, locale = "ko" }: RecipeCardProps) {
               <span className="text-sm">이미지 없음</span>
             </div>
           )}
+          {isTraditional && (
+            <div className="absolute top-2 left-2">
+              <Badge className="bg-amber-500/90 text-white text-xs border-0">향토음식</Badge>
+            </div>
+          )}
         </div>
         <CardContent className="pt-3">
           <div className="flex flex-wrap items-center gap-1">
@@ -38,12 +45,17 @@ export default function RecipeCard({ item, locale = "ko" }: RecipeCardProps) {
                 {category}
               </Badge>
             )}
+            {regionTag && (
+              <Badge variant="outline" className="text-xs text-amber-700 border-amber-200 bg-amber-50">
+                📍 {regionTag}
+              </Badge>
+            )}
           </div>
           <h3 className="mt-1 line-clamp-1 font-medium text-foreground">{name}</h3>
           {cooking_method && (
             <p className="mt-1 text-xs text-muted-foreground">{cooking_method}</p>
           )}
-          {hash_tags.length > 0 && (
+          {!isTraditional && hash_tags.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1">
               {hash_tags.slice(0, 2).map((tag) => (
                 <Badge key={tag} variant="outline" className="text-xs">

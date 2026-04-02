@@ -9,13 +9,33 @@ interface RecipeFiltersProps {
   locale: string
 }
 
-const CATEGORIES = ["반찬", "국", "탕", "찌개", "후식", "볶음", "구이", "조림"]
+const CATEGORY_GROUPS = [
+  { value: "", label: "전체" },
+  { value: "밥/주식", label: "밥/주식" },
+  { value: "국/찌개", label: "국/찌개" },
+  { value: "반찬/부식", label: "반찬/부식" },
+  { value: "일품", label: "일품" },
+  { value: "후식/떡/과자", label: "후식/떡/과자" },
+  { value: "발효식품", label: "발효식품" },
+  { value: "기타", label: "기타" },
+]
+
+const SOURCES = [
+  { value: "", label: "전체" },
+  { value: "식약처", label: "식약처 레시피" },
+  { value: "향토음식", label: "향토음식" },
+]
 
 export default function RecipeFilters({ locale }: RecipeFiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
   const currentCategory = searchParams.get("category") ?? ""
+  const currentSource = searchParams.get("source") ?? ""
+
+  const handleCategoryGroupChange = (category: string) => {
+    pushParams({ category })
+  }
 
   const pushParams = useCallback(
     (updates: Record<string, string>) => {
@@ -37,18 +57,36 @@ export default function RecipeFilters({ locale }: RecipeFiltersProps) {
     pushParams({ category: currentCategory === category ? "" : category })
   }
 
+  const handleSourceChange = (source: string) => {
+    pushParams({ source, category: "" })
+  }
+
   return (
-    <div className="flex flex-wrap gap-2">
-      {CATEGORIES.map((cat) => (
-        <Button
-          key={cat}
-          variant={currentCategory === cat ? "default" : "outline"}
-          size="sm"
-          onClick={() => handleCategoryChange(cat)}
-        >
-          {cat}
-        </Button>
-      ))}
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap gap-2">
+        {SOURCES.map(({ value, label }) => (
+          <Button
+            key={value || "all-source"}
+            variant={currentSource === value ? "default" : "outline"}
+            size="sm"
+            onClick={() => handleSourceChange(value)}
+          >
+            {label}
+          </Button>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {CATEGORY_GROUPS.map(({ value, label }) => (
+          <Button
+            key={value || "all-cat"}
+            variant={currentCategory === value ? "default" : "outline"}
+            size="sm"
+            onClick={() => handleCategoryGroupChange(value)}
+          >
+            {label}
+          </Button>
+        ))}
+      </div>
     </div>
   )
 }

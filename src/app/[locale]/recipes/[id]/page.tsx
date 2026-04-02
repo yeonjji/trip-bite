@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation"
 import Image from "next/image"
+import Link from "next/link"
 import type { Metadata } from "next"
 
 import { Badge } from "@/components/ui/badge"
 import { getRecipeDetail } from "@/lib/data/recipes"
+import { getSpecialtiesByRegionName } from "@/lib/data/specialties"
 import { buildAlternates } from "@/lib/utils/metadata"
 
 interface PageProps {
@@ -37,7 +39,13 @@ export default async function RecipeDetailPage({ params }: PageProps) {
     notFound()
   }
 
-  const { name, category, cooking_method, main_image_url, ingredients, steps, nutrition, hash_tags } = recipe
+  const { name, category, cooking_method, main_image_url, ingredients, steps, nutrition, hash_tags, source } = recipe
+  const isTraditional = source === "향토음식"
+  const regionName = isTraditional && hash_tags[0] ? hash_tags[0] : null
+
+  const relatedSpecialties = regionName
+    ? await getSpecialtiesByRegionName(regionName, 4)
+    : []
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -82,11 +90,20 @@ export default async function RecipeDetailPage({ params }: PageProps) {
 
       {/* 기본 정보 */}
       <div className="mb-6">
-        <div className="mb-2 flex flex-wrap gap-2">
+        <div className="mb-2 flex flex-wrap items-center gap-2">
+          {isTraditional && (
+            <Badge className="bg-amber-500 text-white border-0">향토음식</Badge>
+          )}
           {category && <Badge variant="secondary">{category}</Badge>}
           {cooking_method && <Badge variant="outline">{cooking_method}</Badge>}
         </div>
         <h1 className="text-2xl font-bold text-foreground">{name}</h1>
+        {regionName && (
+          <p className="mt-2 flex items-center gap-1 text-sm text-muted-foreground">
+            <span>📍</span>
+            <span>{regionName} 향토음식</span>
+          </p>
+        )}
       </div>
 
       {/* 영양 정보 */}
@@ -170,8 +187,8 @@ export default async function RecipeDetailPage({ params }: PageProps) {
         </section>
       )}
 
-      {/* 해시태그 */}
-      {hash_tags.length > 0 && (
+      {/* 해시태그 (식약처만) */}
+      {!isTraditional && hash_tags.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {hash_tags.map((tag) => (
             <Badge key={tag} variant="outline">
@@ -179,6 +196,42 @@ export default async function RecipeDetailPage({ params }: PageProps) {
             </Badge>
           ))}
         </div>
+      )}
+
+      {/* 관련 특산물 */}
+      {relatedSpecialties.length > 0 && (
+        <section className="mt-8 border-t pt-6">
+          <h2 className="mb-4 text-lg font-semibold text-foreground">
+            {regionName} 특산물
+          </h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {relatedSpecialties.map((specialty) => (
+              <Link
+                key={specialty.id}
+                href={`/${locale}/specialties/${specialty.id}`}
+                className="group overflow-hidden rounded-xl border bg-card hover:shadow-md transition-shadow"
+              >
+                <div className="relative aspect-square w-full overflow-hidden bg-muted">
+                  {specialty.image_url ? (
+                    <Image
+                      src={specialty.image_url}
+                      alt={specialty.name_ko}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 640px) 50vw, 25vw"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-2xl">🌾</div>
+                  )}
+                </div>
+                <div className="p-2">
+                  <p className="line-clamp-1 text-sm font-medium text-foreground">{specialty.name_ko}</p>
+                  <p className="text-xs text-muted-foreground">{specialty.category}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
       )}
     </main>
   )

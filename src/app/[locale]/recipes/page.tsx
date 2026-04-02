@@ -14,6 +14,7 @@ interface PageProps {
   searchParams: Promise<{
     category?: string
     keyword?: string
+    source?: string
     page?: string
   }>
 }
@@ -34,12 +35,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function RecipesPage({ params, searchParams }: PageProps) {
   const { locale } = await params
-  const { category, keyword, page: pageStr } = await searchParams
+  const { category, keyword, source, page: pageStr } = await searchParams
   const page = Number(pageStr ?? "1") || 1
 
   const { items, totalCount } = await getRecipes({
     category,
     keyword,
+    source,
     page,
     pageSize: PAGE_SIZE,
   })
