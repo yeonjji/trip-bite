@@ -1,4 +1,4 @@
-type PlaceholderType = "travel" | "pet" | "barrier-free" | "camping" | "default"
+type PlaceholderType = "travel" | "pet" | "barrier-free" | "camping" | "festival" | "default"
 
 const CONTENT_TYPE_CONFIG: Record<string, { emoji: string; gradient: string }> = {
   "12": { emoji: "🏔️", gradient: "from-sky-100 to-blue-200" },
@@ -14,6 +14,7 @@ const TYPE_CONFIG: Record<PlaceholderType, { emoji: string; gradient: string }> 
   pet: { emoji: "🐾", gradient: "from-amber-100 to-orange-200" },
   "barrier-free": { emoji: "♿", gradient: "from-teal-100 to-cyan-200" },
   camping: { emoji: "🏕️", gradient: "from-green-100 to-emerald-200" },
+  festival: { emoji: "🎉", gradient: "from-pink-100 to-rose-200" },
   default: { emoji: "📍", gradient: "from-slate-100 to-slate-200" },
 }
 

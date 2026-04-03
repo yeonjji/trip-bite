@@ -39,9 +39,13 @@ export function Header({ locale }: Props) {
             ]}
           />
           <NavDropdown
-            label={t("easyTravel")}
+            label={t("events")}
             locale={locale}
-            items={[]}
+            items={[
+              { href: "/events", label: t("allEvents") },
+              { href: "/events?status=ongoing", label: t("ongoingEvents") },
+              { href: "/events?status=upcoming", label: t("upcomingEvents") },
+            ]}
           />
           <NavDropdown
             label={t("restaurants")}
