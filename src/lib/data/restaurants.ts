@@ -108,3 +108,28 @@ export async function getRestaurantDetail(contentId: string): Promise<{
     images,
   };
 }
+
+export async function getNearbyRestaurants(
+  lat: number,
+  lng: number,
+  excludeContentId?: string,
+  radiusMeters = 5000,
+  limit = 4
+): Promise<Destination[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.rpc("get_nearby_restaurants", {
+    lat,
+    lng,
+    radius_meters: radiusMeters,
+    result_limit: limit,
+    exclude_id: excludeContentId ?? null,
+  });
+
+  if (error) {
+    console.error("근처 맛집 조회 실패:", error.message);
+    return [];
+  }
+
+  return (data as Destination[]) ?? [];
+}
