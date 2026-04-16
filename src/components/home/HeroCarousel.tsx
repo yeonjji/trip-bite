@@ -4,28 +4,13 @@ import Image from "next/image"
 import { useState, useEffect, useRef, useCallback } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
-// Unsplash 큐레이션 사진 — 교체하려면 src의 photo-{id} 부분만 바꾸면 됩니다
+// 사진을 public/images/hero/ 폴더에 넣고 아래 경로를 맞춰주세요
 const SLIDES = [
-  {
-    src: "https://images.unsplash.com/photo-1601621915196-2621bfb0cd6e?w=1920&q=85&auto=format&fit=crop",
-    alt: "서울 야경",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=1920&q=85&auto=format&fit=crop",
-    alt: "경복궁",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1570303345338-e1f0eddf4946?w=1920&q=85&auto=format&fit=crop",
-    alt: "부산",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1519923041107-17f5f1af3ab6?w=1920&q=85&auto=format&fit=crop",
-    alt: "제주도",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1583416750470-965f2d0b07e6?w=1920&q=85&auto=format&fit=crop",
-    alt: "한국 전통마을",
-  },
+  { src: "/images/hero/1.jpg", alt: "한국 여행" },
+  { src: "/images/hero/2.jpg", alt: "한국 여행" },
+  { src: "/images/hero/3.jpg", alt: "한국 여행" },
+  { src: "/images/hero/4.jpg", alt: "한국 여행" },
+  { src: "/images/hero/5.jpg", alt: "한국 여행" },
 ]
 
 const INTERVAL = 5000

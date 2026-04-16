@@ -5,16 +5,16 @@ import { useState } from "react"
 
 type PlaceholderType = "travel" | "pet" | "barrier-free" | "camping" | "restaurant" | "specialty" | "festival" | "default"
 
-// Unsplash 카테고리별 대체 이미지
-const UNSPLASH: Record<PlaceholderType, string> = {
-  travel:       "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600&q=80&auto=format&fit=crop",
-  camping:      "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&q=80&auto=format&fit=crop",
-  restaurant:   "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80&auto=format&fit=crop",
-  specialty:    "https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600&q=80&auto=format&fit=crop",
-  festival:     "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80&auto=format&fit=crop",
-  pet:          "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80&auto=format&fit=crop",
-  "barrier-free": "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600&q=80&auto=format&fit=crop",
-  default:      "https://images.unsplash.com/photo-1601621915196-2621bfb0cd6e?w=600&q=80&auto=format&fit=crop",
+// 카테고리별 대체 이미지 — public/images/placeholders/ 폴더에 넣어주세요
+const PLACEHOLDER_IMG: Record<PlaceholderType, string> = {
+  travel:         "/images/placeholders/travel.jpg",
+  camping:        "/images/placeholders/camping.jpg",
+  restaurant:     "/images/placeholders/restaurant.jpg",
+  specialty:      "/images/placeholders/specialty.jpg",
+  festival:       "/images/placeholders/festival.jpg",
+  pet:            "/images/placeholders/pet.jpg",
+  "barrier-free": "/images/placeholders/travel.jpg",
+  default:        "/images/placeholders/travel.jpg",
 }
 
 // 로드 실패 시 그라디언트 폴백
@@ -56,7 +56,7 @@ export default function ImagePlaceholder({
   const resolvedType: PlaceholderType =
     (contentTypeId ? CONTENT_TYPE_TO_PLACEHOLDER[contentTypeId] : undefined) ?? type
 
-  const src = UNSPLASH[resolvedType]
+  const src = PLACEHOLDER_IMG[resolvedType]
   const gradient = GRADIENT_FALLBACK[resolvedType]
 
   if (failed) {

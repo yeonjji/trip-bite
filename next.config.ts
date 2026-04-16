@@ -96,11 +96,7 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "www.nongsaro.go.kr",
       },
-      // Unsplash (히어로/카드 대체 이미지)
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
+
     ],
   },
   async redirects() {
