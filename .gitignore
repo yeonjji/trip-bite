@@ -43,6 +43,8 @@ next-env.d.ts
 # oh-my-claudecode internal state
 .omc/sessions/
 .omc/state/
+.omc/project-memory.json
+.omc/notepad.md
 
 # IDE
 .idea/
