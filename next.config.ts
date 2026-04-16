@@ -96,6 +96,7 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "www.nongsaro.go.kr",
       },
+
     ],
   },
   async redirects() {

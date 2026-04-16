@@ -11,7 +11,7 @@ export function Footer({ locale }: Props) {
       <div className="mx-auto max-w-7xl px-4 py-10 md:px-6">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           <div>
-            <p className="mb-3 text-sm font-semibold text-[#1B1C1A]">여행한입</p>
+            <p className="mb-3 text-sm font-semibold text-[#1B1C1A]">Trip Bite</p>
             <p className="text-xs leading-relaxed">대한민국의 맛과 멋을 한입에 담다</p>
           </div>
           <div>

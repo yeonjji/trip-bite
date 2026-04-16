@@ -3,6 +3,9 @@ import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 
 import { getDestinationDetail } from "@/lib/data/destinations"
+import { getNearbyRestaurants } from "@/lib/data/restaurants"
+import RestaurantCard from "@/components/cards/RestaurantCard"
+import type { RestaurantDetail as RestaurantDetailType } from "@/types/tour-api"
 import { buildAlternates } from "@/lib/utils/metadata"
 import { getAccessibilityInfo } from "@/lib/data/accessibility"
 import Rating from "@/components/shared/Rating"
@@ -71,6 +74,11 @@ export default async function TravelDetailPage({ params }: Props) {
 
   const lat = mapy ? parseFloat(mapy) : null
   const lng = mapx ? parseFloat(mapx) : null
+
+  const nearbyRestaurants =
+    lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
+      ? await getNearbyRestaurants(lat, lng, id)
+      : []
 
   const galleryImages = images.map((img) => ({
     url: img.originimgurl,
@@ -434,6 +442,30 @@ export default async function TravelDetailPage({ params }: Props) {
             {isKo ? "현재 날씨" : "Current Weather"}
           </h2>
           <WeatherWidget areaCode={areaCode} />
+        </div>
+      )}
+
+      {/* 근처 맛집 */}
+      {nearbyRestaurants.length > 0 && (
+        <div className="mb-6">
+          <h2 className="mb-4 font-headline text-xl font-bold text-[#1B1C1A]">
+            {isKo ? "근처 맛집" : "Nearby Restaurants"}
+          </h2>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            {nearbyRestaurants.map((r) => (
+              <RestaurantCard
+                key={r.content_id}
+                item={{
+                  contentid: r.content_id,
+                  title: r.title,
+                  addr1: r.addr1,
+                  areacode: r.area_code ?? "",
+                  firstimage: r.first_image ?? "",
+                } as RestaurantDetailType}
+                locale={locale}
+              />
+            ))}
+          </div>
         </div>
       )}
 

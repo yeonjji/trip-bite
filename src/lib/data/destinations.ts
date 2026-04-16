@@ -60,6 +60,9 @@ export async function getDestinations(params: {
 
   if (contentTypeId) {
     query = query.eq("content_type_id", contentTypeId);
+  } else {
+    // 음식점(39)은 맛집 목록에서 별도 관리
+    query = query.neq("content_type_id", "39");
   }
 
   if (sort === "rating") {

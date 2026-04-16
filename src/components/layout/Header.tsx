@@ -16,7 +16,7 @@ export function Header({ locale }: Props) {
           href={`/${locale}`}
           className="text-xl font-bold text-[#D84315] hover:text-[#B71C1C] transition-colors"
         >
-          여행한입
+          Trip Bite
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">
