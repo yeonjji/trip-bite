@@ -3,7 +3,6 @@ import Link from "next/link"
 
 import { Card, CardContent } from "@/components/ui/card"
 import { getAreaName } from "@/lib/constants/area-codes"
-import ImagePlaceholder from "@/components/shared/ImagePlaceholder"
 import { TourSpotBase } from "@/types/tour-api"
 
 interface TravelCardProps {
@@ -32,7 +31,9 @@ export default function TravelCard({ item, locale, detailPath }: TravelCardProps
               unoptimized
             />
           ) : (
-            <ImagePlaceholder type="travel" alt={title} />
+            <div className="flex h-full items-center justify-center text-muted-foreground">
+              <span className="text-sm">이미지 없음</span>
+            </div>
           )}
         </div>
         <CardContent className="pt-3">

@@ -3,7 +3,6 @@ import Link from "next/link"
 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import ImagePlaceholder from "@/components/shared/ImagePlaceholder"
 import { CampingSiteBase, CampingSiteDetail } from "@/types/camping"
 
 interface CampingCardProps {
@@ -28,7 +27,9 @@ export default function CampingCard({ item, locale }: CampingCardProps) {
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
           ) : (
-            <ImagePlaceholder type="camping" alt={facltNm} />
+            <div className="flex h-full items-center justify-center text-muted-foreground">
+              <span className="text-sm">이미지 없음</span>
+            </div>
           )}
         </div>
         <CardContent className="pt-3">
