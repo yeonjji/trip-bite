@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
       .from("destinations")
       .select("*")
       .ilike("title", `%${q}%`)
+      .neq("content_type_id", "39")
       .range(offset, offset + PAGE_SIZE - 1)
 
     if (error) {
