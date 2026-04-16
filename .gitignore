@@ -45,6 +45,7 @@ next-env.d.ts
 .omc/state/
 .omc/project-memory.json
 .omc/notepad.md
+**/.omc/
 
 # IDE
 .idea/
