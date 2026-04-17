@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { CAMPING_INDUTY } from "@/types/camping"
 
 interface CampingFilterProps {
@@ -8,31 +7,24 @@ interface CampingFilterProps {
   onIndutyChange: (v: string) => void
 }
 
-export default function CampingFilter({
-  induty,
-  onIndutyChange,
-}: CampingFilterProps) {
+const pill = (active: boolean) =>
+  `whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+    active ? "bg-primary text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+  }`
+
+export default function CampingFilter({ induty, onIndutyChange }: CampingFilterProps) {
   return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <p className="mb-2 text-sm font-medium text-foreground">업종</p>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant={induty === "" ? "default" : "outline"}
-            size="sm"
-            onClick={() => onIndutyChange("")}
-          >
+    <div className="flex flex-col gap-1.5">
+      <span className="text-sm font-semibold text-foreground">유형</span>
+      <div className="overflow-x-auto pb-1">
+        <div className="flex gap-2 flex-nowrap">
+          <button className={pill(induty === "")} onClick={() => onIndutyChange("")}>
             전체
-          </Button>
+          </button>
           {Object.values(CAMPING_INDUTY).map((v) => (
-            <Button
-              key={v}
-              variant={induty === v ? "default" : "outline"}
-              size="sm"
-              onClick={() => onIndutyChange(v)}
-            >
+            <button key={v} className={pill(induty === v)} onClick={() => onIndutyChange(v)}>
               {v}
-            </Button>
+            </button>
           ))}
         </div>
       </div>

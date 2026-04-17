@@ -18,7 +18,7 @@ interface PageProps {
   }>
 }
 
-const PAGE_SIZE = 12
+const PAGE_SIZE = 30
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -83,7 +83,7 @@ export default async function CampingPage({ params, searchParams }: PageProps) {
             <p className="mb-4 text-sm text-muted-foreground">
               총 {totalCount.toLocaleString()}개
             </p>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {items.map((site) => (
                 <CampingCard key={site.id} item={toCardItem(site)} locale={locale} />
               ))}

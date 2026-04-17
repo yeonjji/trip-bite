@@ -2,7 +2,6 @@
 
 import { useRouter, useSearchParams } from "next/navigation"
 
-import { Button } from "@/components/ui/button"
 import RegionFilter from "@/components/filters/RegionFilter"
 import type { SpecialtyCategory, Season } from "@/types/specialty"
 
@@ -13,6 +12,11 @@ interface SpecialtyFiltersProps {
   locale: string
 }
 
+const pill = (active: boolean) =>
+  `whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+    active ? "bg-primary text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+  }`
+
 export default function SpecialtyFilters({ locale }: SpecialtyFiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -22,71 +26,55 @@ export default function SpecialtyFilters({ locale }: SpecialtyFiltersProps) {
 
   function updateParams(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString())
-    if (value) {
-      params.set(key, value)
-    } else {
-      params.delete(key)
-    }
+    if (value) { params.set(key, value) } else { params.delete(key) }
     params.delete("page")
     router.push(`/${locale}/specialties?${params.toString()}`)
-  }
-
-  function handleAreaChange(code: string) {
-    updateParams("areaCode", code)
-  }
-
-  function handleCategoryChange(cat: string) {
-    updateParams("category", cat === category ? "" : cat)
-  }
-
-  function handleSeasonChange(s: string) {
-    updateParams("season", s === season ? "" : s)
   }
 
   const isKo = locale === "ko"
 
   return (
-    <div className="space-y-3">
-      <RegionFilter value={areaCode} onChange={handleAreaChange} locale={locale} />
+    <div className="flex flex-col gap-4">
+      <RegionFilter value={areaCode} onChange={(code) => updateParams("areaCode", code)} locale={locale} />
 
-      <div className="flex flex-wrap gap-2">
-        <Button
-          variant={category === "" ? "default" : "outline"}
-          size="sm"
-          onClick={() => handleCategoryChange("")}
-        >
-          {isKo ? "전체 카테고리" : "All Categories"}
-        </Button>
-        {CATEGORIES.map((cat) => (
-          <Button
-            key={cat}
-            variant={category === cat ? "default" : "outline"}
-            size="sm"
-            onClick={() => handleCategoryChange(cat)}
-          >
-            {cat}
-          </Button>
-        ))}
+      <div className="flex flex-col gap-1.5">
+        <span className="text-sm font-semibold text-foreground">{isKo ? "카테고리" : "Category"}</span>
+        <div className="overflow-x-auto pb-1">
+          <div className="flex gap-2 flex-nowrap">
+            <button className={pill(category === "")} onClick={() => updateParams("category", "")}>
+              {isKo ? "전체" : "All"}
+            </button>
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                className={pill(category === cat)}
+                onClick={() => updateParams("category", category === cat ? "" : cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Button
-          variant={season === "" ? "default" : "outline"}
-          size="sm"
-          onClick={() => handleSeasonChange("")}
-        >
-          {isKo ? "전체 계절" : "All Seasons"}
-        </Button>
-        {SEASONS.map((s) => (
-          <Button
-            key={s}
-            variant={season === s ? "default" : "outline"}
-            size="sm"
-            onClick={() => handleSeasonChange(s)}
-          >
-            {s}
-          </Button>
-        ))}
+      <div className="flex flex-col gap-1.5">
+        <span className="text-sm font-semibold text-foreground">{isKo ? "계절" : "Season"}</span>
+        <div className="overflow-x-auto pb-1">
+          <div className="flex gap-2 flex-nowrap">
+            <button className={pill(season === "")} onClick={() => updateParams("season", "")}>
+              {isKo ? "전체" : "All"}
+            </button>
+            {SEASONS.map((s) => (
+              <button
+                key={s}
+                className={pill(season === s)}
+                onClick={() => updateParams("season", season === s ? "" : s)}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )

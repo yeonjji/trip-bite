@@ -22,7 +22,7 @@ type Props = {
 
 export const dynamic = "force-dynamic"
 
-const PAGE_SIZE = 12
+const PAGE_SIZE = 30
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
@@ -93,7 +93,7 @@ export default async function TravelPage({ params, searchParams }: Props) {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((destination) => (
               <TravelCard
                 key={destination.id}
