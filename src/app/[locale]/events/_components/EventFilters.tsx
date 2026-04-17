@@ -1,7 +1,6 @@
 "use client"
 
 import { useRouter, usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
 
 interface EventFiltersProps {
   region: string
@@ -16,6 +15,11 @@ const STATUS_OPTIONS = [
   { value: "upcoming", ko: "예정", en: "Upcoming" },
   { value: "ended", ko: "종료", en: "Ended" },
 ]
+
+const pill = (active: boolean) =>
+  `whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+    active ? "bg-primary text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+  }`
 
 export default function EventFilters({ region, status, regions, locale }: EventFiltersProps) {
   const router = useRouter()
@@ -33,38 +37,46 @@ export default function EventFilters({ region, status, regions, locale }: EventF
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap gap-2">
-        {STATUS_OPTIONS.map((opt) => (
-          <Button
-            key={opt.value}
-            variant={status === opt.value ? "default" : "outline"}
-            size="sm"
-            onClick={() => router.push(buildUrl({ status: opt.value }))}
-          >
-            {isKo ? opt.ko : opt.en}
-          </Button>
-        ))}
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1.5">
+        <span className="text-sm font-semibold text-foreground">{isKo ? "상태" : "Status"}</span>
+        <div className="overflow-x-auto pb-1">
+          <div className="flex gap-2 flex-nowrap">
+            {STATUS_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                className={pill(status === opt.value)}
+                onClick={() => router.push(buildUrl({ status: opt.value }))}
+              >
+                {isKo ? opt.ko : opt.en}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
+
       {regions.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant={region === "" ? "default" : "outline"}
-            size="sm"
-            onClick={() => router.push(buildUrl({ region: "" }))}
-          >
-            {isKo ? "전체 지역" : "All Regions"}
-          </Button>
-          {regions.map((r) => (
-            <Button
-              key={r}
-              variant={region === r ? "default" : "outline"}
-              size="sm"
-              onClick={() => router.push(buildUrl({ region: r }))}
-            >
-              {r}
-            </Button>
-          ))}
+        <div className="flex flex-col gap-1.5">
+          <span className="text-sm font-semibold text-foreground">{isKo ? "지역" : "Regions"}</span>
+          <div className="overflow-x-auto pb-1">
+            <div className="flex gap-2 flex-nowrap">
+              <button
+                className={pill(region === "")}
+                onClick={() => router.push(buildUrl({ region: "" }))}
+              >
+                {isKo ? "전체" : "All"}
+              </button>
+              {regions.map((r) => (
+                <button
+                  key={r}
+                  className={pill(region === r)}
+                  onClick={() => router.push(buildUrl({ region: r }))}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -1,7 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-
 const RESTAURANT_CAT3 = [
   { id: "A05020100", nameKo: "한식", nameEn: "Korean" },
   { id: "A05020200", nameKo: "서양식", nameEn: "Western" },
@@ -16,28 +14,29 @@ interface Cat3FilterProps {
   locale?: string
 }
 
+const pill = (active: boolean) =>
+  `whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+    active ? "bg-primary text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+  }`
+
 export default function Cat3Filter({ value, onChange, locale = "ko" }: Cat3FilterProps) {
   const isKo = locale === "ko"
 
   return (
-    <div className="flex flex-wrap gap-2">
-      <Button
-        variant={value === "" ? "default" : "outline"}
-        size="sm"
-        onClick={() => onChange("")}
-      >
-        {isKo ? "전체" : "All"}
-      </Button>
-      {RESTAURANT_CAT3.map((cat) => (
-        <Button
-          key={cat.id}
-          variant={value === cat.id ? "default" : "outline"}
-          size="sm"
-          onClick={() => onChange(cat.id)}
-        >
-          {isKo ? cat.nameKo : cat.nameEn}
-        </Button>
-      ))}
+    <div className="flex flex-col gap-1.5">
+      <span className="text-sm font-semibold text-foreground">{isKo ? "음식 종류" : "Cuisine"}</span>
+      <div className="overflow-x-auto pb-1">
+        <div className="flex gap-2 flex-nowrap">
+          <button className={pill(value === "")} onClick={() => onChange("")}>
+            {isKo ? "전체" : "All"}
+          </button>
+          {RESTAURANT_CAT3.map((cat) => (
+            <button key={cat.id} className={pill(value === cat.id)} onClick={() => onChange(cat.id)}>
+              {isKo ? cat.nameKo : cat.nameEn}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
