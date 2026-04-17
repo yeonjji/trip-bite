@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { Button } from "@/components/ui/button"
 
 interface SigunguItem {
   area_code: string
@@ -42,24 +41,35 @@ export default function SigunguFilter({
   if (!list.length) return null
 
   return (
-    <div className="flex flex-wrap gap-2 mt-2">
-      <Button
-        variant={value === "" ? "default" : "outline"}
-        size="sm"
-        onClick={() => onChange("")}
-      >
-        {isKo ? "전체" : "All"}
-      </Button>
-      {list.map((s) => (
-        <Button
-          key={s.area_code}
-          variant={value === s.area_code ? "default" : "outline"}
-          size="sm"
-          onClick={() => onChange(s.area_code)}
-        >
-          {isKo ? s.name_ko : s.name_en}
-        </Button>
-      ))}
+    <div className="flex flex-col gap-1.5">
+      <span className="text-sm font-semibold text-foreground">{isKo ? "시/군/구" : "District"}</span>
+      <div className="overflow-x-auto pb-1">
+        <div className="flex gap-2 flex-nowrap">
+          <button
+            onClick={() => onChange("")}
+            className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              value === ""
+                ? "bg-primary text-white"
+                : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+            }`}
+          >
+            {isKo ? "전체" : "All"}
+          </button>
+          {list.map((s) => (
+            <button
+              key={s.area_code}
+              onClick={() => onChange(s.area_code)}
+              className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                value === s.area_code
+                  ? "bg-primary text-white"
+                  : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+              }`}
+            >
+              {isKo ? s.name_ko : s.name_en}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
