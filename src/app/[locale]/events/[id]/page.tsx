@@ -100,7 +100,7 @@ function formatDate(d: string, isKo: boolean): string {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   const festival = await getFestivalById(id)
-  if (!festival) return { title: "행사/이벤트" }
+  if (!festival) return { title: "행사/축제" }
   return {
     title: festival.title,
     alternates: buildAlternates(`/events/${id}`),
