@@ -15,7 +15,7 @@ const pill = (active: boolean) =>
 export default function CampingFilter({ induty, onIndutyChange }: CampingFilterProps) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-sm font-semibold text-foreground">업종</span>
+      <span className="text-sm font-semibold text-foreground">유형</span>
       <div className="overflow-x-auto pb-1">
         <div className="flex gap-2 flex-nowrap">
           <button className={pill(induty === "")} onClick={() => onIndutyChange("")}>
