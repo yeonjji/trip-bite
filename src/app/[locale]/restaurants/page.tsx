@@ -7,6 +7,7 @@ import type { Metadata } from "next"
 import RestaurantCard from "@/components/cards/RestaurantCard"
 import { buildAlternates } from "@/lib/utils/metadata"
 import EmptyState from "@/components/shared/EmptyState"
+import HeroSearch from "@/components/shared/HeroSearch"
 import { getRestaurants } from "@/lib/data/restaurants"
 import type { RestaurantDetail } from "@/types/tour-api"
 import type { Destination } from "@/types/database"
@@ -72,7 +73,9 @@ export default async function RestaurantsPage({ params, searchParams }: Props) {
   })
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
+    <>
+      <HeroSearch variant="compact" locale={locale} />
+      <div className="mx-auto max-w-7xl px-4 pt-4 pb-8">
       <h1 className="mb-6 text-2xl font-bold text-foreground">
         {locale === "ko" ? "맛집" : "Restaurants"}
       </h1>
@@ -113,5 +116,6 @@ export default async function RestaurantsPage({ params, searchParams }: Props) {
         </>
       )}
     </div>
+    </>
   )
 }

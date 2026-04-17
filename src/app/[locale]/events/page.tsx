@@ -4,6 +4,7 @@ import type { Metadata } from "next"
 import { getFestivals, getFestivalRegions } from "@/lib/data/festivals"
 import { buildAlternates } from "@/lib/utils/metadata"
 import FestivalCard from "@/components/cards/FestivalCard"
+import HeroSearch from "@/components/shared/HeroSearch"
 import EventFilters from "./_components/EventFilters"
 import EventPagination from "./_components/EventPagination"
 import type { FestivalStatus } from "@/types/festival"
@@ -52,7 +53,9 @@ export default async function EventsPage({ params, searchParams }: Props) {
   ])
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
+    <>
+      <HeroSearch variant="compact" locale={locale} />
+      <div className="mx-auto max-w-7xl px-4 pt-4 pb-8">
       <h1 className="mb-6 text-2xl font-bold text-foreground">
         {isKo ? "행사/축제" : "Festivals & Events"}
       </h1>
@@ -91,5 +94,6 @@ export default async function EventsPage({ params, searchParams }: Props) {
         </>
       )}
     </div>
+    </>
   )
 }

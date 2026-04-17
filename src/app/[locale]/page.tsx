@@ -11,7 +11,7 @@ import { getSpecialties } from "@/lib/data/specialties"
 import { getRecipes } from "@/lib/data/recipes"
 import { getCurrentSeason, getCurrentSeasonLabel, getWeatherRecommendation } from "@/lib/utils/recommendation"
 import { buildAlternates } from "@/lib/utils/metadata"
-import SearchBar from "@/components/search/SearchBar"
+import HeroSearch from "@/components/shared/HeroSearch"
 import TravelCard from "@/components/cards/TravelCard"
 import RestaurantCard from "@/components/cards/RestaurantCard"
 import CampingCard from "@/components/cards/CampingCard"
@@ -37,9 +37,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: buildAlternates(""),
   }
 }
-
-// 인기 검색어
-const POPULAR_KEYWORDS = ["제주도", "경복궁", "설악산", "부산 해운대", "전주 한옥마을"]
 
 
 export default async function HomePage({ params }: Props) {
@@ -78,29 +75,7 @@ export default async function HomePage({ params }: Props) {
               ? "Travel destinations, local food and camping across Korea"
               : "전국의 여행지, 맛집, 캠핑장을 한번에"}
           </p>
-          <div className="mx-auto max-w-lg">
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-3 warm-shadow">
-              <SearchBar
-                placeholder={
-                  locale === "en"
-                    ? "Search destinations, camping sites..."
-                    : "여행지, 캠핑장을 검색하세요"
-                }
-              />
-            </div>
-          </div>
-          {/* 인기 검색어 */}
-          <div className="mt-6 flex flex-wrap justify-center gap-2">
-            {POPULAR_KEYWORDS.map((keyword) => (
-              <Link
-                key={keyword}
-                href={`/${locale}/search?q=${encodeURIComponent(keyword)}`}
-                className="rounded-full bg-gray-100 px-4 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-200"
-              >
-                {keyword}
-              </Link>
-            ))}
-          </div>
+          <HeroSearch variant="overlay" locale={locale} />
         </div>
       </section>
 

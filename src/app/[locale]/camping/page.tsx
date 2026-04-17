@@ -4,6 +4,7 @@ import type { Metadata } from "next"
 import CampingCard from "@/components/cards/CampingCard"
 import { buildAlternates } from "@/lib/utils/metadata"
 import { getCampingSites } from "@/lib/data/camping"
+import HeroSearch from "@/components/shared/HeroSearch"
 import type { CampingSite } from "@/types/database"
 
 import CampingFilters from "./_components/CampingFilters"
@@ -66,7 +67,9 @@ export default async function CampingPage({ params, searchParams }: PageProps) {
   })
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8">
+    <>
+      <HeroSearch variant="compact" locale={locale} />
+      <div className="mx-auto max-w-7xl px-4 pt-4 pb-8">
       <h1 className="mb-6 text-2xl font-bold text-foreground">캠핑장</h1>
 
       <Suspense>
@@ -104,6 +107,7 @@ export default async function CampingPage({ params, searchParams }: PageProps) {
           </Suspense>
         </div>
       )}
-    </main>
+    </div>
+    </>
   )
 }
