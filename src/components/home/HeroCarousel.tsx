@@ -11,7 +11,7 @@ const SLIDES = [
   { src: "/hero/hc-digital-W4qdDbv8QUM-unsplash.webp", alt: "한국 여행" },
 ]
 
-const INTERVAL = 5000
+const INTERVAL = 4000
 
 export default function HeroCarousel() {
   const [current, setCurrent] = useState(0)
