@@ -12,7 +12,7 @@ import { getSpecialties } from "@/lib/data/specialties"
 import PaginationClient from "./_components/PaginationClient"
 import SpecialtyFilters from "./_components/SpecialtyFilters"
 
-const PAGE_SIZE = 12
+const PAGE_SIZE = 30
 
 type Props = {
   params: Promise<{ locale: string }>
@@ -65,7 +65,7 @@ export default async function SpecialtiesPage({ params, searchParams }: Props) {
         />
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((item) => (
               <SpecialtyCard
                 key={item.id}
