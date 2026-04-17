@@ -1,13 +1,14 @@
 import Image from "next/image"
 import Link from "next/link"
-import { MapPin } from "lucide-react"
 
+import { Card, CardContent } from "@/components/ui/card"
 import { getAreaName } from "@/lib/constants/area-codes"
 import { TourSpotBase } from "@/types/tour-api"
 
 interface TravelCardProps {
   item: TourSpotBase
   locale: string
+  /** 기본값: /${locale}/travel/${contentid} */
   detailPath?: string
 }
 
@@ -17,33 +18,30 @@ export default function TravelCard({ item, locale, detailPath }: TravelCardProps
   const href = detailPath ?? `/${locale}/travel/${contentid}`
 
   return (
-    <Link href={href} className="group flex items-center gap-4 px-4 py-3.5 hover:bg-stone-50 transition-colors duration-200">
-      {/* 썸네일 */}
-      <div className="relative w-[72px] h-[72px] flex-shrink-0 rounded-lg overflow-hidden bg-stone-100">
-        {firstimage ? (
-          <Image
-            src={firstimage}
-            alt={title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-            sizes="72px"
-            unoptimized
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <MapPin className="w-6 h-6 text-stone-300" />
-          </div>
-        )}
-      </div>
-
-      {/* 텍스트 */}
-      <div className="flex-1 min-w-0">
-        <span className="text-[11px] font-medium uppercase tracking-wide text-primary">{areaName}</span>
-        <h3 className="mt-0.5 line-clamp-1 font-semibold text-foreground">{title}</h3>
-        {addr1 && (
-          <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">{addr1}</p>
-        )}
-      </div>
+    <Link href={href} className="block group">
+      <Card className="h-full cursor-pointer border-0 bg-white soft-card-shadow hover:warm-shadow transition-all duration-300 pt-0">
+        <div className="relative aspect-video w-full overflow-hidden rounded-t-xl bg-muted">
+          {firstimage ? (
+            <Image
+              src={firstimage}
+              alt={title}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              unoptimized
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-muted-foreground">
+              <span className="text-sm">이미지 없음</span>
+            </div>
+          )}
+        </div>
+        <CardContent className="pt-3">
+          <h3 className="line-clamp-1 font-medium text-foreground">{title}</h3>
+          <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{addr1}</p>
+          <span className="mt-2 inline-block text-xs text-primary">{areaName}</span>
+        </CardContent>
+      </Card>
     </Link>
   )
 }

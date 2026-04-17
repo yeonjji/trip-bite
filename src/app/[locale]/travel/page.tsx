@@ -93,7 +93,7 @@ export default async function TravelPage({ params, searchParams }: Props) {
         </div>
       ) : (
         <>
-          <div className="rounded-xl border border-border bg-white soft-card-shadow divide-y divide-border overflow-hidden">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((destination) => (
               <TravelCard
                 key={destination.id}
