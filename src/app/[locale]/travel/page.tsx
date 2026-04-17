@@ -93,7 +93,7 @@ export default async function TravelPage({ params, searchParams }: Props) {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
             {items.map((destination) => (
               <TravelCard
                 key={destination.id}
