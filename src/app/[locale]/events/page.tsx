@@ -24,7 +24,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
   return {
-    title: locale === "en" ? "Festivals & Events" : "행사/이벤트",
+    title: locale === "en" ? "Festivals & Events" : "행사/축제",
     description:
       locale === "en"
         ? "Discover festivals and cultural events across Korea."
@@ -54,11 +54,11 @@ export default async function EventsPage({ params, searchParams }: Props) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
       <h1 className="mb-6 text-2xl font-bold text-foreground">
-        {isKo ? "행사/이벤트" : "Festivals & Events"}
+        {isKo ? "행사/축제" : "Festivals & Events"}
       </h1>
 
       <div className="mb-6">
-        <EventFilters region={region} status={status} regions={regions} locale={locale} />
+        <EventFilters region={region} regions={regions} locale={locale} />
       </div>
 
       {items.length === 0 ? (
