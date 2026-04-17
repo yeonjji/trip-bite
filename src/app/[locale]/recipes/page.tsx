@@ -4,6 +4,7 @@ import type { Metadata } from "next"
 import RecipeCard from "@/components/cards/RecipeCard"
 import { buildAlternates } from "@/lib/utils/metadata"
 import EmptyState from "@/components/shared/EmptyState"
+import HeroSearch from "@/components/shared/HeroSearch"
 import { getRecipes } from "@/lib/data/recipes"
 
 import RecipeFilters from "./_components/RecipeFilters"
@@ -46,7 +47,9 @@ export default async function RecipesPage({ params, searchParams }: PageProps) {
   })
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8">
+    <>
+      <HeroSearch variant="compact" locale={locale} />
+      <div className="mx-auto max-w-7xl px-4 pt-4 pb-8">
       <h1 className="mb-6 text-2xl font-bold text-foreground">레시피</h1>
 
       <Suspense>
@@ -85,6 +88,7 @@ export default async function RecipesPage({ params, searchParams }: PageProps) {
           </Suspense>
         </div>
       )}
-    </main>
+    </div>
+    </>
   )
 }
