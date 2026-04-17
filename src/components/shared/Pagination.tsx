@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronsLeft, ChevronsRight, ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
 
 interface PaginationProps {
   currentPage: number
@@ -10,34 +10,22 @@ interface PaginationProps {
 }
 
 function getPageNumbers(current: number, total: number): (number | "...")[] {
-  if (total <= 7) {
+  if (total <= 12) {
     return Array.from({ length: total }, (_, i) => i + 1)
   }
 
-  const pages: (number | "...")[] = []
-
-  if (current <= 4) {
-    // 앞쪽: 1 2 3 4 5 ... last
-    for (let i = 1; i <= 5; i++) pages.push(i)
-    pages.push("...")
-    pages.push(total)
-  } else if (current >= total - 3) {
-    // 뒤쪽: 1 ... last-4 last-3 last-2 last-1 last
-    pages.push(1)
-    pages.push("...")
-    for (let i = total - 4; i <= total; i++) pages.push(i)
-  } else {
-    // 중간: 1 ... cur-1 cur cur+1 ... last
-    pages.push(1)
-    pages.push("...")
-    pages.push(current - 1)
-    pages.push(current)
-    pages.push(current + 1)
-    pages.push("...")
-    pages.push(total)
+  // 앞쪽: 현재가 1~7 사이
+  if (current <= 7) {
+    return [...Array.from({ length: 10 }, (_, i) => i + 1), "...", total]
   }
 
-  return pages
+  // 뒷쪽: 끝에서 6페이지 이내
+  if (current >= total - 6) {
+    return [1, "...", ...Array.from({ length: 10 }, (_, i) => total - 9 + i)]
+  }
+
+  // 중간: 현재 기준 앞뒤 3페이지씩
+  return [1, "...", ...Array.from({ length: 7 }, (_, i) => current - 3 + i), "...", total]
 }
 
 export default function Pagination({
@@ -51,78 +39,96 @@ export default function Pagination({
 
   const pages = getPageNumbers(currentPage, totalPages)
 
-  const btnBase =
-    "inline-flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium transition-colors focus-visible:outline-none"
-  const btnNav =
-    `${btnBase} border border-stone-200 bg-white text-stone-500 hover:bg-stone-100 hover:text-stone-700 disabled:opacity-30 disabled:cursor-not-allowed`
-  const btnPage =
-    `${btnBase} border border-stone-200 bg-white text-stone-600 hover:border-[#D84315] hover:text-[#D84315]`
-  const btnActive =
-    `${btnBase} border border-[#D84315] bg-[#D84315] text-white shadow-sm`
-
   return (
     <nav aria-label="페이지 탐색" className="flex items-center justify-center gap-1">
-      {/* 처음 */}
-      <button
-        className={btnNav}
+      {/* 맨 앞 */}
+      <NavBtn
         onClick={() => onPageChange(1)}
         disabled={currentPage <= 1}
         aria-label="첫 페이지"
       >
-        <ChevronsLeft className="h-4 w-4" />
-      </button>
+        <ChevronsLeft className="h-3.5 w-3.5" />
+      </NavBtn>
 
       {/* 이전 */}
-      <button
-        className={btnNav}
+      <NavBtn
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage <= 1}
         aria-label="이전 페이지"
       >
-        <ChevronLeft className="h-4 w-4" />
-      </button>
+        <ChevronLeft className="h-3.5 w-3.5" />
+      </NavBtn>
+
+      <span className="mx-1" />
 
       {/* 페이지 번호 */}
       {pages.map((page, i) =>
         page === "..." ? (
           <span
             key={`ellipsis-${i}`}
-            className="inline-flex h-9 w-9 items-center justify-center text-sm text-stone-400 select-none"
+            className="flex h-9 w-7 items-end justify-center pb-1.5 text-xs text-stone-400 select-none tracking-widest"
           >
             ···
           </span>
         ) : (
           <button
             key={page}
-            className={page === currentPage ? btnActive : btnPage}
-            onClick={() => onPageChange(page)}
+            onClick={() => onPageChange(page as number)}
             aria-label={`${page}페이지`}
             aria-current={page === currentPage ? "page" : undefined}
+            className={
+              page === currentPage
+                ? "flex h-9 min-w-[36px] items-center justify-center rounded-lg px-2 text-sm font-semibold bg-primary text-white shadow-sm"
+                : "flex h-9 min-w-[36px] items-center justify-center rounded-lg px-2 text-sm text-stone-500 hover:bg-stone-100 hover:text-stone-800 transition-colors"
+            }
           >
             {page}
           </button>
         )
       )}
 
+      <span className="mx-1" />
+
       {/* 다음 */}
-      <button
-        className={btnNav}
+      <NavBtn
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage >= totalPages}
         aria-label="다음 페이지"
       >
-        <ChevronRight className="h-4 w-4" />
-      </button>
+        <ChevronRight className="h-3.5 w-3.5" />
+      </NavBtn>
 
-      {/* 마지막 */}
-      <button
-        className={btnNav}
+      {/* 맨 끝 */}
+      <NavBtn
         onClick={() => onPageChange(totalPages)}
         disabled={currentPage >= totalPages}
         aria-label="마지막 페이지"
       >
-        <ChevronsRight className="h-4 w-4" />
-      </button>
+        <ChevronsRight className="h-3.5 w-3.5" />
+      </NavBtn>
     </nav>
+  )
+}
+
+function NavBtn({
+  children,
+  disabled,
+  onClick,
+  "aria-label": ariaLabel,
+}: {
+  children: React.ReactNode
+  disabled: boolean
+  onClick: () => void
+  "aria-label": string
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={ariaLabel}
+      className="flex h-9 w-9 items-center justify-center rounded-lg text-stone-400 hover:bg-stone-100 hover:text-stone-700 disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
+    >
+      {children}
+    </button>
   )
 }
