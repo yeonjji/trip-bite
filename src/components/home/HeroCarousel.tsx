@@ -4,13 +4,12 @@ import Image from "next/image"
 import { useState, useEffect, useRef, useCallback } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
-// 사진을 public/images/hero/ 폴더에 넣고 아래 경로를 맞춰주세요
 const SLIDES = [
-  { src: "/images/hero/1.jpg", alt: "한국 여행" },
-  { src: "/images/hero/2.jpg", alt: "한국 여행" },
-  { src: "/images/hero/3.jpg", alt: "한국 여행" },
-  { src: "/images/hero/4.jpg", alt: "한국 여행" },
-  { src: "/images/hero/5.jpg", alt: "한국 여행" },
+  { src: "/hero/bongki66-gyeongbokgung-6200276_1920.webp", alt: "경복궁" },
+  { src: "/hero/markus-winkler-n-E0XNnGc-Q-unsplash.webp", alt: "한국 여행" },
+  { src: "/hero/huongnguyen123-korea-7366036_1920.webp", alt: "한국 풍경" },
+  { src: "/hero/jakub-kapusnak-4f4YZfDMLeU-unsplash.webp", alt: "한국 음식" },
+  { src: "/hero/hc-digital-W4qdDbv8QUM-unsplash.webp", alt: "한국 여행" },
 ]
 
 const INTERVAL = 5000
