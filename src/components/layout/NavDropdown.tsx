@@ -15,9 +15,10 @@ interface NavDropdownProps {
   label: string
   items: DropdownItem[]
   locale: string
+  labelHref?: string  // 라벨 클릭 시 이동할 경로 (기본값: items[0].href)
 }
 
-export function NavDropdown({ label, items, locale }: NavDropdownProps) {
+export function NavDropdown({ label, items, locale, labelHref }: NavDropdownProps) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
   const ref = useRef<HTMLDivElement>(null)
@@ -45,7 +46,7 @@ export function NavDropdown({ label, items, locale }: NavDropdownProps) {
       <div className="flex items-center gap-0.5">
         {items.length > 0 ? (
           <Link
-            href={`/${locale}${items[0].href}`}
+            href={`/${locale}${labelHref ?? items[0].href}`}
             className="text-sm font-medium transition-colors text-gray-700 hover:text-primary-500"
           >
             {label}
