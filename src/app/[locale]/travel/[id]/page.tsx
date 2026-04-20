@@ -15,7 +15,6 @@ import AccessibilityBadge from "@/components/shared/AccessibilityBadge"
 import WeatherWidget from "@/components/weather/WeatherWidget"
 import TravelMap from "../_components/TravelMap"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
-import ImagePlaceholder from "@/components/shared/ImagePlaceholder"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -145,17 +144,11 @@ export default async function TravelDetailPage({ params }: Props) {
         </div>
       )}
 
-      <div className="mb-6">
-        {galleryImages.length > 0 ? (
+      {galleryImages.length > 0 && (
+        <div className="mb-6">
           <ImageGallery images={galleryImages} />
-        ) : (
-          <ImagePlaceholder
-            type="travel"
-            contentTypeId={detail?.contenttypeid}
-            fullWidth
-          />
-        )}
-      </div>
+        </div>
+      )}
 
       {/* 기본 정보 카드 */}
       <div className="mb-6 space-y-3 rounded-xl bg-[#F9F7EF] p-4 soft-card-shadow">
