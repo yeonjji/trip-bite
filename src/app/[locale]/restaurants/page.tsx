@@ -17,7 +17,7 @@ import RestaurantFilters from "./_components/RestaurantFilters"
 
 export const dynamic = "force-dynamic"
 
-const PAGE_SIZE = 12
+const PAGE_SIZE = 30
 
 type Props = {
   params: Promise<{ locale: string }>
@@ -92,7 +92,7 @@ export default async function RestaurantsPage({ params, searchParams }: Props) {
         />
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((destination) => (
               <RestaurantCard
                 key={destination.id}

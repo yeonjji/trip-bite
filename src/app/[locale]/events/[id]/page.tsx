@@ -5,7 +5,6 @@ import type { Metadata } from "next"
 import { getFestivalById, computeStatus, getRegionName } from "@/lib/data/festivals"
 import { buildAlternates } from "@/lib/utils/metadata"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
-import ImagePlaceholder from "@/components/shared/ImagePlaceholder"
 import TravelMap from "../../travel/_components/TravelMap"
 
 type Props = {
@@ -155,8 +154,8 @@ export default async function EventDetailPage({ params }: Props) {
       </p>
 
       {/* Image */}
-      <div className="mb-6 overflow-hidden rounded-xl">
-        {festival.imageUrl ? (
+      {festival.imageUrl && (
+        <div className="mb-6 overflow-hidden rounded-xl">
           <div className="relative aspect-video w-full">
             <Image
               src={festival.imageUrl}
@@ -167,10 +166,8 @@ export default async function EventDetailPage({ params }: Props) {
               className="object-cover"
             />
           </div>
-        ) : (
-          <ImagePlaceholder type="festival" fullWidth />
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Core info card */}
       <div className="mb-6 space-y-3 rounded-xl bg-[#F9F7EF] p-4 soft-card-shadow">

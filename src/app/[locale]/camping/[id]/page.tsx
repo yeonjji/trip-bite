@@ -3,7 +3,6 @@ import type { Metadata } from "next"
 import { setRequestLocale } from "next-intl/server"
 
 import ImageGallery from "@/components/shared/ImageGallery"
-import ImagePlaceholder from "@/components/shared/ImagePlaceholder"
 import { buildAlternates } from "@/lib/utils/metadata"
 import Rating from "@/components/shared/Rating"
 import { Badge } from "@/components/ui/badge"
@@ -147,10 +146,8 @@ export default async function CampingDetailPage({ params }: PageProps) {
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">
       {/* 이미지 갤러리 */}
-      {galleryImages.length > 0 ? (
+      {galleryImages.length > 0 && (
         <ImageGallery images={galleryImages} />
-      ) : (
-        <ImagePlaceholder type="camping" fullWidth />
       )}
 
       {/* 기본 정보 */}
