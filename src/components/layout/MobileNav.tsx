@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Home, Map, UtensilsCrossed, Search } from "lucide-react";
+import { Home, Map, UtensilsCrossed, Search, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function MobileNav() {
@@ -12,10 +12,11 @@ export function MobileNav() {
   const pathname = usePathname();
 
   const tabs = [
-    { href: `/${locale}`, label: t("home"), icon: Home },
-    { href: `/${locale}/travel`, label: t("travel"), icon: Map },
-    { href: `/${locale}/restaurants`, label: t("restaurants"), icon: UtensilsCrossed },
-    { href: `/${locale}/search`, label: t("search"), icon: Search },
+    { href: `/${locale}`,              label: t("home"),        icon: Home },
+    { href: `/${locale}/travel`,       label: t("travel"),      icon: Map },
+    { href: `/${locale}/facilities`,   label: t("facilities"),  icon: Building2 },
+    { href: `/${locale}/restaurants`,  label: t("restaurants"), icon: UtensilsCrossed },
+    { href: `/${locale}/search`,       label: t("search"),      icon: Search },
   ];
 
   return (
@@ -29,7 +30,7 @@ export function MobileNav() {
             key={href}
             href={href}
             className={cn(
-              "flex flex-1 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors",
+              "flex flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors",
               isActive ? "text-primary-500" : "text-gray-500 hover:text-gray-800"
             )}
           >

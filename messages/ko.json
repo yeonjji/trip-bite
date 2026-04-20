@@ -44,7 +44,47 @@
     "chineseFood": "중식",
     "region": "지역",
     "search": "검색",
-    "home": "홈"
+    "home": "홈",
+    "facilities": "편의시설",
+    "evCharging": "전기차 충전소",
+    "publicWifi": "공용 와이파이",
+    "restrooms": "공중화장실",
+    "parking": "주차장"
+  },
+  "facilities": {
+    "pageTitle": "편의시설",
+    "pageDescription": "여행 중 필요한 편의시설을 찾아보세요",
+    "ev": { "title": "전기차 충전소", "desc": "전국 급속·완속 충전소 위치 안내", "badge": "운영중" },
+    "wifi": { "title": "공용 와이파이", "desc": "무료 공용 와이파이 위치", "badge": "준비중" },
+    "restrooms": { "title": "공중화장실", "desc": "공중화장실 위치 및 정보", "badge": "준비중" },
+    "parking": { "title": "주차장", "desc": "공영주차장 위치 및 요금", "badge": "준비중" },
+    "nearby": {
+      "title": "내 주변 편의시설",
+      "subtitle": "현재 위치 기준 가까운 충전소",
+      "allow": "위치 허용하기",
+      "denied": "위치 권한이 거부되었습니다",
+      "loading": "주변 시설을 찾는 중...",
+      "empty": "주변에 충전소가 없습니다"
+    },
+    "evList": {
+      "title": "전기차 충전소",
+      "total": "총 {count}개",
+      "allRegions": "전체 지역",
+      "allKinds": "전체",
+      "fast": "급속",
+      "slow": "완속",
+      "output": "출력",
+      "operator": "운영기관",
+      "parkingFree": "주차 무료",
+      "parkingPaid": "주차 유료",
+      "noResults": "해당 지역에 충전소가 없습니다",
+      "useTime": "이용시간"
+    },
+    "comingSoon": {
+      "title": "준비 중입니다",
+      "desc": "곧 서비스될 예정이에요. 조금만 기다려 주세요!",
+      "back": "편의시설로 돌아가기"
+    }
   },
   "home": {
     "heroTitle": "대한민국의 맛과 멋을",

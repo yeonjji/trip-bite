@@ -44,7 +44,47 @@
     "chineseFood": "Chinese",
     "region": "Region",
     "search": "Search",
-    "home": "Home"
+    "home": "Home",
+    "facilities": "Facilities",
+    "evCharging": "EV Charging",
+    "publicWifi": "Public Wi-Fi",
+    "restrooms": "Restrooms",
+    "parking": "Parking"
+  },
+  "facilities": {
+    "pageTitle": "Facilities",
+    "pageDescription": "Find essential facilities during your travels",
+    "ev": { "title": "EV Charging", "desc": "Fast & slow chargers nationwide", "badge": "Available" },
+    "wifi": { "title": "Public Wi-Fi", "desc": "Free public Wi-Fi locations", "badge": "Coming Soon" },
+    "restrooms": { "title": "Restrooms", "desc": "Public restroom locations", "badge": "Coming Soon" },
+    "parking": { "title": "Parking", "desc": "Public parking lots & fees", "badge": "Coming Soon" },
+    "nearby": {
+      "title": "Available Near You",
+      "subtitle": "Nearest charging stations from your location",
+      "allow": "Allow Location",
+      "denied": "Location permission denied",
+      "loading": "Finding nearby facilities...",
+      "empty": "No charging stations nearby"
+    },
+    "evList": {
+      "title": "EV Charging Stations",
+      "total": "{count} stations found",
+      "allRegions": "All Regions",
+      "allKinds": "All",
+      "fast": "Fast",
+      "slow": "Slow",
+      "output": "Output",
+      "operator": "Operator",
+      "parkingFree": "Free Parking",
+      "parkingPaid": "Paid Parking",
+      "noResults": "No stations found in this area",
+      "useTime": "Hours"
+    },
+    "comingSoon": {
+      "title": "Coming Soon",
+      "desc": "This feature will be available soon. Stay tuned!",
+      "back": "Back to Facilities"
+    }
   },
   "home": {
     "heroTitle": "Discover Korea's",

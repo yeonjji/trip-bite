@@ -59,6 +59,16 @@ export function Header({ locale }: Props) {
               { href: "/restaurants?cat3=A05020900", label: t("cafe") },
             ]}
           />
+          <NavDropdown
+            label={t("facilities")}
+            locale={locale}
+            items={[
+              { href: "/facilities/ev-charging", label: t("evCharging") },
+              { href: "/facilities/wifi",        label: t("publicWifi") },
+              { href: "/facilities/restrooms",   label: t("restrooms") },
+              { href: "/facilities/parking",     label: t("parking") },
+            ]}
+          />
           <Link
             href={`/${locale}/specialties`}
             className="text-sm font-medium text-[#5A413A] hover:text-[#D84315] transition-colors"
