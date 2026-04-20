@@ -17,15 +17,23 @@ export default function FacilityCategoryCard({
 }: FacilityCategoryCardProps) {
   const inner = (
     <div className={cn(
-      "flex items-center gap-3 rounded-2xl bg-[#F4F1E9] p-5 transition-all duration-200",
+      "flex items-center gap-3 rounded-2xl p-5 transition-all duration-200",
       available
-        ? "cursor-pointer hover:bg-[#EBE7DC] hover:-translate-y-0.5 active:scale-[0.98]"
-        : "opacity-60 cursor-default"
+        ? "bg-[#F4F1E9] cursor-pointer hover:bg-[#EBE7DC] hover:-translate-y-0.5 active:scale-[0.98]"
+        : "bg-[#F4F1E9] cursor-default"
     )}>
-      <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
-        <Icon className="w-7 h-7 text-[#D84315]" />
+      <div className={cn(
+        "w-14 h-14 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm",
+      )}>
+        <Icon className={cn(
+          "w-7 h-7",
+          available ? "text-[#D84315]" : "text-stone-400"
+        )} />
       </div>
-      <span className="flex-1 font-bold text-[15px] text-[#1B1C1A] leading-snug">
+      <span className={cn(
+        "flex-1 font-bold text-[15px] leading-snug",
+        available ? "text-[#1B1C1A]" : "text-stone-400"
+      )}>
         {title}
       </span>
       {available && (
