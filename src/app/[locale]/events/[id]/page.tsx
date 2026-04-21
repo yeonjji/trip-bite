@@ -17,7 +17,7 @@ const TOUR_BASE = "https://apis.data.go.kr/B551011/KorService2"
 
 function tourParams(contentId: string) {
   const p = new URLSearchParams()
-  p.set("serviceKey", process.env.TOUR_API_KEY ?? "")
+  p.set("serviceKey", process.env.PUBLIC_DATA_API_KEY ?? "")
   p.set("MobileOS", "ETC")
   p.set("MobileApp", "TripBite")
   p.set("_type", "json")

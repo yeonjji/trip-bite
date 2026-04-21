@@ -12,7 +12,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 const BASE_URL = "https://apis.data.go.kr/B551011/KorService2";
-const API_KEY = process.env.TOUR_API_KEY;
+const API_KEY = process.env.PUBLIC_DATA_API_KEY;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 

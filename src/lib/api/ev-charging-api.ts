@@ -71,8 +71,8 @@ interface ApiResponse<T> {
 }
 
 function getServiceKey(): string {
-  const key = process.env.EV_CHARGER_API_KEY;
-  if (!key) throw new Error("EV_CHARGER_API_KEY 환경변수가 설정되지 않았습니다.");
+  const key = process.env.PUBLIC_DATA_API_KEY;
+  if (!key) throw new Error("PUBLIC_DATA_API_KEY 환경변수가 설정되지 않았습니다.");
   return key;
 }
 

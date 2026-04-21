@@ -29,8 +29,8 @@ interface ListResult<T> {
 }
 
 function getCommonParams(): URLSearchParams {
-  const key = process.env.CAMPING_API_KEY;
-  if (!key) throw new Error("CAMPING_API_KEY 환경변수가 설정되지 않았습니다.");
+  const key = process.env.PUBLIC_DATA_API_KEY;
+  if (!key) throw new Error("PUBLIC_DATA_API_KEY 환경변수가 설정되지 않았습니다.");
 
   const params = new URLSearchParams();
   params.set("serviceKey", key);

@@ -6,9 +6,9 @@ import { createClient } from "@supabase/supabase-js";
 // ─── 환경변수 ───────────────────────────────────────────────
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const TOUR_API_KEY = process.env.TOUR_API_KEY;
-const PET_API_KEY = process.env.PET_TOUR_API_KEY ?? process.env.TOUR_API_KEY;
-const CAMPING_API_KEY = process.env.CAMPING_API_KEY;
+const TOUR_API_KEY = process.env.PUBLIC_DATA_API_KEY;
+const PET_API_KEY = process.env.PUBLIC_DATA_API_KEY ?? process.env.PUBLIC_DATA_API_KEY;
+const CAMPING_API_KEY = process.env.PUBLIC_DATA_API_KEY;
 const RECIPE_API_KEY = process.env.RECIPE_API_KEY;
 
 if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {

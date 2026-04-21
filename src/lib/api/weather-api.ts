@@ -78,8 +78,8 @@ function getLatestBaseTime(now: Date): { baseDate: string; baseTime: string } {
 
 export const weatherApi = {
   async getForecast(nx: number, ny: number): Promise<WeatherForecastItem[]> {
-    const key = process.env.WEATHER_API_KEY;
-    if (!key) throw new Error("WEATHER_API_KEY 환경변수가 설정되지 않았습니다.");
+    const key = process.env.PUBLIC_DATA_API_KEY;
+    if (!key) throw new Error("PUBLIC_DATA_API_KEY 환경변수가 설정되지 않았습니다.");
 
     const now = new Date();
     const { baseDate, baseTime } = getLatestBaseTime(now);

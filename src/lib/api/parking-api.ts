@@ -69,8 +69,8 @@ interface ListResult {
 }
 
 function getServiceKey(): string {
-  const key = process.env.PARKING_API_KEY;
-  if (!key) throw new Error("PARKING_API_KEY 환경변수가 설정되지 않았습니다.");
+  const key = process.env.PUBLIC_DATA_API_KEY;
+  if (!key) throw new Error("PUBLIC_DATA_API_KEY 환경변수가 설정되지 않았습니다.");
   return key;
 }
 

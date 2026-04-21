@@ -15,7 +15,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const PET_TOUR_BASE_URL = "https://apis.data.go.kr/B551011/KorPetTourService2";
 // 반려동물 API는 별도 키(PET_TOUR_API_KEY) 또는 기존 TourAPI 키 사용
-const API_KEY = process.env.PET_TOUR_API_KEY ?? process.env.TOUR_API_KEY;
+const API_KEY = process.env.PUBLIC_DATA_API_KEY;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 

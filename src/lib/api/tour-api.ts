@@ -14,8 +14,8 @@ import type {
 const BASE_URL = "https://apis.data.go.kr/B551011/KorService2";
 
 function getCommonParams(): URLSearchParams {
-  const key = process.env.TOUR_API_KEY;
-  if (!key) throw new Error("TOUR_API_KEY 환경변수가 설정되지 않았습니다.");
+  const key = process.env.PUBLIC_DATA_API_KEY;
+  if (!key) throw new Error("PUBLIC_DATA_API_KEY 환경변수가 설정되지 않았습니다.");
 
   const params = new URLSearchParams();
   params.set("serviceKey", key);
