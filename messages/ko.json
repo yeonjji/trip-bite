@@ -55,9 +55,9 @@
     "pageTitle": "편의시설",
     "pageDescription": "여행 중 필요한 편의시설을 찾아보세요",
     "ev": { "title": "전기차 충전소", "desc": "전국 급속·완속 충전소 위치 안내", "badge": "운영중" },
-    "wifi": { "title": "공용 와이파이", "desc": "무료 공용 와이파이 위치", "badge": "준비중" },
-    "restrooms": { "title": "공중화장실", "desc": "공중화장실 위치 및 정보", "badge": "준비중" },
-    "parking": { "title": "주차장", "desc": "공영주차장 위치 및 요금", "badge": "준비중" },
+    "wifi": { "title": "공용 와이파이", "desc": "무료 공용 와이파이 위치", "badge": "운영중" },
+    "restrooms": { "title": "공중화장실", "desc": "공중화장실 위치 및 정보", "badge": "운영중" },
+    "parking": { "title": "주차장", "desc": "공영주차장 위치 및 요금", "badge": "운영중" },
     "nearby": {
       "title": "내 주변 편의시설",
       "subtitle": "현재 위치 기준 가까운 충전소",

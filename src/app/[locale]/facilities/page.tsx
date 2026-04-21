@@ -35,7 +35,7 @@ export default async function FacilitiesPage({ params }: PageProps) {
       href: `/${locale}/facilities/wifi`,
       icon: Wifi,
       title: isKo ? "공공 와이파이" : "Public Wi-Fi",
-      available: false,
+      available: true,
     },
     {
       href: `/${locale}/facilities/ev-charging`,
@@ -47,13 +47,13 @@ export default async function FacilitiesPage({ params }: PageProps) {
       href: `/${locale}/facilities/restrooms`,
       icon: Users,
       title: isKo ? "공중화장실" : "Restrooms",
-      available: false,
+      available: true,
     },
     {
       href: `/${locale}/facilities/parking`,
       icon: ParkingCircle,
       title: isKo ? "주차장" : "Parking",
-      available: false,
+      available: true,
     },
   ];
 

@@ -55,9 +55,9 @@
     "pageTitle": "Facilities",
     "pageDescription": "Find essential facilities during your travels",
     "ev": { "title": "EV Charging", "desc": "Fast & slow chargers nationwide", "badge": "Available" },
-    "wifi": { "title": "Public Wi-Fi", "desc": "Free public Wi-Fi locations", "badge": "Coming Soon" },
-    "restrooms": { "title": "Restrooms", "desc": "Public restroom locations", "badge": "Coming Soon" },
-    "parking": { "title": "Parking", "desc": "Public parking lots & fees", "badge": "Coming Soon" },
+    "wifi": { "title": "Public Wi-Fi", "desc": "Free public Wi-Fi locations", "badge": "Available" },
+    "restrooms": { "title": "Restrooms", "desc": "Public restroom locations", "badge": "Available" },
+    "parking": { "title": "Parking", "desc": "Public parking lots & fees", "badge": "Available" },
     "nearby": {
       "title": "Available Near You",
       "subtitle": "Nearest charging stations from your location",
