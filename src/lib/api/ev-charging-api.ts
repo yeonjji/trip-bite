@@ -145,7 +145,7 @@ export const evApi = {
     if (params.kind) searchParams.set("kind", params.kind);
     if (params.pageNo !== undefined) searchParams.set("pageNo", String(params.pageNo));
     if (params.numOfRows !== undefined) searchParams.set("numOfRows", String(params.numOfRows));
-    return fetchEvApi<EvCharger>("getChargerInfo", searchParams);
+    return fetchEvApi<EvCharger>("getChargerInfo", searchParams, { cache: "no-store" });
   },
 
   // 충전기 상태 조회 (실시간, no-store)
