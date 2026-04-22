@@ -98,7 +98,7 @@ export default async function ParkingPage({ params, searchParams }: PageProps) {
           ) : (
             <div className="flex flex-col gap-2">
               {items.map((lot) => (
-                <ParkingCard key={lot.prkplceNo} lot={lot} locale={locale} />
+                <ParkingCard key={lot.manage_no} lot={lot} locale={locale} />
               ))}
             </div>
           )}

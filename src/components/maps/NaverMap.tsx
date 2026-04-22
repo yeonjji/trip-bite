@@ -63,7 +63,7 @@ export default function NaverMap({
     script.async = true
     script.onload = initMap
     document.head.appendChild(script)
-  }, [lat, lng, zoom])
+  }, [lat, lng, zoom, showMarker])
 
   useEffect(() => {
     if (!isLoadedRef.current || !mapInstanceRef.current) return
