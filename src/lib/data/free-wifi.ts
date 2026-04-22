@@ -46,3 +46,14 @@ export async function getFreeWifi(params: GetWifiParams = {}): Promise<GetWifiRe
   }
   return { items: (data as FreeWifi[]) ?? [], totalCount: count ?? 0 };
 }
+
+export async function getWifiById(id: string): Promise<FreeWifi | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("free_wifi")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (error || !data) return null;
+  return data as FreeWifi;
+}

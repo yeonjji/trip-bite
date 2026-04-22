@@ -53,3 +53,14 @@ export async function getPublicToilets(params: GetToiletsParams = {}): Promise<G
   }
   return { items: (data as PublicToilet[]) ?? [], totalCount: count ?? 0 };
 }
+
+export async function getToiletById(id: string): Promise<PublicToilet | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("public_toilets")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (error || !data) return null;
+  return data as PublicToilet;
+}

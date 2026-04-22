@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Users } from "lucide-react";
 import type { PublicToilet } from "@/lib/data/public-toilets";
 
@@ -12,6 +13,7 @@ export default function ToiletCard({ toilet, locale }: ToiletCardProps) {
   const hasDisabled = (toilet.disabled_male ?? 0) > 0 || (toilet.disabled_female ?? 0) > 0;
 
   return (
+    <Link href={`/${locale}/facilities/restrooms/${toilet.id}`} className="block">
     <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border bg-white transition-all duration-150 hover:shadow-sm hover:border-[#14b8a6]/40 hover:bg-[#14b8a6]/[0.02] group">
       {/* 아이콘 */}
       <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#14b8a6]/10 flex items-center justify-center border-l-2 border-[#14b8a6]">
@@ -53,5 +55,6 @@ export default function ToiletCard({ toilet, locale }: ToiletCardProps) {
         )}
       </div>
     </div>
+    </Link>
   );
 }
