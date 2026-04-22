@@ -79,16 +79,20 @@ export async function getEvChargers(
 ): Promise<GetEvChargersResult> {
   const { zcode, zscode, kind, page = 1, pageSize = 30 } = params;
   try {
+    // kind 필터는 API 미지원이므로 앱 레벨에서 처리; 필터링 후 충분한 결과를 얻기 위해 더 가져옴
+    const fetchMultiplier = kind ? 2 : 1;
     const result = await evApi.chargerInfo({
       zcode,
       zscode,
-      kind,
       pageNo: page,
-      numOfRows: pageSize * CHARGERS_PER_STATION,
+      numOfRows: pageSize * CHARGERS_PER_STATION * fetchMultiplier,
     });
 
-    const stations = groupByStation(result.items);
-    const approxTotal = Math.ceil(result.totalCount / CHARGERS_PER_STATION);
+    const allStations = groupByStation(result.items);
+    const stations = kind
+      ? allStations.filter(s => kind === "01" ? s.hasFast : s.hasSlow)
+      : allStations;
+    const approxTotal = Math.ceil(result.totalCount / CHARGERS_PER_STATION / fetchMultiplier);
 
     return {
       items: stations.slice(0, pageSize),

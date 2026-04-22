@@ -144,7 +144,7 @@ export const evApi = {
     if (params.statId) searchParams.set("statId", params.statId);
     if (params.zcode) searchParams.set("zcode", params.zcode);
     if (params.zscode) searchParams.set("zscode", params.zscode);
-    if (params.kind) searchParams.set("kind", params.kind);
+    // kind는 응답 필드이며 입력 필터 파라미터로 지원되지 않으므로 전달하지 않음
     if (params.pageNo !== undefined) searchParams.set("pageNo", String(params.pageNo));
     if (params.numOfRows !== undefined) searchParams.set("numOfRows", String(params.numOfRows));
     return fetchEvApi<EvCharger>("getChargerInfo", searchParams, { cache: "no-store" });
