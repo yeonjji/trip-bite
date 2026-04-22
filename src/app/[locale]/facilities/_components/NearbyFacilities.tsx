@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { MapPin, Loader2 } from "lucide-react";
 import { haversineDistance } from "@/lib/utils/haversine";
-import type { EvCharger } from "@/lib/data/ev-charging";
+import type { EvStationSummary } from "@/lib/data/ev-charging";
 import EvChargingCard from "../ev-charging/_components/EvChargingCard";
 
 type Status = "idle" | "requesting" | "granted" | "denied" | "error";
@@ -43,7 +43,7 @@ interface Props {
 export default function NearbyFacilities({ locale }: Props) {
   const isKo = locale === "ko";
   const [status, setStatus] = useState<Status>("idle");
-  const [nearbyChargers, setNearbyChargers] = useState<Array<EvCharger & { distance: number }>>([]);
+  const [nearbyChargers, setNearbyChargers] = useState<Array<EvStationSummary & { distance: number }>>([]);
 
   const handleAllowLocation = useCallback(() => {
     setStatus("requesting");
@@ -53,7 +53,7 @@ export default function NearbyFacilities({ locale }: Props) {
         const zcode = deriveZcode(lat, lng);
         try {
           const res = await fetch(`/api/ev-chargers?zcode=${zcode}&pageSize=50`);
-          const data: { items: EvCharger[] } = await res.json();
+          const data: { items: EvStationSummary[] } = await res.json();
           const withDist = data.items
             .filter((c) => c.lat && c.lng)
             .map((c) => ({
@@ -137,12 +137,12 @@ export default function NearbyFacilities({ locale }: Props) {
 
       {status === "granted" && nearbyChargers.length > 0 && (
         <div className="flex flex-col gap-3">
-          {nearbyChargers.map((charger) => (
+          {nearbyChargers.map((station) => (
             <EvChargingCard
-              key={`${charger.statId}-${charger.chgerId}`}
-              charger={charger}
+              key={station.statId}
+              station={station}
               locale={locale}
-              distance={charger.distance}
+              distance={station.distance}
             />
           ))}
         </div>

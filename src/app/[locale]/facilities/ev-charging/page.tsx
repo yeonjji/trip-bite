@@ -102,10 +102,10 @@ export default async function EvChargingPage({ params, searchParams }: PageProps
             </div>
           ) : (
             <div className="flex flex-col gap-2">
-              {items.map((charger) => (
+              {items.map((station) => (
                 <EvChargingCard
-                  key={`${charger.statId}-${charger.chgerId}`}
-                  charger={charger}
+                  key={station.statId}
+                  station={station}
                   locale={locale}
                 />
               ))}
