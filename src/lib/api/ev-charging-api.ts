@@ -83,6 +83,29 @@ function getCommonParams(): URLSearchParams {
   return params;
 }
 
+function parseXml<T>(xml: string): ListResult<T> {
+  const totalCountMatch = xml.match(/<totalCount>(\d+)<\/totalCount>/);
+  const totalCount = totalCountMatch ? parseInt(totalCountMatch[1], 10) : 0;
+
+  const resultCodeMatch = xml.match(/<resultCode>(\w+)<\/resultCode>/);
+  const resultCode = resultCodeMatch?.[1] ?? "??";
+  if (resultCode !== "00") {
+    const msgMatch = xml.match(/<resultMsg>([^<]+)<\/resultMsg>/);
+    throw new Error(`EV충전소 API 오류 [${resultCode}]: ${msgMatch?.[1] ?? ""}`);
+  }
+
+  const itemBlocks = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)];
+  const items = itemBlocks.map((m) => {
+    const obj: Record<string, string> = {};
+    for (const [, k, v] of m[1].matchAll(/<(\w+)>([^<]*)<\/\1>/g)) {
+      obj[k] = v === "null" ? "" : v;
+    }
+    return obj as T;
+  });
+
+  return { items, totalCount };
+}
+
 async function fetchEvApi<T>(endpoint: string, params: URLSearchParams): Promise<ListResult<T>> {
   const url = `${BASE_URL}/${endpoint}?${params.toString()}`;
   const res = await fetch(url, { next: { revalidate: 3600 } });
@@ -93,18 +116,15 @@ async function fetchEvApi<T>(endpoint: string, params: URLSearchParams): Promise
 
   const text = await res.text();
 
-  // data.go.kr 인증 실패 시 XML 에러 반환 처리
   if (text.trimStart().startsWith("<")) {
-    throw new Error(`EV충전소 API 응답이 XML: ${text.slice(0, 400)}`);
+    return parseXml<T>(text);
   }
 
   const data: ApiResponse<T> = JSON.parse(text);
   const { resultCode, resultMsg } = data.response.header;
-
   if (resultCode !== "00") {
     throw new Error(`전기차 충전소 API 오류 [${resultCode}]: ${resultMsg}`);
   }
-
   const body = data.response.body;
   if (body.items === "" || !body.items) {
     return { items: [], totalCount: body.totalCount };
