@@ -80,7 +80,6 @@ function getServiceKey(): string {
 function getCommonParams(): URLSearchParams {
   const params = new URLSearchParams();
   params.set("serviceKey", getServiceKey());
-  params.set("_type", "json");
   return params;
 }
 
