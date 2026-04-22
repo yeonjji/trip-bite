@@ -91,7 +91,18 @@ async function fetchEvApi<T>(endpoint: string, params: URLSearchParams): Promise
     throw new Error(`전기차 충전소 API 요청 실패: ${res.status} ${res.statusText}`);
   }
 
-  const data: ApiResponse<T> = await res.json();
+  const text = await res.text();
+
+  // data.go.kr 인증 실패 시 XML 에러 반환 처리
+  if (text.trimStart().startsWith("<")) {
+    const codeMatch = text.match(/<returnReasonCode>(\d+)<\/returnReasonCode>/);
+    const msgMatch = text.match(/<returnAuthMsg>([^<]+)<\/returnAuthMsg>/);
+    const code = codeMatch?.[1] ?? "?";
+    const msg = msgMatch?.[1] ?? "XML error";
+    throw new Error(`EV충전소 API 인증 오류 [code ${code}]: ${msg} — data.go.kr에서 해당 API 활용신청 여부를 확인하세요.`);
+  }
+
+  const data: ApiResponse<T> = JSON.parse(text);
   const { resultCode, resultMsg } = data.response.header;
 
   if (resultCode !== "00") {
