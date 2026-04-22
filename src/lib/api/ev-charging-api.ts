@@ -72,7 +72,7 @@ interface ApiResponse<T> {
 }
 
 function getServiceKey(): string {
-  const key = process.env.PUBLIC_DATA_API_KEY;
+  const key = process.env.PUBLIC_DATA_API_KEY?.trim();
   if (!key) throw new Error("PUBLIC_DATA_API_KEY 환경변수가 설정되지 않았습니다.");
   return key;
 }
@@ -135,7 +135,8 @@ async function fetchEvApi<T>(endpoint: string, params: URLSearchParams, init?: R
   }
 
   if (result.totalCount === 0 && result.items.length === 0) {
-    throw new Error(`[DEBUG] 응답 원문(앞 300자): ${text.slice(0, 300)}`);
+    const safeUrl = url.replace(/serviceKey=[^&]+/, `serviceKey=***[len:${getServiceKey().length}]`);
+    throw new Error(`[DEBUG] URL: ${safeUrl} | 응답: ${text.slice(0, 200)}`);
   }
 
   return result;
