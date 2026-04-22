@@ -1,3 +1,4 @@
+import { createClient } from "@/lib/supabase/server";
 import { evApi, type EvCharger, type EvChargerStatus } from "@/lib/api/ev-charging-api";
 
 export interface EvStationSummary {
@@ -33,71 +34,58 @@ interface GetEvChargersResult {
   error?: string;
 }
 
-function groupByStation(chargers: EvCharger[]): EvStationSummary[] {
-  const map = new Map<string, EvStationSummary>();
-  for (const c of chargers) {
-    const existing = map.get(c.statId);
-    if (!existing) {
-      map.set(c.statId, {
-        statId: c.statId,
-        statNm: c.statNm,
-        addr: c.addr,
-        lat: c.lat,
-        lng: c.lng,
-        busiNm: c.busiNm,
-        busiCall: c.busiCall,
-        useTime: c.useTime,
-        parkingFree: c.parkingFree,
-        limitYn: c.limitYn,
-        zcode: c.zcode,
-        zscode: c.zscode,
-        chargerCount: 1,
-        hasFast: c.kind === "1" || c.kind === "01",
-        hasSlow: c.kind === "2" || c.kind === "02",
-        maxOutput: Number(c.output) || 0,
-      });
-    } else {
-      existing.chargerCount += 1;
-      if (c.kind === "1" || c.kind === "01") existing.hasFast = true;
-      if (c.kind === "2" || c.kind === "02") existing.hasSlow = true;
-      existing.maxOutput = Math.max(existing.maxOutput, Number(c.output) || 0);
-    }
-  }
-  return Array.from(map.values());
-}
-
 export interface EvStation {
   chargers: EvCharger[];
   statusMap: Record<string, EvChargerStatus>;
 }
 
-// 충전소 단위로 묶어서 반환 (API는 충전기 단위로 반환하므로 그룹핑)
-const CHARGERS_PER_STATION = 5;
-
+// 충전소 목록 조회 (Supabase ev_stations 뷰 사용)
 export async function getEvChargers(
   params: GetEvChargersParams = {}
 ): Promise<GetEvChargersResult> {
   const { zcode, zscode, kind, page = 1, pageSize = 30 } = params;
+
   try {
-    // kind 필터는 API 미지원이므로 앱 레벨에서 처리; 필터링 후 충분한 결과를 얻기 위해 더 가져옴
-    const fetchMultiplier = kind ? 2 : 1;
-    const result = await evApi.chargerInfo({
-      zcode,
-      zscode,
-      pageNo: page,
-      numOfRows: pageSize * CHARGERS_PER_STATION * fetchMultiplier,
-    });
+    const supabase = await createClient();
 
-    const allStations = groupByStation(result.items);
-    const stations = kind
-      ? allStations.filter(s => kind === "01" ? s.hasFast : s.hasSlow)
-      : allStations;
-    const approxTotal = Math.ceil(result.totalCount / CHARGERS_PER_STATION / fetchMultiplier);
+    let query = supabase
+      .from("ev_stations")
+      .select("*", { count: "estimated" })
+      .order("stat_id", { ascending: true })
+      .range((page - 1) * pageSize, page * pageSize - 1);
 
-    return {
-      items: stations.slice(0, pageSize),
-      totalCount: approxTotal,
-    };
+    if (zcode) query = query.eq("zcode", zcode);
+    if (zscode) query = query.eq("zscode", zscode);
+    if (kind === "01") query = query.eq("has_fast", true);
+    if (kind === "02") query = query.eq("has_slow", true);
+
+    const { data, count, error } = await query;
+
+    if (error) {
+      console.error("전기차 충전소 데이터 조회 실패:", error.message);
+      return { items: [], totalCount: 0, error: error.message };
+    }
+
+    const items: EvStationSummary[] = (data ?? []).map((row) => ({
+      statId:       row.stat_id,
+      statNm:       row.stat_nm ?? "",
+      addr:         row.addr ?? "",
+      lat:          String(row.lat ?? ""),
+      lng:          String(row.lng ?? ""),
+      busiNm:       row.busi_nm ?? "",
+      busiCall:     row.busi_call ?? "",
+      useTime:      row.use_time ?? "",
+      parkingFree:  row.parking_free ?? "",
+      limitYn:      row.limit_yn ?? "",
+      zcode:        row.zcode ?? "",
+      zscode:       row.zscode ?? "",
+      chargerCount: Number(row.charger_count ?? 0),
+      hasFast:      row.has_fast ?? false,
+      hasSlow:      row.has_slow ?? false,
+      maxOutput:    Number(row.max_output ?? 0),
+    }));
+
+    return { items, totalCount: count ?? 0 };
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error("전기차 충전소 데이터 조회 실패:", msg);
@@ -105,21 +93,53 @@ export async function getEvChargers(
   }
 }
 
+// 충전소 상세 조회: 충전기 정보는 Supabase, 실시간 상태는 API 직접 호출
 export async function getEvStation(statId: string): Promise<EvStation | null> {
   try {
-    const [infoResult, statusResult] = await Promise.all([
-      evApi.chargerInfo({ statId, numOfRows: 100 }),
-      evApi.chargerStatus({ statId, numOfRows: 100 }),
-    ]);
+    const supabase = await createClient();
 
-    if (infoResult.items.length === 0) return null;
+    const { data, error } = await supabase
+      .from("ev_chargers")
+      .select("*")
+      .eq("stat_id", statId)
+      .neq("del_yn", "Y");
 
+    if (error || !data || data.length === 0) return null;
+
+    const chargers: EvCharger[] = data.map((row) => ({
+      statId:      row.stat_id,
+      statNm:      row.stat_nm ?? "",
+      chgerId:     row.chger_id,
+      chgerType:   row.chger_type ?? "",
+      addr:        row.addr ?? "",
+      lat:         String(row.lat ?? ""),
+      lng:         String(row.lng ?? ""),
+      useTime:     row.use_time ?? "",
+      busiId:      row.busi_id ?? "",
+      bnm:         row.bnm ?? "",
+      busiNm:      row.busi_nm ?? "",
+      busiCall:    row.busi_call ?? "",
+      output:      String(row.output ?? ""),
+      method:      row.method ?? "",
+      zcode:       row.zcode ?? "",
+      zscode:      row.zscode ?? "",
+      kind:        row.kind ?? "",
+      kindDetail:  row.kind_detail ?? "",
+      parkingFree: row.parking_free ?? "",
+      limitYn:     row.limit_yn ?? "",
+      limitDetail: row.limit_detail ?? "",
+      delYn:       row.del_yn ?? "",
+      note:        row.note ?? "",
+    }));
+
+    // 실시간 충전기 상태는 API 직접 호출
+    const statusResult = await evApi.chargerStatus({ statId, numOfRows: 100 });
     const statusMap: Record<string, EvChargerStatus> = {};
     for (const s of statusResult.items) {
       statusMap[s.chgerId] = s;
     }
 
-    return { chargers: infoResult.items, statusMap };
+    return { chargers, statusMap };
   } catch (error) {
     console.error("전기차 충전소 상세 조회 실패:", error);
     return null;
@@ -137,4 +157,3 @@ export async function getEvChargerStatus(statId: string): Promise<EvChargerStatu
 }
 
 export type { EvCharger, EvChargerStatus };
-
