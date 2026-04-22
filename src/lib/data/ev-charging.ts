@@ -52,14 +52,14 @@ function groupByStation(chargers: EvCharger[]): EvStationSummary[] {
         zcode: c.zcode,
         zscode: c.zscode,
         chargerCount: 1,
-        hasFast: c.kind === "01",
-        hasSlow: c.kind === "02",
+        hasFast: c.kind === "1" || c.kind === "01",
+        hasSlow: c.kind === "2" || c.kind === "02",
         maxOutput: Number(c.output) || 0,
       });
     } else {
       existing.chargerCount += 1;
-      if (c.kind === "01") existing.hasFast = true;
-      if (c.kind === "02") existing.hasSlow = true;
+      if (c.kind === "1" || c.kind === "01") existing.hasFast = true;
+      if (c.kind === "2" || c.kind === "02") existing.hasSlow = true;
       existing.maxOutput = Math.max(existing.maxOutput, Number(c.output) || 0);
     }
   }

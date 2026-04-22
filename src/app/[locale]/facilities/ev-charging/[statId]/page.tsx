@@ -98,8 +98,8 @@ export default async function EvChargingDetailPage({ params }: PageProps) {
   const lng = parseFloat(first.lng);
   const hasLocation = !isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0;
 
-  const hasFast = chargers.some((c) => c.kind === "01");
-  const hasSlow = chargers.some((c) => c.kind === "02");
+  const hasFast = chargers.some((c) => c.kind === "1" || c.kind === "01");
+  const hasSlow = chargers.some((c) => c.kind === "2" || c.kind === "02");
   const maxOutput = Math.max(...chargers.map((c) => parseFloat(c.output) || 0));
   const isParkingFree = first.parkingFree === "Y";
   const availableCount = chargers.filter((c) => statusMap[c.chgerId]?.stat === "2").length;
@@ -196,7 +196,7 @@ export default async function EvChargingDetailPage({ params }: PageProps) {
           {chargers.map((charger) => {
             const st = statusMap[charger.chgerId];
             const statInfo = st ? (STAT_INFO[st.stat] ?? null) : null;
-            const isFastCharger = charger.kind === "01";
+            const isFastCharger = charger.kind === "1" || charger.kind === "01";
             const updTime = st?.statUpdDt ? formatDateTime(st.statUpdDt) : null;
 
             return (
