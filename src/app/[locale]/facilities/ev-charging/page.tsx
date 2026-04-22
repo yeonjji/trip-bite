@@ -94,9 +94,6 @@ export default async function EvChargingPage({ params, searchParams }: PageProps
               <p className="text-sm text-muted-foreground">
                 {isKo ? "해당 지역에 충전소가 없습니다." : "No charging stations found."}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground/60">
-                totalCount: {totalCount}
-              </p>
               {error && (
                 <p className="mt-3 text-xs text-red-500 bg-red-50 rounded-lg px-3 py-2 max-w-md mx-auto text-left break-all">
                   {error}
