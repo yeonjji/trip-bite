@@ -9,57 +9,48 @@ interface ToiletCardProps {
 export default function ToiletCard({ toilet, locale }: ToiletCardProps) {
   const isKo = locale === "ko";
   const address = toilet.address_road || toilet.address_jibun;
+  const hasDisabled = (toilet.disabled_male ?? 0) > 0 || (toilet.disabled_female ?? 0) > 0;
 
   return (
-    <div className="flex items-start gap-4 p-4 rounded-2xl border border-border bg-white transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+    <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border bg-white transition-all duration-150 hover:shadow-sm hover:border-[#14b8a6]/40 hover:bg-[#14b8a6]/[0.02] group">
       {/* 아이콘 */}
-      <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-[#14b8a6]/10 flex items-center justify-center border-l-4 border-[#14b8a6]">
-        <Users className="w-6 h-6 text-[#0d9488]" />
+      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#14b8a6]/10 flex items-center justify-center border-l-2 border-[#14b8a6]">
+        <Users className="w-4.5 h-4.5 text-[#0d9488]" />
       </div>
 
-      {/* 정보 */}
+      {/* 메인 정보 */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-start gap-2 flex-wrap mb-1">
-          {/* 장애인 화장실 */}
-          {((toilet.disabled_male ?? 0) > 0 || (toilet.disabled_female ?? 0) > 0) && (
-            <span className="inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">
+        <div className="flex items-center gap-1.5 mb-0.5">
+          {hasDisabled && (
+            <span className="inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-700">
               {isKo ? "장애인" : "Accessible"}
             </span>
           )}
-          {/* 기저귀교환대 */}
           {toilet.baby_care && (
-            <span className="inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-pink-100 text-pink-700">
+            <span className="inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-pink-100 text-pink-700">
               {isKo ? "기저귀교환대" : "Baby Care"}
             </span>
           )}
-          {/* CCTV */}
           {toilet.cctv && (
-            <span className="inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-[#14b8a6]/10 text-[#0d9488]">
+            <span className="inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-stone-100 text-stone-500">
               CCTV
             </span>
           )}
         </div>
-
-        {/* 화장실명 */}
-        <h3 className="font-bold text-[15px] leading-snug line-clamp-1 text-gray-900">
+        <p className="font-semibold text-sm leading-snug line-clamp-1 text-gray-900 group-hover:text-[#0d9488] transition-colors">
           {toilet.name}
-        </h3>
+        </p>
+        <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{address}</p>
+      </div>
 
-        {/* 주소 */}
-        <p className="mt-0.5 text-xs text-muted-foreground line-clamp-1">{address}</p>
-
-        {/* 운영시간 + 기관 */}
-        <div className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground flex-wrap">
-          {toilet.open_time && (
-            <span className="font-medium text-[#0d9488]">{toilet.open_time}</span>
-          )}
-          {toilet.manage_org && (
-            <>
-              {toilet.open_time && <span>·</span>}
-              <span className="line-clamp-1">{toilet.manage_org}</span>
-            </>
-          )}
-        </div>
+      {/* 우측 보조 정보 */}
+      <div className="flex-shrink-0 text-right">
+        {toilet.open_time && (
+          <p className="text-[11px] text-muted-foreground line-clamp-2 max-w-[90px]">{toilet.open_time}</p>
+        )}
+        {toilet.manage_org && (
+          <p className="text-[11px] text-muted-foreground line-clamp-1 max-w-[90px]">{toilet.manage_org}</p>
+        )}
       </div>
     </div>
   );

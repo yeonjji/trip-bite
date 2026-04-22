@@ -37,19 +37,19 @@ export default function EvChargingFilters({ locale }: EvChargingFiltersProps) {
   );
 
   return (
-    <div className="flex flex-col gap-6">
-      <RegionFilter value={zcode} onChange={(code) => pushParams({ zcode: code })} locale={locale} />
-      <div className="flex flex-col gap-1.5">
-        <span className="text-sm font-semibold text-foreground">
-          {isKo ? "충전 속도" : "Charger Speed"}
+    <div className="flex flex-col gap-5">
+      <RegionFilter value={zcode} onChange={(code) => pushParams({ zcode: code })} locale={locale} variant="sidebar" />
+      <div className="border-t border-border pt-4">
+        <span className="text-sm font-semibold text-foreground block mb-2">
+          {isKo ? "충전 속도" : "Speed"}
         </span>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {KIND_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               onClick={() => pushParams({ kind: opt.value })}
               className={cn(
-                "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors",
                 kind === opt.value
                   ? "bg-[#14b8a6] text-white"
                   : "bg-stone-100 text-stone-600 hover:bg-stone-200"

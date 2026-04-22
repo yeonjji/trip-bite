@@ -40,6 +40,7 @@ export interface EvChargerStatus {
 }
 
 interface ChargerInfoParams {
+  statId?: string;      // 특정 충전소 ID
   zcode?: string;       // 시도 코드 (법정동 코드와 동일: "11"=서울, "26"=부산 등)
   zscode?: string;      // 시군구 코드
   kind?: string;        // 충전기 종류 (01=급속, 02=완속)
@@ -71,7 +72,7 @@ interface ApiResponse<T> {
 }
 
 function getServiceKey(): string {
-  const key = process.env.PUBLIC_DATA_API_KEY;
+  const key = process.env.PUBLIC_DATA_API_KEY?.trim();
   if (!key) throw new Error("PUBLIC_DATA_API_KEY 환경변수가 설정되지 않았습니다.");
   return key;
 }
@@ -79,52 +80,82 @@ function getServiceKey(): string {
 function getCommonParams(): URLSearchParams {
   const params = new URLSearchParams();
   params.set("serviceKey", getServiceKey());
-  params.set("_type", "json");
   return params;
 }
 
-async function fetchEvApi<T>(endpoint: string, params: URLSearchParams): Promise<ListResult<T>> {
+function parseXml<T>(xml: string): ListResult<T> {
+  const totalCountMatch = xml.match(/<totalCount>(\d+)<\/totalCount>/);
+  const totalCount = totalCountMatch ? parseInt(totalCountMatch[1], 10) : 0;
+
+  const resultCodeMatch = xml.match(/<resultCode>(\w+)<\/resultCode>/);
+  const resultCode = resultCodeMatch?.[1] ?? "??";
+  if (resultCode !== "00") {
+    const msgMatch = xml.match(/<resultMsg>([^<]+)<\/resultMsg>/);
+    throw new Error(`EV충전소 API 오류 [${resultCode}]: ${msgMatch?.[1] ?? ""}`);
+  }
+
+  const itemBlocks = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)];
+  const items = itemBlocks.map((m) => {
+    const obj: Record<string, string> = {};
+    for (const [, k, v] of m[1].matchAll(/<(\w+)>([^<]*)<\/\1>/g)) {
+      obj[k] = v === "null" ? "" : v;
+    }
+    return obj as T;
+  });
+
+  return { items, totalCount };
+}
+
+async function fetchEvApi<T>(endpoint: string, params: URLSearchParams, init?: RequestInit): Promise<ListResult<T>> {
   const url = `${BASE_URL}/${endpoint}?${params.toString()}`;
-  const res = await fetch(url, { next: { revalidate: 3600 } });
+  const res = await fetch(url, init ?? { next: { revalidate: 3600 } });
 
   if (!res.ok) {
     throw new Error(`전기차 충전소 API 요청 실패: ${res.status} ${res.statusText}`);
   }
 
-  const data: ApiResponse<T> = await res.json();
-  const { resultCode, resultMsg } = data.response.header;
+  const text = await res.text();
+  let result: ListResult<T>;
 
-  if (resultCode !== "00") {
-    throw new Error(`전기차 충전소 API 오류 [${resultCode}]: ${resultMsg}`);
+  if (text.trimStart().startsWith("<")) {
+    result = parseXml<T>(text);
+  } else {
+    const data: ApiResponse<T> = JSON.parse(text);
+    const { resultCode, resultMsg } = data.response.header;
+    if (resultCode !== "00") {
+      throw new Error(`전기차 충전소 API 오류 [${resultCode}]: ${resultMsg}`);
+    }
+    const body = data.response.body;
+    if (body.items === "" || !body.items) {
+      result = { items: [], totalCount: body.totalCount };
+    } else {
+      const raw = body.items.item;
+      result = { items: Array.isArray(raw) ? raw : [raw], totalCount: body.totalCount };
+    }
   }
 
-  const body = data.response.body;
-  if (body.items === "" || !body.items) {
-    return { items: [], totalCount: body.totalCount };
-  }
-  const raw = body.items.item;
-  const items = Array.isArray(raw) ? raw : [raw];
-  return { items, totalCount: body.totalCount };
+  return result;
 }
 
 export const evApi = {
   // 충전기 정보 조회
   async chargerInfo(params: ChargerInfoParams = {}): Promise<ListResult<EvCharger>> {
     const searchParams = getCommonParams();
+    if (params.statId) searchParams.set("statId", params.statId);
     if (params.zcode) searchParams.set("zcode", params.zcode);
     if (params.zscode) searchParams.set("zscode", params.zscode);
     if (params.kind) searchParams.set("kind", params.kind);
     if (params.pageNo !== undefined) searchParams.set("pageNo", String(params.pageNo));
     if (params.numOfRows !== undefined) searchParams.set("numOfRows", String(params.numOfRows));
-    return fetchEvApi<EvCharger>("getChargerInfo", searchParams);
+    return fetchEvApi<EvCharger>("getChargerInfo", searchParams, { cache: "no-store" });
   },
 
-  // 충전기 상태 조회
+  // 충전기 상태 조회 (실시간, no-store)
   async chargerStatus(params: ChargerStatusParams = {}): Promise<ListResult<EvChargerStatus>> {
     const searchParams = getCommonParams();
     if (params.statId) searchParams.set("statId", params.statId);
     if (params.pageNo !== undefined) searchParams.set("pageNo", String(params.pageNo));
     if (params.numOfRows !== undefined) searchParams.set("numOfRows", String(params.numOfRows));
-    return fetchEvApi<EvChargerStatus>("getChargerStatus", searchParams);
+    return fetchEvApi<EvChargerStatus>("getChargerStatus", searchParams, { cache: "no-store" });
   },
 };

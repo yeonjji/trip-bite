@@ -28,8 +28,8 @@ export default function WifiFilters({ locale }: WifiFiltersProps) {
   );
 
   return (
-    <div className="flex flex-col gap-6">
-      <RegionFilter value={zcode} onChange={(code) => pushParams({ zcode: code })} locale={locale} />
+    <div className="flex flex-col gap-5">
+      <RegionFilter value={zcode} onChange={(code) => pushParams({ zcode: code })} locale={locale} variant="sidebar" />
     </div>
   );
 }

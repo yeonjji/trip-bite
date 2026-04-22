@@ -92,10 +92,20 @@ export async function getParkingLots(params: GetParkingParams = {}): Promise<Lis
   }
 
   const url = `${BASE_URL}?${searchParams.toString()}`;
-  const res = await fetch(url, { next: { revalidate: 86400 } }); // 하루 캐싱 (주차장 정보는 자주 안 바뀜)
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      next: { revalidate: 86400 },
+      signal: AbortSignal.timeout(15000),
+    });
+  } catch (err) {
+    const cause = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
+    throw new Error(`주차장 API 연결 실패 (url: ${BASE_URL}) — ${cause}`);
+  }
 
   if (!res.ok) {
-    throw new Error(`주차장 API 요청 실패: ${res.status} ${res.statusText}`);
+    const body = await res.text().catch(() => "");
+    throw new Error(`주차장 API HTTP ${res.status} ${res.statusText} — ${body.slice(0, 200)}`);
   }
 
   const data: ParkingApiResponse = await res.json();

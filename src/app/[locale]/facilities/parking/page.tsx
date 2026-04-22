@@ -37,7 +37,7 @@ export default async function ParkingPage({ params, searchParams }: PageProps) {
   const isKo = locale === "ko";
   const page = Number(pageStr ?? "1") || 1;
 
-  const { items, totalCount } = await getParking({
+  const { items, totalCount, error } = await getParking({
     zcode,
     smprcSe,
     page,
@@ -46,7 +46,6 @@ export default async function ParkingPage({ params, searchParams }: PageProps) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 pt-4 pb-8">
-      {/* 뒤로가기 */}
       <Link
         href={`/${locale}/facilities`}
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-[#0d9488] transition-colors mb-4"
@@ -55,65 +54,69 @@ export default async function ParkingPage({ params, searchParams }: PageProps) {
         {isKo ? "편의시설" : "Facilities"}
       </Link>
 
-      {/* 헤더 */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-[#14b8a6]/10 flex items-center justify-center">
-          <ParkingCircle className="w-5 h-5 text-[#0d9488]" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-[#14b8a6]/10 flex items-center justify-center">
+            <ParkingCircle className="w-4.5 h-4.5 text-[#0d9488]" />
+          </div>
+          <h1 className="text-xl font-bold text-foreground">
             {isKo ? "주차장" : "Parking Lots"}
           </h1>
         </div>
-      </div>
-
-      {/* 필터 */}
-      <Suspense>
-        <ParkingFilters locale={locale} />
-      </Suspense>
-
-      {/* 결과 */}
-      <div className="mt-6">
-        {items.length === 0 ? (
-          <div className="py-16 text-center">
-            <ParkingCircle className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
-            <p className="text-muted-foreground">
-              {isKo ? "해당 지역에 주차장이 없습니다." : "No parking lots found in this area."}
-            </p>
-          </div>
-        ) : (
-          <>
-            <p className="mb-4 text-sm text-muted-foreground">
-              {isKo
-                ? `총 ${totalCount.toLocaleString()}개`
-                : `${totalCount.toLocaleString()} parking lots found`}
-            </p>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {items.map((lot) => (
-                <ParkingCard
-                  key={lot.prkplceNo}
-                  lot={lot}
-                  locale={locale}
-                />
-              ))}
-            </div>
-          </>
+        {totalCount > 0 && (
+          <span className="text-sm text-muted-foreground">
+            {isKo ? `총 ${totalCount.toLocaleString()}개` : `${totalCount.toLocaleString()} lots`}
+          </span>
         )}
       </div>
 
-      {/* 페이지네이션 */}
-      {totalCount > PAGE_SIZE && (
-        <div className="mt-8">
-          <Suspense>
-            <ParkingPagination
-              locale={locale}
-              currentPage={page}
-              totalCount={totalCount}
-              pageSize={PAGE_SIZE}
-            />
-          </Suspense>
+      <div className="flex flex-col lg:flex-row gap-6 items-start">
+        <aside className="w-full lg:w-52 lg:shrink-0">
+          <div className="lg:sticky lg:top-20 bg-white border border-border rounded-2xl p-4">
+            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">
+              {isKo ? "필터" : "Filter"}
+            </p>
+            <Suspense>
+              <ParkingFilters locale={locale} />
+            </Suspense>
+          </div>
+        </aside>
+
+        <div className="flex-1 min-w-0">
+          {items.length === 0 ? (
+            <div className="py-20 text-center">
+              <ParkingCircle className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground">
+                {isKo ? "해당 지역에 주차장이 없습니다." : "No parking lots found."}
+              </p>
+              {error && (
+                <p className="mt-3 text-xs text-red-500 bg-red-50 rounded-lg px-3 py-2 max-w-md mx-auto text-left break-all">
+                  {error}
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {items.map((lot) => (
+                <ParkingCard key={lot.manage_no} lot={lot} locale={locale} />
+              ))}
+            </div>
+          )}
+
+          {totalCount > PAGE_SIZE && (
+            <div className="mt-6">
+              <Suspense>
+                <ParkingPagination
+                  locale={locale}
+                  currentPage={page}
+                  totalCount={totalCount}
+                  pageSize={PAGE_SIZE}
+                />
+              </Suspense>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

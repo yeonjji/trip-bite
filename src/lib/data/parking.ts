@@ -1,4 +1,25 @@
-import { getParkingLots, type ParkingLot } from "@/lib/api/parking-api";
+import { createClient } from "@/lib/supabase/server";
+
+export interface ParkingLot {
+  id: string;
+  manage_no: string;
+  name: string;
+  type: string | null;
+  address_jibun: string | null;
+  address_road: string | null;
+  lat: number | null;
+  lng: number | null;
+  capacity: number | null;
+  fee_type: string | null;
+  base_fee: number | null;
+  weekday_open: string | null;
+  weekday_close: string | null;
+  disabled_spots: number | null;
+  phone: string | null;
+  area_code: string | null;
+  sido_name: string | null;
+  sigungu_name: string | null;
+}
 
 interface GetParkingParams {
   zcode?: string;
@@ -10,16 +31,25 @@ interface GetParkingParams {
 interface GetParkingResult {
   items: ParkingLot[];
   totalCount: number;
+  error?: string;
 }
 
 export async function getParking(params: GetParkingParams = {}): Promise<GetParkingResult> {
-  const { zcode, smprcSe, page = 1, pageSize = 20 } = params;
-  try {
-    return await getParkingLots({ zcode, smprcSe, page, perPage: pageSize });
-  } catch (error) {
-    console.error("주차장 데이터 조회 실패:", error);
-    return { items: [], totalCount: 0 };
-  }
-}
+  const { zcode, smprcSe, page = 1, pageSize = 30 } = params;
+  const supabase = await createClient();
 
-export type { ParkingLot };
+  let query = supabase.from("parking_lots").select("*", { count: "exact" });
+
+  if (zcode) query = query.eq("area_code", zcode);
+  if (smprcSe) query = query.eq("fee_type", smprcSe);
+
+  const from = (page - 1) * pageSize;
+  query = query.range(from, from + pageSize - 1).order("name");
+
+  const { data, count, error } = await query;
+  if (error) {
+    console.error("주차장 데이터 조회 실패:", error.message);
+    return { items: [], totalCount: 0, error: error.message };
+  }
+  return { items: (data as ParkingLot[]) ?? [], totalCount: count ?? 0 };
+}
