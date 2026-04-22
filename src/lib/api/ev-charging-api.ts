@@ -116,23 +116,30 @@ async function fetchEvApi<T>(endpoint: string, params: URLSearchParams, init?: R
   }
 
   const text = await res.text();
+  let result: ListResult<T>;
 
   if (text.trimStart().startsWith("<")) {
-    return parseXml<T>(text);
+    result = parseXml<T>(text);
+  } else {
+    const data: ApiResponse<T> = JSON.parse(text);
+    const { resultCode, resultMsg } = data.response.header;
+    if (resultCode !== "00") {
+      throw new Error(`전기차 충전소 API 오류 [${resultCode}]: ${resultMsg}`);
+    }
+    const body = data.response.body;
+    if (body.items === "" || !body.items) {
+      result = { items: [], totalCount: body.totalCount };
+    } else {
+      const raw = body.items.item;
+      result = { items: Array.isArray(raw) ? raw : [raw], totalCount: body.totalCount };
+    }
   }
 
-  const data: ApiResponse<T> = JSON.parse(text);
-  const { resultCode, resultMsg } = data.response.header;
-  if (resultCode !== "00") {
-    throw new Error(`전기차 충전소 API 오류 [${resultCode}]: ${resultMsg}`);
+  if (result.totalCount === 0 && result.items.length === 0) {
+    throw new Error(`[DEBUG] 응답 원문(앞 300자): ${text.slice(0, 300)}`);
   }
-  const body = data.response.body;
-  if (body.items === "" || !body.items) {
-    return { items: [], totalCount: body.totalCount };
-  }
-  const raw = body.items.item;
-  const items = Array.isArray(raw) ? raw : [raw];
-  return { items, totalCount: body.totalCount };
+
+  return result;
 }
 
 export const evApi = {
