@@ -95,11 +95,7 @@ async function fetchEvApi<T>(endpoint: string, params: URLSearchParams): Promise
 
   // data.go.kr 인증 실패 시 XML 에러 반환 처리
   if (text.trimStart().startsWith("<")) {
-    const codeMatch = text.match(/<returnReasonCode>(\d+)<\/returnReasonCode>/);
-    const msgMatch = text.match(/<returnAuthMsg>([^<]+)<\/returnAuthMsg>/);
-    const code = codeMatch?.[1] ?? "?";
-    const msg = msgMatch?.[1] ?? "XML error";
-    throw new Error(`EV충전소 API 인증 오류 [code ${code}]: ${msg} — data.go.kr에서 해당 API 활용신청 여부를 확인하세요.`);
+    throw new Error(`EV충전소 API 응답이 XML: ${text.slice(0, 400)}`);
   }
 
   const data: ApiResponse<T> = JSON.parse(text);
