@@ -37,19 +37,19 @@ export default function ParkingFilters({ locale }: ParkingFiltersProps) {
   );
 
   return (
-    <div className="flex flex-col gap-6">
-      <RegionFilter value={zcode} onChange={(code) => pushParams({ zcode: code })} locale={locale} />
-      <div className="flex flex-col gap-1.5">
-        <span className="text-sm font-semibold text-foreground">
+    <div className="flex flex-col gap-5">
+      <RegionFilter value={zcode} onChange={(code) => pushParams({ zcode: code })} locale={locale} variant="sidebar" />
+      <div className="border-t border-border pt-4">
+        <span className="text-sm font-semibold text-foreground block mb-2">
           {isKo ? "요금" : "Fee"}
         </span>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {FEE_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               onClick={() => pushParams({ smprcSe: opt.value })}
               className={cn(
-                "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors",
                 smprcSe === opt.value
                   ? "bg-[#14b8a6] text-white"
                   : "bg-stone-100 text-stone-600 hover:bg-stone-200"
