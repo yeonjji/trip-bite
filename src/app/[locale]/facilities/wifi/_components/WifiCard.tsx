@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Wifi } from "lucide-react";
 import type { FreeWifi } from "@/lib/data/free-wifi";
 
@@ -11,6 +12,7 @@ export default function WifiCard({ wifi, locale }: WifiCardProps) {
   const address = wifi.address_road || wifi.address_jibun;
 
   return (
+    <Link href={`/${locale}/facilities/wifi/${wifi.id}`} className="block">
     <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border bg-white transition-all duration-150 hover:shadow-sm hover:border-[#14b8a6]/40 hover:bg-[#14b8a6]/[0.02] group">
       {/* 아이콘 */}
       <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#14b8a6]/10 flex items-center justify-center border-l-2 border-[#14b8a6]">
@@ -51,5 +53,6 @@ export default function WifiCard({ wifi, locale }: WifiCardProps) {
         )}
       </div>
     </div>
+    </Link>
   );
 }
