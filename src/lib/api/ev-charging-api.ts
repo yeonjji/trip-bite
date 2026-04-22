@@ -40,6 +40,7 @@ export interface EvChargerStatus {
 }
 
 interface ChargerInfoParams {
+  statId?: string;      // 특정 충전소 ID
   zcode?: string;       // 시도 코드 (법정동 코드와 동일: "11"=서울, "26"=부산 등)
   zscode?: string;      // 시군구 코드
   kind?: string;        // 충전기 종류 (01=급속, 02=완속)
@@ -106,9 +107,9 @@ function parseXml<T>(xml: string): ListResult<T> {
   return { items, totalCount };
 }
 
-async function fetchEvApi<T>(endpoint: string, params: URLSearchParams): Promise<ListResult<T>> {
+async function fetchEvApi<T>(endpoint: string, params: URLSearchParams, init?: RequestInit): Promise<ListResult<T>> {
   const url = `${BASE_URL}/${endpoint}?${params.toString()}`;
-  const res = await fetch(url, { next: { revalidate: 3600 } });
+  const res = await fetch(url, init ?? { next: { revalidate: 3600 } });
 
   if (!res.ok) {
     throw new Error(`전기차 충전소 API 요청 실패: ${res.status} ${res.statusText}`);
@@ -138,6 +139,7 @@ export const evApi = {
   // 충전기 정보 조회
   async chargerInfo(params: ChargerInfoParams = {}): Promise<ListResult<EvCharger>> {
     const searchParams = getCommonParams();
+    if (params.statId) searchParams.set("statId", params.statId);
     if (params.zcode) searchParams.set("zcode", params.zcode);
     if (params.zscode) searchParams.set("zscode", params.zscode);
     if (params.kind) searchParams.set("kind", params.kind);
@@ -146,12 +148,12 @@ export const evApi = {
     return fetchEvApi<EvCharger>("getChargerInfo", searchParams);
   },
 
-  // 충전기 상태 조회
+  // 충전기 상태 조회 (실시간, no-store)
   async chargerStatus(params: ChargerStatusParams = {}): Promise<ListResult<EvChargerStatus>> {
     const searchParams = getCommonParams();
     if (params.statId) searchParams.set("statId", params.statId);
     if (params.pageNo !== undefined) searchParams.set("pageNo", String(params.pageNo));
     if (params.numOfRows !== undefined) searchParams.set("numOfRows", String(params.numOfRows));
-    return fetchEvApi<EvChargerStatus>("getChargerStatus", searchParams);
+    return fetchEvApi<EvChargerStatus>("getChargerStatus", searchParams, { cache: "no-store" });
   },
 };

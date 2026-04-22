@@ -14,6 +14,11 @@ interface GetEvChargersResult {
   error?: string;
 }
 
+export interface EvStation {
+  chargers: EvCharger[];
+  statusMap: Record<string, EvChargerStatus>;
+}
+
 export async function getEvChargers(
   params: GetEvChargersParams = {}
 ): Promise<GetEvChargersResult> {
@@ -24,6 +29,27 @@ export async function getEvChargers(
     const msg = error instanceof Error ? error.message : String(error);
     console.error("전기차 충전소 데이터 조회 실패:", msg);
     return { items: [], totalCount: 0, error: msg };
+  }
+}
+
+export async function getEvStation(statId: string): Promise<EvStation | null> {
+  try {
+    const [infoResult, statusResult] = await Promise.all([
+      evApi.chargerInfo({ statId, numOfRows: 100 }),
+      evApi.chargerStatus({ statId, numOfRows: 100 }),
+    ]);
+
+    if (infoResult.items.length === 0) return null;
+
+    const statusMap: Record<string, EvChargerStatus> = {};
+    for (const s of statusResult.items) {
+      statusMap[s.chgerId] = s;
+    }
+
+    return { chargers: infoResult.items, statusMap };
+  } catch (error) {
+    console.error("전기차 충전소 상세 조회 실패:", error);
+    return null;
   }
 }
 
