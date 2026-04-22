@@ -11,6 +11,7 @@ interface GetEvChargersParams {
 interface GetEvChargersResult {
   items: EvCharger[];
   totalCount: number;
+  error?: string;
 }
 
 export async function getEvChargers(
@@ -20,8 +21,9 @@ export async function getEvChargers(
   try {
     return await evApi.chargerInfo({ zcode, zscode, kind, pageNo: page, numOfRows: pageSize });
   } catch (error) {
-    console.error("전기차 충전소 데이터 조회 실패:", error);
-    return { items: [], totalCount: 0 };
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error("전기차 충전소 데이터 조회 실패:", msg);
+    return { items: [], totalCount: 0, error: msg };
   }
 }
 

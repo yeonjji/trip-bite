@@ -37,7 +37,7 @@ export default async function EvChargingPage({ params, searchParams }: PageProps
   const isKo = locale === "ko";
   const page = Number(pageStr ?? "1") || 1;
 
-  const { items, totalCount } = await getEvChargers({
+  const { items, totalCount, error } = await getEvChargers({
     zcode,
     kind,
     page,
@@ -94,6 +94,11 @@ export default async function EvChargingPage({ params, searchParams }: PageProps
               <p className="text-sm text-muted-foreground">
                 {isKo ? "해당 지역에 충전소가 없습니다." : "No charging stations found."}
               </p>
+              {error && (
+                <p className="mt-3 text-xs text-red-500 bg-red-50 rounded-lg px-3 py-2 max-w-md mx-auto text-left break-all">
+                  {error}
+                </p>
+              )}
             </div>
           ) : (
             <div className="flex flex-col gap-2">
