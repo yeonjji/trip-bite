@@ -54,8 +54,9 @@ SELECT
   MAX(zcode)                                      AS zcode,
   MAX(zscode)                                     AS zscode,
   COUNT(*)                                        AS charger_count,
-  BOOL_OR(kind IN ('1', '01'))                    AS has_fast,
-  BOOL_OR(kind IN ('2', '02'))                    AS has_slow,
+  BOOL_OR(NULLIF(output, '')::numeric > 22)       AS has_fast,
+  BOOL_OR(NULLIF(output, '') IS NOT NULL
+    AND NULLIF(output, '')::numeric <= 22)         AS has_slow,
   MAX(NULLIF(output, '')::numeric)                AS max_output
 FROM public.ev_chargers
 WHERE del_yn IS DISTINCT FROM 'Y'

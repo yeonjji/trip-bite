@@ -45,53 +45,60 @@ export default async function EvChargingPage({ params, searchParams }: PageProps
   });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pt-4 pb-8">
-      {/* 뒤로가기 */}
-      <Link
-        href={`/${locale}/facilities`}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-[#0d9488] transition-colors mb-4"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        {isKo ? "편의시설" : "Facilities"}
-      </Link>
+    <div className="bg-[#F9F7F0] min-h-screen">
+      <div className="max-w-7xl mx-auto flex">
+        {/* 사이드바 */}
+        <aside className="hidden lg:flex w-72 shrink-0 border-r border-gray-200 bg-[#F9F7F0] flex-col gap-2 px-6 py-8 sticky top-[var(--header-height,64px)] h-[calc(100vh-64px)] overflow-y-auto">
+          <Suspense>
+            <EvChargingFilters locale={locale} />
+          </Suspense>
+        </aside>
 
-      {/* 헤더 */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#14b8a6]/10 flex items-center justify-center">
-            <Zap className="w-4.5 h-4.5 text-[#0d9488]" />
+        {/* 메인 */}
+        <main className="flex-1 min-w-0 px-8 py-8">
+          {/* 뒤로가기 */}
+          <Link
+            href={`/${locale}/facilities`}
+            className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-orange-700 transition-colors mb-6"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            {isKo ? "편의시설" : "Facilities"}
+          </Link>
+
+          {/* 헤더 */}
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 leading-tight">
+                {isKo ? "충전소 찾기" : "Find Charging Stations"}
+              </h1>
+              {totalCount > 0 && (
+                <p className="text-base text-slate-500 mt-1">
+                  {isKo
+                    ? `전국 ${totalCount.toLocaleString()}개 충전소`
+                    : `${totalCount.toLocaleString()} stations nationwide`}
+                </p>
+              )}
+            </div>
+            <div className="hidden sm:flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-gray-100 shadow-sm">
+              <Zap className="w-4 h-4 text-slate-400" />
+              <span className="text-xs font-semibold text-slate-600">
+                {isKo ? "전기차 충전소" : "EV Charging"}
+              </span>
+            </div>
           </div>
-          <h1 className="text-xl font-bold text-foreground">
-            {isKo ? "전기차 충전소" : "EV Charging Stations"}
-          </h1>
-        </div>
-        {totalCount > 0 && (
-          <span className="text-sm text-muted-foreground">
-            {isKo ? `총 ${totalCount.toLocaleString()}개` : `${totalCount.toLocaleString()} stations`}
-          </span>
-        )}
-      </div>
 
-      {/* 사이드바 + 콘텐츠 */}
-      <div className="flex flex-col lg:flex-row gap-6 items-start">
-        {/* 사이드바 필터 */}
-        <aside className="w-full lg:w-52 lg:shrink-0">
-          <div className="lg:sticky lg:top-20 bg-white border border-border rounded-2xl p-4">
-            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">
-              {isKo ? "필터" : "Filter"}
-            </p>
+          {/* 모바일 필터 */}
+          <div className="lg:hidden mb-6 bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
             <Suspense>
               <EvChargingFilters locale={locale} />
             </Suspense>
           </div>
-        </aside>
 
-        {/* 리스트 */}
-        <div className="flex-1 min-w-0">
+          {/* 리스트 */}
           {items.length === 0 ? (
             <div className="py-20 text-center">
-              <Zap className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground">
+              <Zap className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+              <p className="text-sm text-slate-400">
                 {isKo ? "해당 지역에 충전소가 없습니다." : "No charging stations found."}
               </p>
               {error && (
@@ -101,7 +108,7 @@ export default async function EvChargingPage({ params, searchParams }: PageProps
               )}
             </div>
           ) : (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-4">
               {items.map((station) => (
                 <EvChargingCard
                   key={station.statId}
@@ -113,7 +120,7 @@ export default async function EvChargingPage({ params, searchParams }: PageProps
           )}
 
           {totalCount > PAGE_SIZE && (
-            <div className="mt-6">
+            <div className="mt-12">
               <Suspense>
                 <EvChargingPagination
                   locale={locale}
@@ -124,7 +131,7 @@ export default async function EvChargingPage({ params, searchParams }: PageProps
               </Suspense>
             </div>
           )}
-        </div>
+        </main>
       </div>
     </div>
   );
