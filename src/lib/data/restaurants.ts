@@ -34,6 +34,7 @@ export async function getRestaurants(params: {
     query = query.eq("cat3", cat3);
   }
 
+  query = query.order("has_image", { ascending: false, nullsFirst: false });
   if (sort === "rating") {
     query = query.order("rating_avg", { ascending: false });
   } else {

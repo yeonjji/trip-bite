@@ -29,6 +29,7 @@ export async function getCampingSites(
     query = query.eq("induty", induty);
   }
 
+  query = query.order("has_image", { ascending: false, nullsFirst: false });
   if (sort === "rating") {
     query = query.order("rating_avg", { ascending: false });
   } else {
