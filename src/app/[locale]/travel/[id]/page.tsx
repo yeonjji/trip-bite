@@ -4,6 +4,7 @@ import type { Metadata } from "next"
 
 import { getDestinationDetail } from "@/lib/data/destinations"
 import { getNearbyRestaurants } from "@/lib/data/restaurants"
+import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
 import RestaurantCard from "@/components/cards/RestaurantCard"
 import type { RestaurantDetail as RestaurantDetailType } from "@/types/tour-api"
 import { buildAlternates } from "@/lib/utils/metadata"
@@ -14,6 +15,7 @@ import ReviewSection from "@/components/reviews/ReviewSection"
 import AccessibilityBadge from "@/components/shared/AccessibilityBadge"
 import WeatherWidget from "@/components/weather/WeatherWidget"
 import TravelMap from "../_components/TravelMap"
+import NearbyFacilities from "../_components/NearbyFacilities"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 
 type Props = {
@@ -74,10 +76,12 @@ export default async function TravelDetailPage({ params }: Props) {
   const lat = mapy ? parseFloat(mapy) : null
   const lng = mapx ? parseFloat(mapx) : null
 
-  const nearbyRestaurants =
-    lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
-      ? await getNearbyRestaurants(lat, lng, id)
-      : []
+  const hasCoords = lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
+
+  const [nearbyRestaurants, nearbyFacilities] = await Promise.all([
+    hasCoords ? getNearbyRestaurants(lat!, lng!, id) : Promise.resolve([]),
+    hasCoords ? getNearbyFacilities(lat!, lng!) : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
+  ])
 
   const galleryImages = images.map((img) => ({
     url: img.originimgurl,
@@ -437,6 +441,15 @@ export default async function TravelDetailPage({ params }: Props) {
           <WeatherWidget areaCode={areaCode} />
         </div>
       )}
+
+      {/* 주변 편의시설 */}
+      <NearbyFacilities
+        locale={locale}
+        toilets={nearbyFacilities.toilets}
+        wifi={nearbyFacilities.wifi}
+        parking={nearbyFacilities.parking}
+        evStations={nearbyFacilities.evStations}
+      />
 
       {/* 근처 맛집 */}
       {nearbyRestaurants.length > 0 && (
