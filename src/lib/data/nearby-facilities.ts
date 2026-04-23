@@ -74,7 +74,7 @@ export interface NearbyFacilitiesResult {
 export async function getNearbyFacilities(
   lat: number,
   lng: number,
-  radiusMeters = 5000,
+  radiusMeters = 10000,
   limit = 5
 ): Promise<NearbyFacilitiesResult> {
   const supabase = await createClient();
