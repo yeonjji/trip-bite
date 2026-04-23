@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Users } from "lucide-react";
+import { Users, MapPin, Clock } from "lucide-react";
 import type { PublicToilet } from "@/lib/data/public-toilets";
 
 interface ToiletCardProps {
@@ -11,50 +11,70 @@ export default function ToiletCard({ toilet, locale }: ToiletCardProps) {
   const isKo = locale === "ko";
   const address = toilet.address_road || toilet.address_jibun;
   const hasDisabled = (toilet.disabled_male ?? 0) > 0 || (toilet.disabled_female ?? 0) > 0;
+  const totalToilets = (toilet.male_toilets ?? 0) + (toilet.female_toilets ?? 0);
 
   return (
-    <Link href={`/${locale}/facilities/restrooms/${toilet.id}`} className="block">
-    <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border bg-white transition-all duration-150 hover:shadow-sm hover:border-[#14b8a6]/40 hover:bg-[#14b8a6]/[0.02] group">
+    <div className="bg-white rounded-xl p-6 shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border border-transparent hover:shadow-[0px_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-between gap-6">
       {/* 아이콘 */}
-      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#14b8a6]/10 flex items-center justify-center border-l-2 border-[#14b8a6]">
-        <Users className="w-4.5 h-4.5 text-[#0d9488]" />
+      <div className="flex-shrink-0 w-14 h-14 bg-[#F9F7F0] rounded-xl flex items-center justify-center text-primary">
+        <Users className="w-7 h-7" />
       </div>
 
-      {/* 메인 정보 */}
+      {/* 중앙 정보 */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5 mb-0.5">
+        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+          <span className="font-semibold text-base text-gray-900 line-clamp-1">
+            {toilet.name}
+          </span>
           {hasDisabled && (
-            <span className="inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-700">
+            <span className="inline-flex items-center text-[10px] font-black px-2 py-0.5 rounded bg-sky-100 text-sky-700 tracking-tight uppercase">
               {isKo ? "장애인" : "Accessible"}
             </span>
           )}
           {toilet.baby_care && (
-            <span className="inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-pink-100 text-pink-700">
+            <span className="inline-flex items-center text-[10px] font-black px-2 py-0.5 rounded bg-pink-100 text-pink-700 tracking-tight uppercase">
               {isKo ? "기저귀교환대" : "Baby Care"}
             </span>
           )}
           {toilet.cctv && (
-            <span className="inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-stone-100 text-stone-500">
+            <span className="inline-flex items-center text-[10px] font-black px-2 py-0.5 rounded bg-slate-100 text-slate-500 tracking-tight uppercase">
               CCTV
             </span>
           )}
         </div>
-        <p className="font-semibold text-sm leading-snug line-clamp-1 text-gray-900 group-hover:text-[#0d9488] transition-colors">
-          {toilet.name}
-        </p>
-        <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{address}</p>
+        <div className="flex items-center gap-4 text-sm text-slate-500">
+          <span className="flex items-center gap-1 min-w-0 line-clamp-1">
+            <MapPin className="w-3.5 h-3.5 shrink-0 text-teal-600" />
+            {address}
+          </span>
+          {toilet.open_time && (
+            <span className="flex items-center gap-1 shrink-0 text-xs">
+              <Clock className="w-3 h-3 text-slate-400" />
+              {toilet.open_time}
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* 우측 보조 정보 */}
-      <div className="flex-shrink-0 text-right">
-        {toilet.open_time && (
-          <p className="text-[11px] text-muted-foreground line-clamp-2 max-w-[90px]">{toilet.open_time}</p>
-        )}
-        {toilet.manage_org && (
-          <p className="text-[11px] text-muted-foreground line-clamp-1 max-w-[90px]">{toilet.manage_org}</p>
-        )}
-      </div>
+      {/* 칸 수 */}
+      {totalToilets > 0 && (
+        <div className="flex-shrink-0 text-center min-w-[72px]">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+            {isKo ? "화장실" : "Stalls"}
+          </p>
+          <p className="text-2xl font-bold text-teal-600 leading-none">
+            {totalToilets}
+          </p>
+        </div>
+      )}
+
+      {/* 상세보기 버튼 */}
+      <Link
+        href={`/${locale}/facilities/restrooms/${toilet.id}`}
+        className="flex-shrink-0 inline-flex items-center justify-center px-5 py-3 rounded-lg bg-primary text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity shadow-md"
+      >
+        {isKo ? "상세보기" : "View Details"}
+      </Link>
     </div>
-    </Link>
   );
 }
