@@ -5,6 +5,7 @@ export interface EvStationSummary {
   statId: string;
   statNm: string;
   addr: string;
+  sigunguName: string;
   lat: string;
   lng: string;
   busiNm: string;
@@ -22,7 +23,7 @@ export interface EvStationSummary {
 
 interface GetEvChargersParams {
   zcode?: string;
-  zscode?: string;
+  sigunguName?: string;
   kind?: string;
   page?: number;
   pageSize?: number;
@@ -43,7 +44,7 @@ export interface EvStation {
 export async function getEvChargers(
   params: GetEvChargersParams = {}
 ): Promise<GetEvChargersResult> {
-  const { zcode, zscode, kind, page = 1, pageSize = 30 } = params;
+  const { zcode, sigunguName, kind, page = 1, pageSize = 30 } = params;
 
   try {
     const supabase = await createClient();
@@ -55,7 +56,7 @@ export async function getEvChargers(
       .range((page - 1) * pageSize, page * pageSize - 1);
 
     if (zcode) query = query.eq("zcode", zcode);
-    if (zscode) query = query.eq("zscode", zscode);
+    if (sigunguName) query = query.eq("sigungu_name", sigunguName);
     if (kind === "01") query = query.eq("has_fast", true);
     if (kind === "02") query = query.eq("has_slow", true);
 
@@ -70,6 +71,7 @@ export async function getEvChargers(
       statId:       row.stat_id,
       statNm:       row.stat_nm ?? "",
       addr:         row.addr ?? "",
+      sigunguName:  row.sigungu_name ?? "",
       lat:          String(row.lat ?? ""),
       lng:          String(row.lng ?? ""),
       busiNm:       row.busi_nm ?? "",

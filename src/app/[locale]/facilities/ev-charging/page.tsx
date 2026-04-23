@@ -10,7 +10,7 @@ import EvChargingPagination from "./_components/EvChargingPagination";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ zcode?: string; kind?: string; page?: string }>;
+  searchParams: Promise<{ zcode?: string; sigungu?: string; kind?: string; page?: string }>;
 }
 
 const PAGE_SIZE = 30;
@@ -33,12 +33,13 @@ export async function generateMetadata({
 
 export default async function EvChargingPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
-  const { zcode, kind, page: pageStr } = await searchParams;
+  const { zcode, sigungu, kind, page: pageStr } = await searchParams;
   const isKo = locale === "ko";
   const page = Number(pageStr ?? "1") || 1;
 
   const { items, totalCount, error } = await getEvChargers({
     zcode,
+    sigunguName: sigungu,
     kind,
     page,
     pageSize: PAGE_SIZE,
