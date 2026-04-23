@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Zap, MapPin, ChevronDown } from "lucide-react";
+import { PlugZap, Zap, BatteryCharging, MapPin, ChevronDown } from "lucide-react";
 import { AREA_CODES, AREA_CODE_MAP } from "@/lib/constants/area-codes";
 
 interface EvChargingFiltersProps {
@@ -11,9 +11,9 @@ interface EvChargingFiltersProps {
 }
 
 const KIND_OPTIONS = [
-  { value: "", labelKo: "전체", labelEn: "All Stations" },
-  { value: "01", labelKo: "급속", labelEn: "Fast Charge" },
-  { value: "02", labelKo: "완속", labelEn: "Slow Charge" },
+  { value: "", labelKo: "전체", labelEn: "All Stations", icon: PlugZap },
+  { value: "01", labelKo: "급속", labelEn: "Fast Charge", icon: Zap },
+  { value: "02", labelKo: "완속", labelEn: "Slow Charge", icon: BatteryCharging },
 ];
 
 export default function EvChargingFilters({ locale }: EvChargingFiltersProps) {
@@ -54,26 +54,30 @@ export default function EvChargingFilters({ locale }: EvChargingFiltersProps) {
       </div>
 
       {/* 충전 속도 탭 */}
-      {KIND_OPTIONS.map((opt) => (
-        <button
-          key={opt.value}
-          onClick={() => pushParams({ kind: opt.value })}
-          className={cn(
-            "flex items-center gap-3 w-full rounded-lg px-4 py-3 text-sm font-medium transition-all duration-150 text-left",
-            kind === opt.value
-              ? "bg-white text-orange-700 font-bold shadow-sm"
-              : "text-slate-500 hover:bg-orange-50 hover:text-orange-700"
-          )}
-        >
-          <Zap
+      {KIND_OPTIONS.map((opt) => {
+        const Icon = opt.icon;
+        const isActive = kind === opt.value;
+        return (
+          <button
+            key={opt.value}
+            onClick={() => pushParams({ kind: opt.value })}
             className={cn(
-              "w-4 h-4 shrink-0",
-              kind === opt.value ? "text-orange-700" : "text-slate-400"
+              "flex items-center gap-3 w-full rounded-lg px-4 py-3 text-sm font-medium transition-all duration-150 text-left",
+              isActive
+                ? "bg-white text-orange-700 font-bold shadow-sm"
+                : "text-slate-500 hover:bg-orange-50 hover:text-orange-700"
             )}
-          />
-          {isKo ? opt.labelKo : opt.labelEn}
-        </button>
-      ))}
+          >
+            <Icon
+              className={cn(
+                "w-4 h-4 shrink-0",
+                isActive ? "text-orange-700" : "text-slate-400"
+              )}
+            />
+            {isKo ? opt.labelKo : opt.labelEn}
+          </button>
+        );
+      })}
 
       {/* 지역 탭 (hover 드롭다운) */}
       <div
