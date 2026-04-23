@@ -65,6 +65,7 @@ export async function getDestinations(params: {
     query = query.neq("content_type_id", "39");
   }
 
+  query = query.order("has_image", { ascending: false, nullsFirst: false });
   if (sort === "rating") {
     query = query.order("rating_avg", { ascending: false });
   } else {

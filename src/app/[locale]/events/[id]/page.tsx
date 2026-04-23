@@ -3,9 +3,11 @@ import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 import { getFestivalById, computeStatus, getRegionName } from "@/lib/data/festivals"
+import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
 import { buildAlternates } from "@/lib/utils/metadata"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import TravelMap from "../../travel/_components/TravelMap"
+import NearbyFacilities from "../../travel/_components/NearbyFacilities"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -125,6 +127,10 @@ export default async function EventDetailPage({ params }: Props) {
   const lat = festival.mapy
   const lng = festival.mapx
   const hasMap = lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
+
+  const nearbyFacilities = hasMap
+    ? await getNearbyFacilities(lat!, lng!)
+    : { toilets: [], wifi: [], parking: [], evStations: [] }
 
   const venue = detail.eventplace || festival.addr1
   const homepage = detail.eventhomepage || detail.homepage
@@ -285,6 +291,15 @@ export default async function EventDetailPage({ params }: Props) {
           </div>
         </>
       )}
+
+      {/* 주변 시설 */}
+      <NearbyFacilities
+        locale={locale}
+        toilets={nearbyFacilities.toilets}
+        wifi={nearbyFacilities.wifi}
+        parking={nearbyFacilities.parking}
+        evStations={nearbyFacilities.evStations}
+      />
     </div>
   )
 }
