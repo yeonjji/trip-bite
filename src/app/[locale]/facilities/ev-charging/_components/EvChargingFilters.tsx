@@ -11,9 +11,9 @@ interface EvChargingFiltersProps {
 }
 
 const KIND_OPTIONS = [
-  { value: "", labelKo: "전체", labelEn: "All" },
-  { value: "01", labelKo: "급속", labelEn: "Fast" },
-  { value: "02", labelKo: "완속", labelEn: "Slow" },
+  { value: "", labelKo: "전체", labelEn: "All Stations" },
+  { value: "01", labelKo: "급속", labelEn: "Fast Charge" },
+  { value: "02", labelKo: "완속", labelEn: "Slow Charge" },
 ];
 
 export default function EvChargingFilters({ locale }: EvChargingFiltersProps) {
@@ -44,36 +44,38 @@ export default function EvChargingFilters({ locale }: EvChargingFiltersProps) {
 
   return (
     <div className="flex flex-col gap-1">
-      <div className="mb-3">
-        <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-0.5">
+      <div className="mb-4">
+        <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest mb-0.5">
           Navigation
         </p>
-        <p className="text-xs font-bold text-foreground tracking-wide">
-          EV NETWORK
+        <p className="text-xs font-bold text-slate-700 tracking-wide uppercase">
+          EV Network
         </p>
       </div>
 
+      {/* 충전 속도 탭 */}
       {KIND_OPTIONS.map((opt) => (
         <button
           key={opt.value}
           onClick={() => pushParams({ kind: opt.value })}
           className={cn(
-            "flex items-center gap-2.5 w-full rounded-lg px-3 py-2 text-sm font-medium transition-colors text-left",
+            "flex items-center gap-3 w-full rounded-lg px-4 py-3 text-sm font-medium transition-all duration-150 text-left",
             kind === opt.value
-              ? "bg-[#14b8a6]/10 text-[#0d9488] font-semibold"
-              : "text-stone-600 hover:bg-stone-50"
+              ? "bg-white text-orange-700 font-bold shadow-sm"
+              : "text-slate-500 hover:bg-orange-50 hover:text-orange-700"
           )}
         >
           <Zap
             className={cn(
               "w-4 h-4 shrink-0",
-              kind === opt.value ? "text-[#0d9488]" : "text-stone-400"
+              kind === opt.value ? "text-orange-700" : "text-slate-400"
             )}
           />
           {isKo ? opt.labelKo : opt.labelEn}
         </button>
       ))}
 
+      {/* 지역 탭 (hover 드롭다운) */}
       <div
         className="relative"
         onMouseEnter={() => setRegionOpen(true)}
@@ -81,16 +83,16 @@ export default function EvChargingFilters({ locale }: EvChargingFiltersProps) {
       >
         <button
           className={cn(
-            "flex items-center gap-2.5 w-full rounded-lg px-3 py-2 text-sm font-medium transition-colors text-left",
+            "flex items-center gap-3 w-full rounded-lg px-4 py-3 text-sm font-medium transition-all duration-150 text-left",
             zcode
-              ? "bg-[#14b8a6]/10 text-[#0d9488] font-semibold"
-              : "text-stone-600 hover:bg-stone-50"
+              ? "bg-white text-orange-700 font-bold shadow-sm"
+              : "text-slate-500 hover:bg-orange-50 hover:text-orange-700"
           )}
         >
           <MapPin
             className={cn(
               "w-4 h-4 shrink-0",
-              zcode ? "text-[#0d9488]" : "text-stone-400"
+              zcode ? "text-orange-700" : "text-slate-400"
             )}
           />
           <span className="flex-1 truncate">{currentRegionName}</span>
@@ -98,23 +100,23 @@ export default function EvChargingFilters({ locale }: EvChargingFiltersProps) {
             className={cn(
               "w-3.5 h-3.5 shrink-0 transition-transform",
               regionOpen && "rotate-180",
-              zcode ? "text-[#0d9488]" : "text-stone-400"
+              zcode ? "text-orange-700" : "text-slate-400"
             )}
           />
         </button>
 
         {regionOpen && (
-          <div className="absolute left-0 top-full z-50 mt-1 w-48 rounded-xl border border-border bg-white shadow-lg py-1.5 max-h-64 overflow-y-auto">
+          <div className="absolute left-0 top-full z-50 mt-1 w-48 rounded-xl border border-gray-100 bg-white shadow-lg py-1.5 max-h-64 overflow-y-auto">
             <button
               onClick={() => {
                 pushParams({ zcode: "" });
                 setRegionOpen(false);
               }}
               className={cn(
-                "flex w-full items-center px-3 py-1.5 text-xs transition-colors",
+                "flex w-full items-center px-4 py-2 text-xs transition-colors",
                 !zcode
-                  ? "text-[#0d9488] font-semibold bg-[#14b8a6]/5"
-                  : "text-stone-600 hover:bg-stone-50"
+                  ? "text-orange-700 font-bold bg-orange-50"
+                  : "text-slate-600 hover:bg-orange-50 hover:text-orange-700"
               )}
             >
               {isKo ? "전체 지역" : "All Regions"}
@@ -127,10 +129,10 @@ export default function EvChargingFilters({ locale }: EvChargingFiltersProps) {
                   setRegionOpen(false);
                 }}
                 className={cn(
-                  "flex w-full items-center px-3 py-1.5 text-xs transition-colors",
+                  "flex w-full items-center px-4 py-2 text-xs transition-colors",
                   zcode === area.code
-                    ? "text-[#0d9488] font-semibold bg-[#14b8a6]/5"
-                    : "text-stone-600 hover:bg-stone-50"
+                    ? "text-orange-700 font-bold bg-orange-50"
+                    : "text-slate-600 hover:bg-orange-50 hover:text-orange-700"
                 )}
               >
                 {isKo ? area.nameKo : area.nameEn}
