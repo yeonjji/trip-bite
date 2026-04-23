@@ -77,9 +77,6 @@ export default async function EvChargingPage({ params, searchParams }: PageProps
         {/* 사이드바 필터 */}
         <aside className="w-full lg:w-52 lg:shrink-0">
           <div className="lg:sticky lg:top-20 bg-white border border-border rounded-2xl p-4">
-            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">
-              {isKo ? "필터" : "Filter"}
-            </p>
             <Suspense>
               <EvChargingFilters locale={locale} />
             </Suspense>
