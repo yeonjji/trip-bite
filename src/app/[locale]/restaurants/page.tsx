@@ -1,5 +1,3 @@
-// P1-38: 맛집 목록 페이지 (서버 컴포넌트)
-
 import { Suspense } from "react"
 import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
@@ -75,47 +73,62 @@ export default async function RestaurantsPage({ params, searchParams }: Props) {
   return (
     <>
       <HeroSearch variant="compact" locale={locale} />
-      <div className="mx-auto max-w-7xl px-4 pt-4 pb-8">
-      <h1 className="mb-6 text-2xl font-bold text-foreground">
-        {locale === "ko" ? "맛집" : "Restaurants"}
-      </h1>
+      <div className="bg-[#F9F7F0] min-h-screen">
+        <div className="max-w-7xl mx-auto flex">
 
-      <div className="mb-6">
-        <Suspense fallback={null}>
-          <RestaurantFilters locale={locale} />
-        </Suspense>
-      </div>
-
-      {items.length === 0 ? (
-        <EmptyState
-          title={locale === "ko" ? "맛집이 없습니다." : "No restaurants found."}
-        />
-      ) : (
-        <>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((destination) => (
-              <RestaurantCard
-                key={destination.id}
-                item={toRestaurantDetail(destination)}
-                locale={locale}
-              />
-            ))}
-          </div>
-
-          <div className="mt-10 flex justify-center">
+          {/* 사이드바 (데스크탑) */}
+          <aside className="hidden lg:flex w-64 shrink-0 border-r border-gray-200 bg-[#F9F7F0] flex-col gap-2 px-6 py-8 sticky top-[64px] h-[calc(100vh-64px)] overflow-y-auto">
             <Suspense fallback={null}>
-              <PaginationClient
-                currentPage={page}
-                totalCount={totalCount}
-                pageSize={PAGE_SIZE}
-                locale={locale}
-                areaCode={areaCode}
-              />
+              <RestaurantFilters locale={locale} />
             </Suspense>
-          </div>
-        </>
-      )}
-    </div>
+          </aside>
+
+          {/* 메인 콘텐츠 */}
+          <main className="flex-1 min-w-0 px-6 py-8">
+            <h1 className="mb-6 text-2xl font-bold text-foreground">
+              {locale === "ko" ? "맛집" : "Restaurants"}
+            </h1>
+
+            {/* 모바일 필터 */}
+            <div className="lg:hidden mb-6 bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+              <Suspense fallback={null}>
+                <RestaurantFilters locale={locale} />
+              </Suspense>
+            </div>
+
+            {items.length === 0 ? (
+              <EmptyState
+                title={locale === "ko" ? "맛집이 없습니다." : "No restaurants found."}
+              />
+            ) : (
+              <>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {items.map((destination) => (
+                    <RestaurantCard
+                      key={destination.id}
+                      item={toRestaurantDetail(destination)}
+                      locale={locale}
+                    />
+                  ))}
+                </div>
+
+                <div className="mt-10 flex justify-center">
+                  <Suspense fallback={null}>
+                    <PaginationClient
+                      currentPage={page}
+                      totalCount={totalCount}
+                      pageSize={PAGE_SIZE}
+                      locale={locale}
+                      areaCode={areaCode}
+                    />
+                  </Suspense>
+                </div>
+              </>
+            )}
+          </main>
+
+        </div>
+      </div>
     </>
   )
 }

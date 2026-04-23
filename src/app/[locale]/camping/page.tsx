@@ -69,45 +69,62 @@ export default async function CampingPage({ params, searchParams }: PageProps) {
   return (
     <>
       <HeroSearch variant="compact" locale={locale} />
-      <div className="mx-auto max-w-7xl px-4 pt-4 pb-8">
-      <h1 className="mb-6 text-2xl font-bold text-foreground">캠핑장</h1>
+      <div className="bg-[#F9F7F0] min-h-screen">
+        <div className="max-w-7xl mx-auto flex">
 
-      <Suspense>
-        <CampingFilters locale={locale} />
-      </Suspense>
+          {/* 사이드바 (데스크탑) */}
+          <aside className="hidden lg:flex w-64 shrink-0 border-r border-gray-200 bg-[#F9F7F0] flex-col gap-2 px-6 py-8 sticky top-[64px] h-[calc(100vh-64px)] overflow-y-auto">
+            <Suspense>
+              <CampingFilters locale={locale} />
+            </Suspense>
+          </aside>
 
-      <div className="mt-6">
-        {items.length === 0 ? (
-          <div className="py-16 text-center text-muted-foreground">
-            검색 결과가 없습니다.
-          </div>
-        ) : (
-          <>
-            <p className="mb-4 text-sm text-muted-foreground">
-              총 {totalCount.toLocaleString()}개
-            </p>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {items.map((site) => (
-                <CampingCard key={site.id} item={toCardItem(site)} locale={locale} />
-              ))}
+          {/* 메인 콘텐츠 */}
+          <main className="flex-1 min-w-0 px-6 py-8">
+            <h1 className="mb-6 text-2xl font-bold text-foreground">
+              {locale === "ko" ? "캠핑장" : "Camping Sites"}
+            </h1>
+
+            {/* 모바일 필터 */}
+            <div className="lg:hidden mb-6 bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+              <Suspense>
+                <CampingFilters locale={locale} />
+              </Suspense>
             </div>
-          </>
-        )}
-      </div>
 
-      {totalCount > PAGE_SIZE && (
-        <div className="mt-8">
-          <Suspense>
-            <CampingPagination
-              locale={locale}
-              currentPage={page}
-              totalCount={totalCount}
-              pageSize={PAGE_SIZE}
-            />
-          </Suspense>
+            {items.length === 0 ? (
+              <div className="py-16 text-center text-muted-foreground">
+                {locale === "ko" ? "검색 결과가 없습니다." : "No camping sites found."}
+              </div>
+            ) : (
+              <>
+                <p className="mb-4 text-sm text-muted-foreground">
+                  {locale === "ko" ? `총 ${totalCount.toLocaleString()}개` : `${totalCount.toLocaleString()} sites`}
+                </p>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {items.map((site) => (
+                    <CampingCard key={site.id} item={toCardItem(site)} locale={locale} />
+                  ))}
+                </div>
+              </>
+            )}
+
+            {totalCount > PAGE_SIZE && (
+              <div className="mt-8 flex justify-center">
+                <Suspense>
+                  <CampingPagination
+                    locale={locale}
+                    currentPage={page}
+                    totalCount={totalCount}
+                    pageSize={PAGE_SIZE}
+                  />
+                </Suspense>
+              </div>
+            )}
+          </main>
+
         </div>
-      )}
-    </div>
+      </div>
     </>
   )
 }
