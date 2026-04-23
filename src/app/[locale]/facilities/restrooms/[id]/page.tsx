@@ -15,11 +15,14 @@ import {
   Bell,
   Check,
   X,
+  PersonStanding,
 } from "lucide-react";
 import { setRequestLocale } from "next-intl/server";
 import { cn } from "@/lib/utils";
 import { getToiletById } from "@/lib/data/public-toilets";
 import NaverMap from "@/components/maps/NaverMap";
+
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -27,15 +30,15 @@ interface PageProps {
 
 function InfoRow({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-start gap-2.5">
-      <div className="flex-shrink-0 w-6 h-6 rounded-md bg-[#14b8a6]/10 flex items-center justify-center text-[#0d9488] mt-0.5">
+    <div className="flex items-start gap-3">
+      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600 mt-0.5">
         {icon}
       </div>
       <div className="flex-1 min-w-0">
         <dt className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
           {label}
         </dt>
-        <dd className="text-sm text-foreground leading-snug">{value}</dd>
+        <dd className="text-sm text-foreground leading-snug mt-0.5">{value}</dd>
       </div>
     </div>
   );
@@ -66,194 +69,272 @@ export default async function RestroomDetailPage({ params }: PageProps) {
   const lng = toilet.lng ?? null;
   const hasLocation = lat !== null && lng !== null && lat !== 0 && lng !== 0;
   const address = toilet.address_road || toilet.address_jibun || "";
-
   const disabledTotal = (toilet.disabled_male ?? 0) + (toilet.disabled_female ?? 0);
 
   const amenities = [
     {
       key: "baby_care",
       active: toilet.baby_care,
-      icon: <Baby className="w-4 h-4" />,
+      icon: <Baby className="w-5 h-5" />,
       labelKo: "기저귀교환대",
       labelEn: "Baby Care",
     },
     {
       key: "cctv",
       active: toilet.cctv,
-      icon: <Camera className="w-4 h-4" />,
+      icon: <Camera className="w-5 h-5" />,
       labelKo: "CCTV",
       labelEn: "CCTV",
     },
     {
       key: "emergency_bell",
       active: toilet.emergency_bell,
-      icon: <Bell className="w-4 h-4" />,
+      icon: <Bell className="w-5 h-5" />,
       labelKo: "비상벨",
       labelEn: "Emergency Bell",
     },
   ];
 
-  return (
-    <div className="mx-auto max-w-2xl px-4 pt-4 pb-12">
-      {/* 뒤로가기 */}
-      <Link
-        href={`/${locale}/facilities/restrooms`}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-[#0d9488] transition-colors mb-4"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        {isKo ? "공중화장실" : "Public Restrooms"}
-      </Link>
+  const stallTypes = [
+    {
+      label: isKo ? "남자 칸" : "Male",
+      count: toilet.male_toilets ?? 0,
+      color: "text-blue-600",
+      bg: "bg-blue-50",
+      border: "border-blue-100",
+    },
+    {
+      label: isKo ? "여자 칸" : "Female",
+      count: toilet.female_toilets ?? 0,
+      color: "text-pink-600",
+      bg: "bg-pink-50",
+      border: "border-pink-100",
+    },
+    {
+      label: isKo ? "장애인 칸" : "Accessible",
+      count: disabledTotal,
+      color: "text-purple-600",
+      bg: "bg-purple-50",
+      border: "border-purple-100",
+    },
+  ];
 
-      {/* 히어로 */}
-      <div className="bg-gradient-to-br from-[#14b8a6] to-[#0d9488] rounded-2xl p-5 text-white mb-4">
-        <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
-            <Users className="w-7 h-7 text-white" />
+  return (
+    <div className="bg-[#F9F7F0] min-h-screen">
+      <div className="mx-auto max-w-6xl px-4 pt-6 pb-16">
+
+        {/* 뒤로가기 */}
+        <Link
+          href={`/${locale}/facilities/restrooms`}
+          className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-orange-700 transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          {isKo ? "공중화장실" : "Public Restrooms"}
+        </Link>
+
+        {/* 히어로 배너 */}
+        <div className="relative h-[280px] rounded-2xl overflow-hidden mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700">
+          <div className="absolute right-8 inset-y-0 flex items-center">
+            <Users className="w-48 h-48 text-white/5" strokeWidth={1} />
           </div>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-lg font-bold leading-snug">{toilet.name}</h1>
-            <div className="flex flex-wrap gap-1.5 mt-2">
+          <div className="absolute bottom-0 left-0 right-0 p-8">
+            <div className="flex flex-wrap gap-2 mb-3">
               {toilet.baby_care && (
-                <span className="inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full bg-pink-400/30 text-white">
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-pink-500/80 text-white">
+                  <Baby className="w-3 h-3" />
                   {isKo ? "기저귀교환대" : "Baby Care"}
                 </span>
               )}
               {toilet.cctv && (
-                <span className="inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/20 text-white">
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-slate-600/80 text-slate-200">
+                  <Camera className="w-3 h-3" />
                   CCTV
                 </span>
               )}
               {toilet.emergency_bell && (
-                <span className="inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full bg-orange-400/30 text-white">
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-orange-500/80 text-white">
+                  <Bell className="w-3 h-3" />
                   {isKo ? "비상벨" : "Emergency Bell"}
                 </span>
               )}
             </div>
+            <h1 className="text-2xl font-bold text-white leading-snug">{toilet.name}</h1>
+            {address && (
+              <p className="text-sm text-slate-300 mt-1">{address}</p>
+            )}
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-px mt-5 bg-white/20 rounded-xl overflow-hidden">
-          <div className="text-center py-3 bg-white/10">
-            <p className="text-2xl font-bold">{toilet.male_toilets ?? "-"}</p>
-            <p className="text-[11px] text-white/70 mt-0.5">
-              {isKo ? "남자 칸" : "Male"}
-            </p>
-          </div>
-          <div className="text-center py-3 bg-white/10">
-            <p className="text-2xl font-bold">{toilet.female_toilets ?? "-"}</p>
-            <p className="text-[11px] text-white/70 mt-0.5">
-              {isKo ? "여자 칸" : "Female"}
-            </p>
-          </div>
-          <div className="text-center py-3 bg-white/10">
-            <p className="text-2xl font-bold">{disabledTotal || "-"}</p>
-            <p className="text-[11px] text-white/70 mt-0.5">
-              {isKo ? "장애인 칸" : "Accessible"}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* 지도 */}
-      {hasLocation && (
-        <div className="rounded-2xl border border-border overflow-hidden mb-4 h-52 relative">
-          <NaverMap
-            lat={lat!}
-            lng={lng!}
-            zoom={16}
-            showMarker
-            className="h-full w-full relative"
-          />
-        </div>
-      )}
-
-      {/* 시설 정보 */}
-      <div className="bg-white rounded-2xl border border-border p-4 mb-4">
-        <h2 className="text-sm font-bold text-foreground mb-3">
-          {isKo ? "시설 정보" : "Amenities"}
-        </h2>
-        <div className="grid grid-cols-3 gap-2">
-          {amenities.map((a) => (
-            <div
-              key={a.key}
-              className={cn(
-                "flex flex-col items-center gap-1.5 py-3 rounded-xl border",
-                a.active
-                  ? "border-[#14b8a6]/30 bg-[#14b8a6]/5 text-[#0d9488]"
-                  : "border-border bg-stone-50 text-stone-300"
-              )}
-            >
-              {a.icon}
-              <span className="text-[10px] font-semibold text-center leading-tight">
-                {isKo ? a.labelKo : a.labelEn}
-              </span>
-              {a.active ? (
-                <Check className="w-3 h-3" />
-              ) : (
-                <X className="w-3 h-3" />
-              )}
+        {/* Stats Bar */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {[
+            {
+              icon: <Users className="w-5 h-5" />,
+              label: isKo ? "남자 칸" : "Male Stalls",
+              value: String(toilet.male_toilets ?? "-"),
+            },
+            {
+              icon: <Users className="w-5 h-5" />,
+              label: isKo ? "여자 칸" : "Female Stalls",
+              value: String(toilet.female_toilets ?? "-"),
+            },
+            {
+              icon: <PersonStanding className="w-5 h-5" />,
+              label: isKo ? "장애인 칸" : "Accessible",
+              value: disabledTotal > 0 ? String(disabledTotal) : "-",
+            },
+            {
+              icon: <Baby className="w-5 h-5" />,
+              label: isKo ? "기저귀교환대" : "Baby Care",
+              value: toilet.baby_care ? (isKo ? "있음" : "Yes") : (isKo ? "없음" : "No"),
+            },
+          ].map((stat, i) => (
+            <div key={i} className="bg-white p-4 rounded-xl border border-zinc-100 shadow-sm flex items-center gap-4">
+              <div className="w-12 h-12 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center shrink-0">
+                {stat.icon}
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider">{stat.label}</p>
+                <p className="text-lg font-bold text-slate-800">{stat.value}</p>
+              </div>
             </div>
           ))}
         </div>
-      </div>
 
-      {/* 이용 정보 */}
-      <div className="bg-white rounded-2xl border border-border p-4 mb-4">
-        <h2 className="text-sm font-bold text-foreground mb-3">
-          {isKo ? "이용 정보" : "Details"}
-        </h2>
-        <dl className="flex flex-col gap-3">
-          {address && (
-            <InfoRow
-              icon={<MapPin className="w-3.5 h-3.5" />}
-              label={isKo ? "주소" : "Address"}
-              value={address}
-            />
-          )}
-          {toilet.open_time && (
-            <InfoRow
-              icon={<Clock className="w-3.5 h-3.5" />}
-              label={isKo ? "이용시간" : "Hours"}
-              value={toilet.open_time}
-            />
-          )}
-          {toilet.open_time_detail && toilet.open_time_detail !== toilet.open_time && (
-            <InfoRow
-              icon={<Clock className="w-3.5 h-3.5" />}
-              label={isKo ? "상세 운영시간" : "Hours Detail"}
-              value={toilet.open_time_detail}
-            />
-          )}
-          {toilet.manage_org && (
-            <InfoRow
-              icon={<Building2 className="w-3.5 h-3.5" />}
-              label={isKo ? "관리기관" : "Managed By"}
-              value={toilet.manage_org}
-            />
-          )}
-          {toilet.phone && (
-            <InfoRow
-              icon={<Phone className="w-3.5 h-3.5" />}
-              label={isKo ? "연락처" : "Phone"}
-              value={toilet.phone}
-            />
-          )}
-        </dl>
-      </div>
+        {/* 2컬럼 메인 레이아웃 */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-      {/* 길찾기 버튼 */}
-      {hasLocation && (
-        <a
-          href={`https://map.naver.com/v5/search/${encodeURIComponent(address || toilet.name)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-[#14b8a6] hover:bg-[#0d9488] text-white font-semibold text-sm transition-colors"
-        >
-          <Navigation className="w-4 h-4" />
-          {isKo ? "네이버 지도에서 길찾기" : "Get Directions on Naver Maps"}
-        </a>
-      )}
+          {/* 왼쪽: 칸 수 현황 + 편의시설 */}
+          <div className="lg:col-span-2">
+            {/* 칸 수 현황 */}
+            <h2 className="text-base font-bold text-slate-800 mb-4">
+              {isKo ? "칸 수 현황" : "Stall Count"}
+            </h2>
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              {stallTypes.map((stall) => (
+                <div
+                  key={stall.label}
+                  className={cn(
+                    "bg-white rounded-2xl border p-6 shadow-sm text-center",
+                    stall.border
+                  )}
+                >
+                  <div className={cn("w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center", stall.bg, stall.color)}>
+                    <Users className="w-6 h-6" />
+                  </div>
+                  <p className={cn("text-3xl font-bold", stall.color)}>
+                    {stall.count > 0 ? stall.count : "-"}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">{stall.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* 편의시설 */}
+            <h2 className="text-base font-bold text-slate-800 mb-4">
+              {isKo ? "편의시설" : "Amenities"}
+            </h2>
+            <div className="grid grid-cols-3 gap-4">
+              {amenities.map((a) => (
+                <div
+                  key={a.key}
+                  className={cn(
+                    "bg-white rounded-2xl border p-6 shadow-sm text-center",
+                    a.active ? "border-orange-100" : "border-zinc-100"
+                  )}
+                >
+                  <div className={cn(
+                    "w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center",
+                    a.active ? "bg-orange-50 text-orange-600" : "bg-slate-50 text-slate-300"
+                  )}>
+                    {a.icon}
+                  </div>
+                  <p className={cn(
+                    "text-xs font-semibold",
+                    a.active ? "text-slate-700" : "text-slate-400"
+                  )}>
+                    {isKo ? a.labelKo : a.labelEn}
+                  </p>
+                  <div className={cn(
+                    "mt-2 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full",
+                    a.active
+                      ? "bg-green-100 text-green-700"
+                      : "bg-slate-100 text-slate-400"
+                  )}>
+                    {a.active
+                      ? <><Check className="w-2.5 h-2.5" />{isKo ? "있음" : "Yes"}</>
+                      : <><X className="w-2.5 h-2.5" />{isKo ? "없음" : "No"}</>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 오른쪽: 이용정보 + 지도 + 길찾기 */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-2xl border border-zinc-100 shadow-sm p-6 mb-4">
+              <h2 className="text-base font-bold text-slate-800 mb-5">
+                {isKo ? "이용 정보" : "Details"}
+              </h2>
+              <dl className="flex flex-col gap-4">
+                {address && (
+                  <InfoRow
+                    icon={<MapPin className="w-4 h-4" />}
+                    label={isKo ? "주소" : "Address"}
+                    value={address}
+                  />
+                )}
+                {toilet.open_time && (
+                  <InfoRow
+                    icon={<Clock className="w-4 h-4" />}
+                    label={isKo ? "이용시간" : "Hours"}
+                    value={toilet.open_time}
+                  />
+                )}
+                {toilet.open_time_detail && toilet.open_time_detail !== toilet.open_time && (
+                  <InfoRow
+                    icon={<Clock className="w-4 h-4" />}
+                    label={isKo ? "상세 운영시간" : "Hours Detail"}
+                    value={toilet.open_time_detail}
+                  />
+                )}
+                {toilet.manage_org && (
+                  <InfoRow
+                    icon={<Building2 className="w-4 h-4" />}
+                    label={isKo ? "관리기관" : "Managed By"}
+                    value={toilet.manage_org}
+                  />
+                )}
+                {toilet.phone && (
+                  <InfoRow
+                    icon={<Phone className="w-4 h-4" />}
+                    label={isKo ? "연락처" : "Phone"}
+                    value={toilet.phone}
+                  />
+                )}
+              </dl>
+            </div>
+
+            {hasLocation && (
+              <div className="h-48 rounded-xl overflow-hidden border border-zinc-200 mb-4 relative">
+                <NaverMap lat={lat!} lng={lng!} zoom={16} showMarker className="h-full w-full relative" />
+              </div>
+            )}
+
+            {hasLocation && (
+              <a
+                href={`https://map.naver.com/v5/search/${encodeURIComponent(address || toilet.name)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-slate-900 hover:bg-orange-600 text-white font-semibold text-sm transition-colors"
+              >
+                <Navigation className="w-4 h-4" />
+                {isKo ? "네이버 지도에서 길찾기" : "Get Directions on Naver Maps"}
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

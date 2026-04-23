@@ -14,6 +14,10 @@ export interface ParkingLot {
   base_fee: number | null;
   weekday_open: string | null;
   weekday_close: string | null;
+  sat_open: string | null;
+  sat_close: string | null;
+  holiday_open: string | null;
+  holiday_close: string | null;
   disabled_spots: number | null;
   phone: string | null;
   area_code: string | null;
@@ -32,6 +36,17 @@ interface GetParkingResult {
   items: ParkingLot[];
   totalCount: number;
   error?: string;
+}
+
+export async function getParkingById(id: string): Promise<ParkingLot | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("parking_lots")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (error) return null;
+  return data as ParkingLot;
 }
 
 export async function getParking(params: GetParkingParams = {}): Promise<GetParkingResult> {

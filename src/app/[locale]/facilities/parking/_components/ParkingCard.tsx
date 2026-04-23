@@ -1,4 +1,5 @@
-import { ParkingCircle, MapPin, Clock } from "lucide-react";
+import Link from "next/link";
+import { ParkingCircle, MapPin, Clock, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ParkingLot } from "@/lib/data/parking";
 
@@ -21,7 +22,11 @@ export default function ParkingCard({ lot, locale }: ParkingCardProps) {
   const hasHours = weekdayOpen && weekdayClose;
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border border-transparent hover:shadow-[0px_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-between gap-6">
+    <Link
+      href={`/${locale}/facilities/parking/${lot.id}`}
+      className="block bg-white rounded-xl p-6 shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border border-transparent hover:shadow-[0px_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-300"
+    >
+    <div className="flex items-center justify-between gap-6">
       {/* 아이콘 */}
       <div className="flex-shrink-0 w-14 h-14 bg-[#F9F7F0] rounded-xl flex items-center justify-center text-primary">
         <ParkingCircle className="w-7 h-7" />
@@ -60,27 +65,31 @@ export default function ParkingCard({ lot, locale }: ParkingCardProps) {
       </div>
 
       {/* 주차면 / 요금 */}
-      <div className="flex-shrink-0 text-center min-w-[72px]">
-        {lot.capacity ? (
-          <>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-              {isKo ? "주차면" : "Spots"}
-            </p>
-            <p className="text-2xl font-bold text-teal-600 leading-none">
-              {lot.capacity}
-            </p>
-          </>
-        ) : lot.base_fee ? (
-          <>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-              {isKo ? "기본요금" : "Base Fee"}
-            </p>
-            <p className="text-sm font-bold text-orange-700 leading-none">
-              {isKo ? `${lot.base_fee.toLocaleString()}원` : `₩${lot.base_fee.toLocaleString()}`}
-            </p>
-          </>
-        ) : null}
+      <div className="flex items-center gap-3">
+        <div className="text-center min-w-[64px]">
+          {lot.capacity ? (
+            <>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                {isKo ? "주차면" : "Spots"}
+              </p>
+              <p className="text-2xl font-bold text-orange-600 leading-none">
+                {lot.capacity}
+              </p>
+            </>
+          ) : lot.base_fee ? (
+            <>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                {isKo ? "기본요금" : "Base Fee"}
+              </p>
+              <p className="text-sm font-bold text-orange-700 leading-none">
+                {isKo ? `${lot.base_fee.toLocaleString()}원` : `₩${lot.base_fee.toLocaleString()}`}
+              </p>
+            </>
+          ) : null}
+        </div>
+        <ChevronRight className="w-4 h-4 text-slate-300 shrink-0" />
       </div>
     </div>
+    </Link>
   );
 }

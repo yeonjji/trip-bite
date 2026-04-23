@@ -12,6 +12,8 @@ import {
   Navigation,
   AlertCircle,
   Info,
+  BatteryCharging,
+  CheckCircle,
 } from "lucide-react";
 import { setRequestLocale } from "next-intl/server";
 import { cn } from "@/lib/utils";
@@ -34,13 +36,37 @@ const CHARGER_TYPE_LABELS: Record<string, string> = {
   "07": "AC3상",
 };
 
-const STAT_INFO: Record<string, { label: string; dot: string; badge: string }> = {
-  "2": { label: "충전대기", dot: "bg-green-500", badge: "text-green-700 bg-green-50" },
-  "3": { label: "충전중",   dot: "bg-blue-500",  badge: "text-blue-700 bg-blue-50"  },
-  "1": { label: "통신이상", dot: "bg-red-500",    badge: "text-red-700 bg-red-50"    },
-  "4": { label: "운영중지", dot: "bg-gray-400",   badge: "text-gray-600 bg-gray-100" },
-  "5": { label: "점검중",   dot: "bg-orange-400", badge: "text-orange-700 bg-orange-50" },
-  "9": { label: "삭제",     dot: "bg-gray-300",   badge: "text-gray-400 bg-gray-50"  },
+const STAT_INFO: Record<string, { label: string; labelEn: string; border: string; bg: string; badge: string }> = {
+  "2": {
+    label: "충전대기", labelEn: "AVAILABLE",
+    border: "border-green-100", bg: "bg-green-50/30",
+    badge: "text-green-700 bg-green-100",
+  },
+  "3": {
+    label: "충전중", labelEn: "CHARGING",
+    border: "border-blue-100", bg: "bg-blue-50/30",
+    badge: "text-blue-700 bg-blue-100",
+  },
+  "1": {
+    label: "통신이상", labelEn: "ERROR",
+    border: "border-red-100", bg: "bg-red-50/20",
+    badge: "text-red-700 bg-red-100",
+  },
+  "4": {
+    label: "운영중지", labelEn: "STOPPED",
+    border: "border-gray-100", bg: "bg-gray-50/30",
+    badge: "text-gray-600 bg-gray-100",
+  },
+  "5": {
+    label: "점검중", labelEn: "MAINTENANCE",
+    border: "border-orange-100", bg: "bg-orange-50/20",
+    badge: "text-orange-700 bg-orange-100",
+  },
+  "9": {
+    label: "삭제", labelEn: "REMOVED",
+    border: "border-gray-100", bg: "bg-gray-50/20",
+    badge: "text-gray-400 bg-gray-50",
+  },
 };
 
 function formatDateTime(dt: string): string {
@@ -58,15 +84,15 @@ function InfoRow({
   value: string;
 }) {
   return (
-    <div className="flex items-start gap-2.5">
-      <div className="flex-shrink-0 w-6 h-6 rounded-md bg-[#14b8a6]/10 flex items-center justify-center text-[#0d9488] mt-0.5">
+    <div className="flex items-start gap-3">
+      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600 mt-0.5">
         {icon}
       </div>
       <div className="flex-1 min-w-0">
         <dt className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
           {label}
         </dt>
-        <dd className="text-sm text-foreground leading-snug">{value}</dd>
+        <dd className="text-sm text-foreground leading-snug mt-0.5">{value}</dd>
       </div>
     </div>
   );
@@ -90,7 +116,6 @@ export default async function EvChargingDetailPage({ params }: PageProps) {
   const station = await getEvStation(statId);
   if (!station) notFound();
 
-  // notFound() throws — station is EvStation here
   const { chargers, statusMap } = station!;
   const first = chargers[0];
 
@@ -98,239 +123,276 @@ export default async function EvChargingDetailPage({ params }: PageProps) {
   const lng = parseFloat(first.lng);
   const hasLocation = !isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0;
 
-  const hasFast = chargers.some((c) => c.kind === "1" || c.kind === "01");
-  const hasSlow = chargers.some((c) => c.kind === "2" || c.kind === "02");
+  // output kW 기준으로 급속/완속 판단 (22kW 초과 = 급속)
+  const hasFast = chargers.some((c) => parseFloat(c.output) > 22);
+  const hasSlow = chargers.some((c) => {
+    const kw = parseFloat(c.output);
+    return !isNaN(kw) && kw > 0 && kw <= 22;
+  });
   const maxOutput = Math.max(...chargers.map((c) => parseFloat(c.output) || 0));
   const isParkingFree = first.parkingFree === "Y";
   const availableCount = chargers.filter((c) => statusMap[c.chgerId]?.stat === "2").length;
 
   return (
-    <div className="mx-auto max-w-2xl px-4 pt-4 pb-12">
-      {/* 뒤로가기 */}
-      <Link
-        href={`/${locale}/facilities/ev-charging`}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-[#0d9488] transition-colors mb-4"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        {isKo ? "전기차 충전소" : "EV Charging"}
-      </Link>
+    <div className="bg-[#F9F7F0] min-h-screen">
+      <div className="mx-auto max-w-6xl px-4 pt-6 pb-16">
 
-      {/* 히어로 */}
-      <div className="bg-gradient-to-br from-[#14b8a6] to-[#0d9488] rounded-2xl p-5 text-white mb-4">
-        <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
-            <Zap className="w-7 h-7 text-white" />
+        {/* 뒤로가기 */}
+        <Link
+          href={`/${locale}/facilities/ev-charging`}
+          className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-orange-700 transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          {isKo ? "전기차 충전소" : "EV Charging"}
+        </Link>
+
+        {/* 히어로 배너 */}
+        <div className="relative h-[280px] rounded-2xl overflow-hidden mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700">
+          {/* 배경 Zap 아이콘 */}
+          <div className="absolute right-8 inset-y-0 flex items-center">
+            <Zap className="w-48 h-48 text-white/5" strokeWidth={1} />
           </div>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-lg font-bold leading-snug">{first.statNm}</h1>
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              <span
-                className={cn(
-                  "inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full",
-                  availableCount > 0
-                    ? "bg-green-400/30 text-white"
-                    : "bg-white/20 text-white/80"
+          {/* 왼쪽 하단 콘텐츠 */}
+          <div className="absolute bottom-0 left-0 right-0 p-8">
+            <div className="flex flex-wrap gap-2 mb-3">
+              <span className={cn(
+                "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full",
+                availableCount > 0 ? "bg-green-500/90 text-white" : "bg-slate-600/80 text-slate-300"
+              )}>
+                {availableCount > 0 && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                 )}
-              >
                 {availableCount > 0
-                  ? isKo ? "이용가능" : "Available"
-                  : isKo ? "대기없음" : "Unavailable"}
+                  ? (isKo ? "이용가능" : "Available")
+                  : (isKo ? "현황없음" : "No Status")}
               </span>
               {hasFast && (
-                <span className="inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full bg-orange-400/30 text-white">
+                <span className="inline-flex items-center text-xs font-semibold px-3 py-1 rounded-full bg-orange-500/80 text-white">
                   {isKo ? "급속" : "Fast"}
                 </span>
               )}
               {hasSlow && (
-                <span className="inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/20 text-white">
+                <span className="inline-flex items-center text-xs font-semibold px-3 py-1 rounded-full bg-slate-600/80 text-slate-200">
                   {isKo ? "완속" : "Slow"}
                 </span>
               )}
               {isParkingFree && (
-                <span className="inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/20 text-white">
+                <span className="inline-flex items-center text-xs font-semibold px-3 py-1 rounded-full bg-blue-500/80 text-white">
                   {isKo ? "주차무료" : "Free Parking"}
                 </span>
               )}
             </div>
+            <h1 className="text-2xl font-bold text-white leading-snug">{first.statNm}</h1>
+            {first.addr && (
+              <p className="text-sm text-slate-300 mt-1">{first.addr}</p>
+            )}
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-px mt-5 bg-white/20 rounded-xl overflow-hidden">
-          <div className="text-center py-3 bg-white/10">
-            <p className="text-2xl font-bold">{chargers.length}</p>
-            <p className="text-[11px] text-white/70 mt-0.5">
-              {isKo ? "충전기" : "Chargers"}
-            </p>
-          </div>
-          <div className="text-center py-3 bg-white/10">
-            <p className="text-2xl font-bold">
-              {maxOutput > 0 ? maxOutput : "-"}
-            </p>
-            <p className="text-[11px] text-white/70 mt-0.5">
-              {isKo ? "최대 kW" : "Max kW"}
-            </p>
-          </div>
-          <div className="text-center py-3 bg-white/10">
-            <p className="text-2xl font-bold">{availableCount}</p>
-            <p className="text-[11px] text-white/70 mt-0.5">
-              {isKo ? "대기가능" : "Available"}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* 지도 */}
-      {hasLocation && (
-        <div className="rounded-2xl border border-border overflow-hidden mb-4 h-52 relative">
-          <NaverMap lat={lat} lng={lng} zoom={16} showMarker className="h-full w-full relative" />
-        </div>
-      )}
-
-      {/* 충전기 현황 */}
-      <div className="bg-white rounded-2xl border border-border p-4 mb-4">
-        <h2 className="text-sm font-bold text-foreground mb-3">
-          {isKo ? "충전기 현황" : "Charger Status"}
-        </h2>
-        <div className="flex flex-col divide-y divide-border">
-          {chargers.map((charger) => {
-            const st = statusMap[charger.chgerId];
-            const statInfo = st ? (STAT_INFO[st.stat] ?? null) : null;
-            const isFastCharger = charger.kind === "1" || charger.kind === "01";
-            const updTime = st?.statUpdDt ? formatDateTime(st.statUpdDt) : null;
-
-            return (
-              <div
-                key={charger.chgerId}
-                className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0"
-              >
-                {/* 상태 dot */}
-                <div
-                  className={cn(
-                    "flex-shrink-0 w-2 h-2 rounded-full",
-                    statInfo?.dot ?? "bg-gray-300"
-                  )}
-                />
-
-                {/* 충전기 정보 */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span
-                      className={cn(
-                        "text-[10px] font-semibold px-1.5 py-0.5 rounded-md",
-                        isFastCharger
-                          ? "bg-orange-100 text-orange-700"
-                          : "bg-blue-100 text-blue-700"
-                      )}
-                    >
-                      {isFastCharger
-                        ? isKo ? "급속" : "Fast"
-                        : isKo ? "완속" : "Slow"}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      #{charger.chgerId} ·{" "}
-                      {CHARGER_TYPE_LABELS[charger.chgerType] ?? charger.chgerType}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    {charger.output && (
-                      <p className="text-sm font-semibold text-foreground">
-                        {charger.output}kW
-                      </p>
-                    )}
-                    {charger.method && (
-                      <p className="text-xs text-muted-foreground">{charger.method}</p>
-                    )}
-                  </div>
-                  {updTime && (
-                    <p className="text-[10px] text-muted-foreground/60 mt-0.5">
-                      {isKo ? "갱신" : "Updated"}: {updTime}
-                    </p>
-                  )}
-                </div>
-
-                {/* 상태 배지 */}
-                <div className="flex-shrink-0">
-                  {statInfo ? (
-                    <span
-                      className={cn(
-                        "text-[10px] font-semibold px-2 py-0.5 rounded-full",
-                        statInfo.badge
-                      )}
-                    >
-                      {statInfo.label}
-                    </span>
-                  ) : (
-                    <span className="text-[10px] text-muted-foreground">-</span>
-                  )}
-                </div>
+        {/* Stats Bar */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {[
+            {
+              icon: <Zap className="w-5 h-5" />,
+              label: isKo ? "최대 속도" : "Max Speed",
+              value: maxOutput > 0 ? `${maxOutput}kW` : "-",
+            },
+            {
+              icon: <BatteryCharging className="w-5 h-5" />,
+              label: isKo ? "총 충전기" : "Total Chargers",
+              value: String(chargers.length),
+            },
+            {
+              icon: <CheckCircle className="w-5 h-5" />,
+              label: isKo ? "이용가능" : "Available",
+              value: String(availableCount),
+            },
+            {
+              icon: <Clock className="w-5 h-5" />,
+              label: isKo ? "이용시간" : "Hours",
+              value: first.useTime || (isKo ? "24시간" : "24 Hours"),
+            },
+          ].map((stat, i) => (
+            <div key={i} className="bg-white p-4 rounded-xl border border-zinc-100 shadow-sm flex items-center gap-4">
+              <div className="w-12 h-12 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center shrink-0">
+                {stat.icon}
               </div>
-            );
-          })}
+              <div className="min-w-0">
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider">{stat.label}</p>
+                <p className="text-lg font-bold text-slate-800 truncate">{stat.value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 2컬럼 메인 레이아웃 */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          {/* 왼쪽: 충전기 현황 카드 목록 */}
+          <div className="lg:col-span-2">
+            <h2 className="text-base font-bold text-slate-800 mb-4">
+              {isKo ? "충전기 현황" : "Charger Status"}
+            </h2>
+            <div className="flex flex-col gap-4">
+              {chargers.map((charger) => {
+                const st = statusMap[charger.chgerId];
+                const statInfo = st ? (STAT_INFO[st.stat] ?? null) : null;
+                const kwNum = parseFloat(charger.output) || 0;
+                const isFastCharger = kwNum > 22;
+                const updTime = st?.statUpdDt ? formatDateTime(st.statUpdDt) : null;
+
+                return (
+                  <div
+                    key={charger.chgerId}
+                    className={cn(
+                      "bg-white rounded-2xl border p-6 shadow-sm",
+                      statInfo?.border ?? "border-zinc-100",
+                      statInfo?.bg ?? ""
+                    )}
+                  >
+                    {/* 상단 */}
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className={cn(
+                          "w-12 h-12 rounded-xl flex items-center justify-center shrink-0",
+                          isFastCharger ? "bg-orange-50 text-orange-600" : "bg-blue-50 text-blue-600"
+                        )}>
+                          {isFastCharger
+                            ? <Zap className="w-6 h-6" />
+                            : <BatteryCharging className="w-6 h-6" />}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-800">
+                            {isKo ? "충전기" : "Charger"} #{charger.chgerId}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            {CHARGER_TYPE_LABELS[charger.chgerType] ?? charger.chgerType}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="shrink-0">
+                        {statInfo ? (
+                          <span className={cn(
+                            "inline-flex items-center text-xs font-semibold px-3 py-1 rounded-full",
+                            statInfo.badge
+                          )}>
+                            {isKo ? statInfo.label : statInfo.labelEn}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center text-xs text-slate-400 px-3 py-1 rounded-full bg-slate-100">
+                            {isKo ? "정보없음" : "Unknown"}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 구분선 */}
+                    <div className="border-t border-zinc-100 my-4" />
+
+                    {/* 하단 */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        {charger.output && (
+                          <div>
+                            <p className="text-[10px] text-slate-400 uppercase tracking-wide">
+                              {isKo ? "출력" : "Power"}
+                            </p>
+                            <p className="text-base font-bold text-orange-600">{charger.output}kW</p>
+                          </div>
+                        )}
+                        {charger.method && (
+                          <div>
+                            <p className="text-[10px] text-slate-400 uppercase tracking-wide">
+                              {isKo ? "방식" : "Method"}
+                            </p>
+                            <p className="text-sm font-medium text-slate-700">{charger.method}</p>
+                          </div>
+                        )}
+                      </div>
+                      {updTime && (
+                        <p className="text-[10px] text-slate-400">
+                          {isKo ? "갱신" : "Updated"}: {updTime}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 오른쪽: 이용정보 + 지도 + 길찾기 */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-2xl border border-zinc-100 shadow-sm p-6 mb-4">
+              <h2 className="text-base font-bold text-slate-800 mb-5">
+                {isKo ? "이용 정보" : "Details"}
+              </h2>
+              <dl className="flex flex-col gap-4">
+                <InfoRow
+                  icon={<MapPin className="w-4 h-4" />}
+                  label={isKo ? "주소" : "Address"}
+                  value={first.addr}
+                />
+                {first.useTime && (
+                  <InfoRow
+                    icon={<Clock className="w-4 h-4" />}
+                    label={isKo ? "이용시간" : "Hours"}
+                    value={first.useTime}
+                  />
+                )}
+                {first.busiNm && (
+                  <InfoRow
+                    icon={<Building2 className="w-4 h-4" />}
+                    label={isKo ? "운영기관" : "Operator"}
+                    value={first.busiNm}
+                  />
+                )}
+                {first.busiCall && (
+                  <InfoRow
+                    icon={<Phone className="w-4 h-4" />}
+                    label={isKo ? "연락처" : "Phone"}
+                    value={first.busiCall}
+                  />
+                )}
+                {first.limitYn === "Y" && first.limitDetail && (
+                  <InfoRow
+                    icon={<AlertCircle className="w-4 h-4" />}
+                    label={isKo ? "이용제한" : "Restriction"}
+                    value={first.limitDetail}
+                  />
+                )}
+                {first.note && (
+                  <InfoRow
+                    icon={<Info className="w-4 h-4" />}
+                    label={isKo ? "비고" : "Notes"}
+                    value={first.note}
+                  />
+                )}
+              </dl>
+            </div>
+
+            {/* 지도 */}
+            {hasLocation && (
+              <div className="h-48 rounded-xl overflow-hidden border border-zinc-200 mb-4 relative">
+                <NaverMap lat={lat} lng={lng} zoom={16} showMarker className="h-full w-full relative" />
+              </div>
+            )}
+
+            {/* 길찾기 버튼 */}
+            {hasLocation && (
+              <a
+                href={`https://map.naver.com/v5/search/${encodeURIComponent(first.addr)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-slate-900 hover:bg-orange-600 text-white font-semibold text-sm transition-colors"
+              >
+                <Navigation className="w-4 h-4" />
+                {isKo ? "네이버 지도에서 길찾기" : "Get Directions on Naver Maps"}
+              </a>
+            )}
+          </div>
         </div>
       </div>
-
-      {/* 이용 정보 */}
-      <div className="bg-white rounded-2xl border border-border p-4 mb-4">
-        <h2 className="text-sm font-bold text-foreground mb-3">
-          {isKo ? "이용 정보" : "Details"}
-        </h2>
-        <dl className="flex flex-col gap-3">
-          <InfoRow
-            icon={<MapPin className="w-3.5 h-3.5" />}
-            label={isKo ? "주소" : "Address"}
-            value={first.addr}
-          />
-          {first.useTime && (
-            <InfoRow
-              icon={<Clock className="w-3.5 h-3.5" />}
-              label={isKo ? "이용시간" : "Hours"}
-              value={first.useTime}
-            />
-          )}
-          {first.busiNm && (
-            <InfoRow
-              icon={<Building2 className="w-3.5 h-3.5" />}
-              label={isKo ? "운영기관" : "Operator"}
-              value={first.busiNm}
-            />
-          )}
-          {first.busiCall && (
-            <InfoRow
-              icon={<Phone className="w-3.5 h-3.5" />}
-              label={isKo ? "연락처" : "Phone"}
-              value={first.busiCall}
-            />
-          )}
-          {first.limitYn === "Y" && first.limitDetail && (
-            <InfoRow
-              icon={<AlertCircle className="w-3.5 h-3.5" />}
-              label={isKo ? "이용제한" : "Restriction"}
-              value={first.limitDetail}
-            />
-          )}
-          {first.note && (
-            <InfoRow
-              icon={<Info className="w-3.5 h-3.5" />}
-              label={isKo ? "비고" : "Notes"}
-              value={first.note}
-            />
-          )}
-        </dl>
-      </div>
-
-      {/* 길찾기 버튼 */}
-      {hasLocation && (
-        <a
-          href={`https://map.naver.com/v5/search/${encodeURIComponent(first.addr)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-[#14b8a6] hover:bg-[#0d9488] text-white font-semibold text-sm transition-colors"
-        >
-          <Navigation className="w-4 h-4" />
-          {isKo ? "네이버 지도에서 길찾기" : "Get Directions on Naver Maps"}
-        </a>
-      )}
     </div>
   );
 }
