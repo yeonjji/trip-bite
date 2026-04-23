@@ -8,11 +8,13 @@ import Rating from "@/components/shared/Rating"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { getCampingSiteDetail } from "@/lib/data/camping"
+import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import WeatherWidget from "@/components/weather/WeatherWidget"
 import ReviewSection from "@/components/reviews/ReviewSection"
 
 import CampingMap from "./_components/CampingMap"
+import NearbyFacilities from "../../travel/_components/NearbyFacilities"
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>
@@ -113,6 +115,11 @@ export default async function CampingDetailPage({ params }: PageProps) {
   const lat = detail?.mapY ? Number(detail.mapY) : site?.mapy ?? null
   const lng = detail?.mapX ? Number(detail.mapX) : site?.mapx ?? null
   const hasMap = lat !== null && lng !== null
+
+  const nearbyFacilities =
+    hasMap && !isNaN(lat!) && !isNaN(lng!)
+      ? await getNearbyFacilities(lat!, lng!)
+      : { toilets: [], wifi: [], parking: [], evStations: [] }
 
   const galleryImages = images.map((img) => ({ url: img.imageUrl, alt: name }))
   const coverImage = detail?.firstImageUrl ?? site?.first_image_url
@@ -471,6 +478,16 @@ export default async function CampingDetailPage({ params }: PageProps) {
           </section>
         </>
       )}
+
+      {/* 주변 시설 */}
+      <Separator className="my-6" />
+      <NearbyFacilities
+        locale={locale}
+        toilets={nearbyFacilities.toilets}
+        wifi={nearbyFacilities.wifi}
+        parking={nearbyFacilities.parking}
+        evStations={nearbyFacilities.evStations}
+      />
 
       {/* 리뷰 */}
       <Separator className="my-6" />

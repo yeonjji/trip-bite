@@ -9,6 +9,8 @@ import { buildAlternates } from "@/lib/utils/metadata"
 import Rating from "@/components/shared/Rating"
 import NaverMap from "@/components/maps/NaverMap"
 import { getRestaurantDetail } from "@/lib/data/restaurants"
+import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
+import NearbyFacilities from "../../travel/_components/NearbyFacilities"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -57,6 +59,13 @@ export default async function RestaurantDetailPage({ params }: Props) {
   const mapx = detail?.mapx ?? (destination?.mapx ? String(destination.mapx) : undefined)
   const mapy = detail?.mapy ?? (destination?.mapy ? String(destination.mapy) : undefined)
   const hasMap = mapx && mapy
+
+  const lat = mapy ? parseFloat(mapy) : null
+  const lng = mapx ? parseFloat(mapx) : null
+  const nearbyFacilities =
+    lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
+      ? await getNearbyFacilities(lat, lng)
+      : { toilets: [], wifi: [], parking: [], evStations: [] }
 
   const galleryImages = images.map((img) => ({
     url: img.originimgurl,
@@ -151,6 +160,14 @@ export default async function RestaurantDetailPage({ params }: Props) {
           </div>
         </div>
       )}
+
+      <NearbyFacilities
+        locale={locale}
+        toilets={nearbyFacilities.toilets}
+        wifi={nearbyFacilities.wifi}
+        parking={nearbyFacilities.parking}
+        evStations={nearbyFacilities.evStations}
+      />
     </div>
   )
 }
