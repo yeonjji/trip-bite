@@ -78,7 +78,7 @@ export default function NearbyFacilities({
           {isKo ? "주변 시설" : "Nearby Facilities"}
         </h2>
         <span className="text-xs text-muted-foreground">
-          {isKo ? "2km 이내" : "within 2km"}
+          {isKo ? "5km 이내" : "within 5km"}
         </span>
       </div>
 
