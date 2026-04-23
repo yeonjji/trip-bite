@@ -55,45 +55,58 @@ export default async function EventsPage({ params, searchParams }: Props) {
   return (
     <>
       <HeroSearch variant="compact" locale={locale} />
-      <div className="mx-auto max-w-7xl px-4 pt-4 pb-8">
-      <h1 className="mb-6 text-2xl font-bold text-foreground">
-        {isKo ? "행사/축제" : "Festivals & Events"}
-      </h1>
+      <div className="bg-[#F9F7F0] min-h-screen">
+        <div className="max-w-7xl mx-auto flex">
 
-      <div className="mb-6">
-        <EventFilters region={region} regions={regions} locale={locale} />
-      </div>
+          {/* 사이드바 (데스크탑) */}
+          <aside className="hidden lg:flex w-64 shrink-0 border-r border-gray-200 bg-[#F9F7F0] flex-col gap-2 px-6 py-8 sticky top-[64px] h-[calc(100vh-64px)] overflow-y-auto">
+            <EventFilters regions={regions} locale={locale} />
+          </aside>
 
-      {items.length === 0 ? (
-        <div className="py-16 text-center text-muted-foreground">
-          {isKo ? "행사가 없습니다." : "No events found."}
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {items.map((festival) => (
-              <FestivalCard
-                key={festival.contentId}
-                item={festival}
-                locale={locale}
-              />
-            ))}
-          </div>
+          {/* 메인 콘텐츠 */}
+          <main className="flex-1 min-w-0 px-6 py-8">
+            <h1 className="mb-6 text-2xl font-bold text-foreground">
+              {isKo ? "행사/축제" : "Festivals & Events"}
+            </h1>
 
-          {totalCount > PAGE_SIZE && (
-            <div className="mt-8 flex justify-center">
-              <Suspense>
-                <EventPagination
-                  currentPage={page}
-                  totalCount={totalCount}
-                  pageSize={PAGE_SIZE}
-                />
-              </Suspense>
+            {/* 모바일 필터 */}
+            <div className="lg:hidden mb-6 bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+              <EventFilters regions={regions} locale={locale} />
             </div>
-          )}
-        </>
-      )}
-    </div>
+
+            {items.length === 0 ? (
+              <div className="py-16 text-center text-muted-foreground">
+                {isKo ? "행사가 없습니다." : "No events found."}
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {items.map((festival) => (
+                    <FestivalCard
+                      key={festival.contentId}
+                      item={festival}
+                      locale={locale}
+                    />
+                  ))}
+                </div>
+
+                {totalCount > PAGE_SIZE && (
+                  <div className="mt-8 flex justify-center">
+                    <Suspense>
+                      <EventPagination
+                        currentPage={page}
+                        totalCount={totalCount}
+                        pageSize={PAGE_SIZE}
+                      />
+                    </Suspense>
+                  </div>
+                )}
+              </>
+            )}
+          </main>
+
+        </div>
+      </div>
     </>
   )
 }
