@@ -10,7 +10,7 @@ import ToiletPagination from "./_components/ToiletPagination";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ zcode?: string; sigungu?: string; baby_care?: string; page?: string }>;
+  searchParams: Promise<{ zcode?: string; baby_care?: string; page?: string }>;
 }
 
 const PAGE_SIZE = 30;
@@ -33,13 +33,12 @@ export async function generateMetadata({
 
 export default async function RestroomsPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
-  const { zcode, sigungu, baby_care, page: pageStr } = await searchParams;
+  const { zcode, baby_care, page: pageStr } = await searchParams;
   const isKo = locale === "ko";
   const page = Number(pageStr ?? "1") || 1;
 
   const { items, totalCount } = await getPublicToilets({
     zcode,
-    sigunguName: sigungu,
     baby_care: baby_care === "Y",
     page,
     pageSize: PAGE_SIZE,

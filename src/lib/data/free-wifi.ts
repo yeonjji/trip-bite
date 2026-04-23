@@ -19,7 +19,6 @@ export interface FreeWifi {
 
 interface GetWifiParams {
   zcode?: string;
-  sigunguName?: string;
   page?: number;
   pageSize?: number;
 }
@@ -30,13 +29,12 @@ interface GetWifiResult {
 }
 
 export async function getFreeWifi(params: GetWifiParams = {}): Promise<GetWifiResult> {
-  const { zcode, sigunguName, page = 1, pageSize = 30 } = params;
+  const { zcode, page = 1, pageSize = 30 } = params;
   const supabase = await createClient();
 
   let query = supabase.from("free_wifi").select("*", { count: "exact" });
 
   if (zcode) query = query.eq("area_code", zcode);
-  if (sigunguName) query = query.eq("sigungu_name", sigunguName);
 
   const from = (page - 1) * pageSize;
   query = query.range(from, from + pageSize - 1).order("place_name");

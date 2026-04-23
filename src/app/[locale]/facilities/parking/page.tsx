@@ -10,7 +10,7 @@ import ParkingPagination from "./_components/ParkingPagination";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ zcode?: string; sigungu?: string; smprcSe?: string; page?: string }>;
+  searchParams: Promise<{ zcode?: string; smprcSe?: string; page?: string }>;
 }
 
 const PAGE_SIZE = 30;
@@ -33,13 +33,12 @@ export async function generateMetadata({
 
 export default async function ParkingPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
-  const { zcode, sigungu, smprcSe, page: pageStr } = await searchParams;
+  const { zcode, smprcSe, page: pageStr } = await searchParams;
   const isKo = locale === "ko";
   const page = Number(pageStr ?? "1") || 1;
 
   const { items, totalCount, error } = await getParking({
     zcode,
-    sigunguName: sigungu,
     smprcSe,
     page,
     pageSize: PAGE_SIZE,

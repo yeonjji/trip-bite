@@ -10,7 +10,7 @@ import WifiPagination from "./_components/WifiPagination";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ zcode?: string; sigungu?: string; page?: string }>;
+  searchParams: Promise<{ zcode?: string; page?: string }>;
 }
 
 const PAGE_SIZE = 30;
@@ -33,11 +33,11 @@ export async function generateMetadata({
 
 export default async function WifiPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
-  const { zcode, sigungu, page: pageStr } = await searchParams;
+  const { zcode, page: pageStr } = await searchParams;
   const isKo = locale === "ko";
   const page = Number(pageStr ?? "1") || 1;
 
-  const { items, totalCount } = await getFreeWifi({ zcode, sigunguName: sigungu, page, pageSize: PAGE_SIZE });
+  const { items, totalCount } = await getFreeWifi({ zcode, page, pageSize: PAGE_SIZE });
 
   return (
     <div className="bg-[#F9F7F0] min-h-screen">

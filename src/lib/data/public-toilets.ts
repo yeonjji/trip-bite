@@ -9,7 +9,6 @@ export interface PublicToilet {
   lat: number | null;
   lng: number | null;
   area_code: string | null;
-  sigungu_name: string | null;
   manage_org: string | null;
   phone: string | null;
   open_time: string | null;
@@ -25,7 +24,6 @@ export interface PublicToilet {
 
 interface GetToiletsParams {
   zcode?: string;
-  sigunguName?: string;
   baby_care?: boolean;
   page?: number;
   pageSize?: number;
@@ -37,13 +35,12 @@ interface GetToiletsResult {
 }
 
 export async function getPublicToilets(params: GetToiletsParams = {}): Promise<GetToiletsResult> {
-  const { zcode, sigunguName, baby_care, page = 1, pageSize = 30 } = params;
+  const { zcode, baby_care, page = 1, pageSize = 30 } = params;
   const supabase = await createClient();
 
   let query = supabase.from("public_toilets").select("*", { count: "exact" });
 
   if (zcode) query = query.eq("area_code", zcode);
-  if (sigunguName) query = query.eq("sigungu_name", sigunguName);
   if (baby_care) query = query.eq("baby_care", true);
 
   const from = (page - 1) * pageSize;

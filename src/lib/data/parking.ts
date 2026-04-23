@@ -27,7 +27,6 @@ export interface ParkingLot {
 
 interface GetParkingParams {
   zcode?: string;
-  sigunguName?: string;
   smprcSe?: string;
   page?: number;
   pageSize?: number;
@@ -51,13 +50,12 @@ export async function getParkingById(id: string): Promise<ParkingLot | null> {
 }
 
 export async function getParking(params: GetParkingParams = {}): Promise<GetParkingResult> {
-  const { zcode, sigunguName, smprcSe, page = 1, pageSize = 30 } = params;
+  const { zcode, smprcSe, page = 1, pageSize = 30 } = params;
   const supabase = await createClient();
 
   let query = supabase.from("parking_lots").select("*", { count: "exact" });
 
   if (zcode) query = query.eq("area_code", zcode);
-  if (sigunguName) query = query.eq("sigungu_name", sigunguName);
   if (smprcSe) query = query.eq("fee_type", smprcSe);
 
   const from = (page - 1) * pageSize;
