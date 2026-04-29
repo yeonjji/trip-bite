@@ -3,11 +3,10 @@
 import { useState, useEffect, useCallback } from "react"
 import { ExternalLink, Calendar, Newspaper } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
+import RegionSelector from "@/components/region/RegionSelector"
 
-const REGIONS = ["전국", "서울", "부산", "제주", "강릉", "여수", "전주"] as const
 const TOPICS = ["전체", "축제", "관광", "전시", "여행", "맛집"] as const
 
-type Region = (typeof REGIONS)[number]
 type Topic = (typeof TOPICS)[number]
 
 interface NewsItem {
@@ -18,7 +17,7 @@ interface NewsItem {
   pubDate: string
 }
 
-function buildQuery(region: Region, topic: Topic): string {
+function buildQuery(region: string, topic: Topic): string {
   if (region === "전국" && topic === "전체") return "국내 여행 관광 뉴스"
   if (region === "전국") return `지역 ${topic}`
   if (topic === "전체") return `${region} 여행 관광`
@@ -33,13 +32,13 @@ function formatPubDate(pubDate: string) {
 }
 
 export default function MainTravelNewsSection() {
-  const [region, setRegion] = useState<Region>("전국")
+  const [region, setRegion] = useState("전국")
   const [topic, setTopic] = useState<Topic>("전체")
   const [news, setNews] = useState<NewsItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
-  const fetchNews = useCallback(async (r: Region, t: Topic) => {
+  const fetchNews = useCallback(async (r: string, t: Topic) => {
     setLoading(true)
     setError(false)
     try {
@@ -69,24 +68,12 @@ export default function MainTravelNewsSection() {
           <p className="mt-1 text-sm text-gray-500">최신 여행·축제 관련 뉴스를 확인해보세요.</p>
         </div>
 
-        {/* 지역 탭 — 언더라인 세그먼트 */}
-        <div className="mb-5 border-b border-gray-200">
-          <div className="flex gap-0 overflow-x-auto scrollbar-none">
-            {REGIONS.map((r) => (
-              <button
-                key={r}
-                onClick={() => setRegion(r)}
-                className={`shrink-0 px-5 py-2.5 text-sm font-medium transition-colors relative whitespace-nowrap
-                  ${region === r
-                    ? "text-[#1B1C1A] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#1B1C1A] after:rounded-full"
-                    : "text-gray-400 hover:text-gray-600"
-                  }`}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-        </div>
+        <RegionSelector
+          value={region}
+          onChange={setRegion}
+          showNational={true}
+          accentColor="#D84315"
+        />
 
         {/* 주제 칩 — 해시태그 스타일 */}
         <div className="mb-8 flex flex-wrap gap-2">

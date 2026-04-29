@@ -3,11 +3,10 @@
 import { useState, useEffect, useCallback } from "react"
 import { ExternalLink, User, Calendar, BookOpen } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
+import RegionSelector from "@/components/region/RegionSelector"
 
-const REGIONS = ["서울", "부산", "제주", "강릉", "여수", "전주"] as const
 const THEMES = ["전체", "당일치기", "맛집여행", "감성카페", "가족여행", "축제여행"] as const
 
-type Region = (typeof REGIONS)[number]
 type Theme = (typeof THEMES)[number]
 
 interface BlogPost {
@@ -25,13 +24,13 @@ function formatDate(postdate: string) {
 }
 
 export default function MainBlogReviewSection() {
-  const [region, setRegion] = useState<Region>("제주")
+  const [region, setRegion] = useState("제주")
   const [theme, setTheme] = useState<Theme>("전체")
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
-  const fetchPosts = useCallback(async (r: Region, t: Theme) => {
+  const fetchPosts = useCallback(async (r: string, t: Theme) => {
     setLoading(true)
     setError(false)
     const query = t === "전체" ? `${r} 여행 후기` : `${r} ${t} 후기`
@@ -61,24 +60,11 @@ export default function MainBlogReviewSection() {
           <p className="mt-1 text-sm text-gray-500">네이버 블로그에서 확인할 수 있는 여행 후기를 모아봤어요.</p>
         </div>
 
-        {/* 지역 탭 — 언더라인 세그먼트 */}
-        <div className="mb-5 border-b border-gray-300/60">
-          <div className="flex gap-0 overflow-x-auto scrollbar-none">
-            {REGIONS.map((r) => (
-              <button
-                key={r}
-                onClick={() => setRegion(r)}
-                className={`shrink-0 px-5 py-2.5 text-sm font-medium transition-colors relative whitespace-nowrap
-                  ${region === r
-                    ? "text-[#1B1C1A] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#1B1C1A] after:rounded-full"
-                    : "text-gray-400 hover:text-gray-600"
-                  }`}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-        </div>
+        <RegionSelector
+          value={region}
+          onChange={setRegion}
+          accentColor="#b05a42"
+        />
 
         {/* 테마 칩 — 해시태그 스타일 */}
         <div className="mb-8 flex flex-wrap gap-2">

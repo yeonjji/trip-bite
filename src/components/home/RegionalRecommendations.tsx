@@ -3,21 +3,19 @@
 import { useState, useEffect, useCallback } from "react"
 import NaverPlaceCard, { type NaverPlace } from "@/components/nearby/NaverPlaceCard"
 import { Skeleton } from "@/components/ui/skeleton"
+import RegionSelector from "@/components/region/RegionSelector"
 
-const REGIONS = ["서울", "부산", "제주", "강릉", "여수", "전주"] as const
 const CATEGORIES = ["맛집", "카페", "숙소", "관광지"] as const
-
-type Region = (typeof REGIONS)[number]
 type Category = (typeof CATEGORIES)[number]
 
 export default function RegionalRecommendations() {
-  const [region, setRegion] = useState<Region>("서울")
+  const [region, setRegion] = useState("서울")
   const [category, setCategory] = useState<Category>("맛집")
   const [places, setPlaces] = useState<NaverPlace[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
-  const fetchPlaces = useCallback(async (r: Region, c: Category) => {
+  const fetchPlaces = useCallback(async (r: string, c: Category) => {
     setLoading(true)
     setError(false)
     try {
@@ -39,32 +37,18 @@ export default function RegionalRecommendations() {
   return (
     <section className="bg-white py-14">
       <div className="mx-auto max-w-6xl px-4">
-        {/* 헤더 */}
-        <div className="mb-8">
+        <div className="mb-6">
           <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-[#b05a42]">발견</p>
           <h2 className="font-headline text-2xl font-bold text-[#1B1C1A]">오늘 어디로 떠나볼까요?</h2>
         </div>
 
-        {/* 지역 탭 — 언더라인 세그먼트 */}
-        <div className="mb-5 border-b border-gray-200">
-          <div className="flex gap-0 overflow-x-auto scrollbar-none">
-            {REGIONS.map((r) => (
-              <button
-                key={r}
-                onClick={() => setRegion(r)}
-                className={`shrink-0 px-5 py-2.5 text-sm font-medium transition-colors relative whitespace-nowrap
-                  ${region === r
-                    ? "text-[#1B1C1A] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#1B1C1A] after:rounded-full"
-                    : "text-gray-400 hover:text-gray-600"
-                  }`}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-        </div>
+        <RegionSelector
+          value={region}
+          onChange={setRegion}
+          accentColor="#b05a42"
+        />
 
-        {/* 카테고리 칩 — 해시태그 스타일 */}
+        {/* 카테고리 칩 */}
         <div className="mb-8 flex flex-wrap gap-2">
           {CATEGORIES.map((c) => (
             <button
@@ -81,7 +65,6 @@ export default function RegionalRecommendations() {
           ))}
         </div>
 
-        {/* 결과 */}
         {loading ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {Array.from({ length: 5 }).map((_, i) => (
