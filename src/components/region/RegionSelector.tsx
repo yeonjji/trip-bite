@@ -170,11 +170,11 @@ export default function RegionSelector({
 
         {/* ③ 전체 지역 보기 버튼 */}
         <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-          <DialogTrigger asChild>
-            <button className="flex shrink-0 items-center gap-1 rounded-full border border-gray-200 px-3.5 py-1.5 text-xs font-medium text-gray-500 transition-colors hover:border-gray-400 hover:text-gray-700 whitespace-nowrap">
-              전체 지역
-              <ChevronDown className="h-3 w-3" />
-            </button>
+          <DialogTrigger
+            render={<button className="flex shrink-0 items-center gap-1 rounded-full border border-gray-200 px-3.5 py-1.5 text-xs font-medium text-gray-500 transition-colors hover:border-gray-400 hover:text-gray-700 whitespace-nowrap" />}
+          >
+            전체 지역
+            <ChevronDown className="h-3 w-3" />
           </DialogTrigger>
           <DialogContent className="max-w-md sm:max-w-lg">
             <DialogHeader>
