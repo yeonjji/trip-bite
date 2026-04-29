@@ -11,6 +11,7 @@ import NaverMap from "@/components/maps/NaverMap"
 import { getRestaurantDetail } from "@/lib/data/restaurants"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
+import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -50,6 +51,12 @@ export default async function RestaurantDetailPage({ params }: Props) {
   const title = detail?.title ?? destination?.title ?? ""
   const addr1 = detail?.addr1 ?? destination?.addr1 ?? ""
   const tel = detail?.tel ?? destination?.tel ?? ""
+  const regionName = (() => {
+    const parts = addr1.split(" ").filter(Boolean)
+    const sigungu = parts[1]
+    if (!sigungu) return null
+    return sigungu.replace(/(특별자치시|광역시|특별시|시|군|구)$/, "")
+  })()
   const overview = detail?.overview ?? destination?.overview ?? ""
   const firstmenu = intro?.firstmenu
   const opentimefood = intro?.opentimefood
@@ -168,6 +175,9 @@ export default async function RestaurantDetailPage({ params }: Props) {
         parking={nearbyFacilities.parking}
         evStations={nearbyFacilities.evStations}
       />
+
+      {/* 이 근처에서 같이 가볼 곳 */}
+      {regionName && <NearbyNaverPlaces regionName={regionName} />}
     </div>
   )
 }

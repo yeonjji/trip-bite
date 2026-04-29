@@ -5,6 +5,7 @@ import type { Metadata } from "next"
 import { getFestivalById, computeStatus, getRegionName } from "@/lib/data/festivals"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
 import { buildAlternates } from "@/lib/utils/metadata"
+import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import TravelMap from "../../travel/_components/TravelMap"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
@@ -134,6 +135,12 @@ export default async function EventDetailPage({ params }: Props) {
 
   const venue = detail.eventplace || festival.addr1
   const homepage = detail.eventhomepage || detail.homepage
+  const regionName = (() => {
+    const parts = (festival.addr1 ?? "").split(" ").filter(Boolean)
+    const sigungu = parts[1]
+    if (!sigungu) return null
+    return sigungu.replace(/(특별자치시|광역시|특별시|시|군|구)$/, "")
+  })()
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
@@ -300,6 +307,9 @@ export default async function EventDetailPage({ params }: Props) {
         parking={nearbyFacilities.parking}
         evStations={nearbyFacilities.evStations}
       />
+
+      {/* 이 근처에서 같이 가볼 곳 */}
+      {regionName && <NearbyNaverPlaces regionName={regionName} />}
     </div>
   )
 }

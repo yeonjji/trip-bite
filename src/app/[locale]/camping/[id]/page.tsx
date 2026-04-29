@@ -15,6 +15,7 @@ import ReviewSection from "@/components/reviews/ReviewSection"
 
 import CampingMap from "./_components/CampingMap"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
+import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>
@@ -77,6 +78,12 @@ export default async function CampingDetailPage({ params }: PageProps) {
   const name = detail?.facltNm ?? site?.faclt_nm ?? ""
   const addr = detail?.addr1 ?? site?.addr1 ?? ""
   const addr2 = detail?.addr2 ?? site?.addr2
+  const regionName = (() => {
+    const parts = addr.split(" ").filter(Boolean)
+    const sigungu = parts[1]
+    if (!sigungu) return null
+    return sigungu.replace(/(특별자치시|광역시|특별시|시|군|구)$/, "")
+  })()
   const tel = detail?.tel ?? site?.tel
   const homepage = detail?.homepage ?? site?.homepage
   const intro = detail?.intro
@@ -488,6 +495,14 @@ export default async function CampingDetailPage({ params }: PageProps) {
         parking={nearbyFacilities.parking}
         evStations={nearbyFacilities.evStations}
       />
+
+      {/* 이 근처에서 같이 가볼 곳 */}
+      {regionName && (
+        <>
+          <Separator className="my-6" />
+          <NearbyNaverPlaces regionName={regionName} />
+        </>
+      )}
 
       {/* 리뷰 */}
       <Separator className="my-6" />
