@@ -18,6 +18,7 @@ import TravelMap from "../_components/TravelMap"
 import NearbyFacilities from "../_components/NearbyFacilities"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
+import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -450,6 +451,9 @@ export default async function TravelDetailPage({ params }: Props) {
           <WeatherWidget areaCode={areaCode} />
         </div>
       )}
+
+      {/* 여행 후기 */}
+      <TravelBlogReviewSection placeName={title} regionName={regionName} />
 
       {/* 주변 편의시설 */}
       <NearbyFacilities
