@@ -19,6 +19,7 @@ import SpecialtyCard from "@/components/cards/SpecialtyCard"
 import RecipeCard from "@/components/cards/RecipeCard"
 import RegionExplorer from "@/components/home/RegionExplorer"
 import HeroCarousel from "@/components/home/HeroCarousel"
+import RegionalRecommendations from "@/components/home/RegionalRecommendations"
 import type { Destination } from "@/types/database"
 import type { TourSpotBase, RestaurantDetail } from "@/types/tour-api"
 
@@ -114,12 +115,15 @@ export default async function HomePage({ params }: Props) {
         </div>
       </section>
 
-      {/* 3. 인기 지역 그리드 */}
+      {/* 3. 지역별 추천 장소 */}
+      <RegionalRecommendations />
+
+      {/* 4. 인기 지역 그리드 */}
       <div className="bg-[#F9F7EF]">
         <RegionExplorer locale={locale} />
       </div>
 
-      {/* 4. 제철 특산품 */}
+      {/* 5. 제철 특산품 */}
       <section className="bg-white px-4 py-20">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex items-end justify-between">
