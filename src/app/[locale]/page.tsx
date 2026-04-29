@@ -20,6 +20,7 @@ import RecipeCard from "@/components/cards/RecipeCard"
 import RegionExplorer from "@/components/home/RegionExplorer"
 import HeroCarousel from "@/components/home/HeroCarousel"
 import RegionalRecommendations from "@/components/home/RegionalRecommendations"
+import MainBlogReviewSection from "@/components/home/MainBlogReviewSection"
 import type { Destination } from "@/types/database"
 import type { TourSpotBase, RestaurantDetail } from "@/types/tour-api"
 
@@ -118,12 +119,15 @@ export default async function HomePage({ params }: Props) {
       {/* 3. 지역별 추천 장소 */}
       <RegionalRecommendations />
 
-      {/* 4. 인기 지역 그리드 */}
+      {/* 4. 요즘 여행자들의 후기 */}
+      <MainBlogReviewSection />
+
+      {/* 5. 인기 지역 그리드 */}
       <div className="bg-[#F9F7EF]">
         <RegionExplorer locale={locale} />
       </div>
 
-      {/* 5. 제철 특산품 */}
+      {/* 6. 제철 특산품 */}
       <section className="bg-white px-4 py-20">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex items-end justify-between">
@@ -153,7 +157,7 @@ export default async function HomePage({ params }: Props) {
         </div>
       </section>
 
-      {/* 5. 날씨별 추천 */}
+      {/* 7. 날씨별 추천 */}
       <section className="bg-[#F9F7EF] px-4 py-20">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex items-end justify-between">
@@ -195,7 +199,7 @@ export default async function HomePage({ params }: Props) {
         </div>
       </section>
 
-      {/* 6. 최신 레시피 */}
+      {/* 8. 최신 레시피 */}
       <section className="bg-white px-4 py-20">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex items-end justify-between">
@@ -225,7 +229,7 @@ export default async function HomePage({ params }: Props) {
         </div>
       </section>
 
-      {/* 7. 추천 캠핑장 */}
+      {/* 9. 추천 캠핑장 */}
       <section className="bg-[#F9F7EF] px-4 py-20">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex items-end justify-between">
