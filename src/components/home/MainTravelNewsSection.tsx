@@ -60,51 +60,47 @@ export default function MainTravelNewsSection() {
   }, [region, topic, fetchNews])
 
   return (
-    <section className="bg-white py-12">
+    <section className="bg-white py-14">
       <div className="mx-auto max-w-6xl px-4">
         {/* 헤더 */}
-        <div className="mb-6">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-[#D84315]">
-            뉴스
-          </p>
-          <h2 className="font-headline text-2xl font-bold text-[#1B1C1A]">
-            지역 축제·관광 소식
-          </h2>
-          <p className="mt-1 text-sm text-gray-500">
-            최신 여행·축제 관련 뉴스를 확인해보세요.
-          </p>
+        <div className="mb-8">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-[#D84315]">뉴스</p>
+          <h2 className="font-headline text-2xl font-bold text-[#1B1C1A]">지역 축제·관광 소식</h2>
+          <p className="mt-1 text-sm text-gray-500">최신 여행·축제 관련 뉴스를 확인해보세요.</p>
         </div>
 
-        {/* 지역 탭 */}
-        <div className="mb-3 flex flex-wrap gap-2">
-          {REGIONS.map((r) => (
-            <button
-              key={r}
-              onClick={() => setRegion(r)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                region === r
-                  ? "bg-[#1B1C1A] text-white"
-                  : "bg-[#F5F5F0] text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              {r}
-            </button>
-          ))}
+        {/* 지역 탭 — 언더라인 세그먼트 */}
+        <div className="mb-5 border-b border-gray-200">
+          <div className="flex gap-0 overflow-x-auto scrollbar-none">
+            {REGIONS.map((r) => (
+              <button
+                key={r}
+                onClick={() => setRegion(r)}
+                className={`shrink-0 px-5 py-2.5 text-sm font-medium transition-colors relative whitespace-nowrap
+                  ${region === r
+                    ? "text-[#1B1C1A] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#1B1C1A] after:rounded-full"
+                    : "text-gray-400 hover:text-gray-600"
+                  }`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* 주제 탭 */}
-        <div className="mb-6 flex flex-wrap gap-2">
+        {/* 주제 칩 — 해시태그 스타일 */}
+        <div className="mb-8 flex flex-wrap gap-2">
           {TOPICS.map((t) => (
             <button
               key={t}
               onClick={() => setTopic(t)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              className={`rounded-full border px-3.5 py-1 text-xs font-medium transition-all ${
                 topic === t
-                  ? "bg-[#D84315] text-white"
-                  : "bg-[#F5F5F0] text-gray-600 hover:bg-gray-200"
+                  ? "border-[#D84315] bg-[#D84315]/8 text-[#D84315]"
+                  : "border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700"
               }`}
             >
-              {t}
+              #{t}
             </button>
           ))}
         </div>
@@ -117,13 +113,9 @@ export default function MainTravelNewsSection() {
             ))}
           </div>
         ) : error ? (
-          <p className="py-10 text-center text-sm text-gray-400">
-            관광 뉴스를 불러오지 못했습니다.
-          </p>
+          <p className="py-10 text-center text-sm text-gray-400">관광 뉴스를 불러오지 못했습니다.</p>
         ) : news.length === 0 ? (
-          <p className="py-10 text-center text-sm text-gray-400">
-            관련 관광 뉴스가 없습니다.
-          </p>
+          <p className="py-10 text-center text-sm text-gray-400">관련 관광 뉴스가 없습니다.</p>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {news.map((item, i) => (
@@ -136,17 +128,10 @@ export default function MainTravelNewsSection() {
                     <Newspaper className="h-3 w-3" />
                     뉴스
                   </span>
-
-                  <p className="line-clamp-2 font-semibold leading-snug text-[#1B1C1A]">
-                    {item.title}
-                  </p>
-
+                  <p className="line-clamp-2 font-semibold leading-snug text-[#1B1C1A]">{item.title}</p>
                   {item.description && (
-                    <p className="line-clamp-3 text-sm leading-relaxed text-gray-500">
-                      {item.description}
-                    </p>
+                    <p className="line-clamp-3 text-sm leading-relaxed text-gray-500">{item.description}</p>
                   )}
-
                   {item.pubDate && (
                     <p className="flex items-center gap-1 text-xs text-gray-400">
                       <Calendar className="h-3 w-3" />
@@ -154,7 +139,6 @@ export default function MainTravelNewsSection() {
                     </p>
                   )}
                 </div>
-
                 <a
                   href={item.originallink || item.link}
                   target="_blank"

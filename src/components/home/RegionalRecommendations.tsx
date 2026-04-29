@@ -37,48 +37,46 @@ export default function RegionalRecommendations() {
   }, [region, category, fetchPlaces])
 
   return (
-    <section className="bg-white py-12">
+    <section className="bg-white py-14">
       <div className="mx-auto max-w-6xl px-4">
         {/* 헤더 */}
-        <div className="mb-6">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-[#b05a42]">
-            발견
-          </p>
-          <h2 className="font-headline text-2xl font-bold text-[#1B1C1A]">
-            오늘 어디로 떠나볼까요?
-          </h2>
+        <div className="mb-8">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-[#b05a42]">발견</p>
+          <h2 className="font-headline text-2xl font-bold text-[#1B1C1A]">오늘 어디로 떠나볼까요?</h2>
         </div>
 
-        {/* 지역 탭 */}
-        <div className="mb-3 flex flex-wrap gap-2">
-          {REGIONS.map((r) => (
-            <button
-              key={r}
-              onClick={() => setRegion(r)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                region === r
-                  ? "bg-[#1B1C1A] text-white"
-                  : "bg-[#F5F5F0] text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              {r}
-            </button>
-          ))}
+        {/* 지역 탭 — 언더라인 세그먼트 */}
+        <div className="mb-5 border-b border-gray-200">
+          <div className="flex gap-0 overflow-x-auto scrollbar-none">
+            {REGIONS.map((r) => (
+              <button
+                key={r}
+                onClick={() => setRegion(r)}
+                className={`shrink-0 px-5 py-2.5 text-sm font-medium transition-colors relative whitespace-nowrap
+                  ${region === r
+                    ? "text-[#1B1C1A] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#1B1C1A] after:rounded-full"
+                    : "text-gray-400 hover:text-gray-600"
+                  }`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* 카테고리 탭 */}
-        <div className="mb-6 flex flex-wrap gap-2">
+        {/* 카테고리 칩 — 해시태그 스타일 */}
+        <div className="mb-8 flex flex-wrap gap-2">
           {CATEGORIES.map((c) => (
             <button
               key={c}
               onClick={() => setCategory(c)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              className={`rounded-full border px-3.5 py-1 text-xs font-medium transition-all ${
                 category === c
-                  ? "bg-[#b05a42] text-white"
-                  : "bg-[#F5F5F0] text-gray-600 hover:bg-gray-200"
+                  ? "border-[#b05a42] bg-[#b05a42]/8 text-[#b05a42]"
+                  : "border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700"
               }`}
             >
-              {c}
+              #{c}
             </button>
           ))}
         </div>
@@ -91,13 +89,9 @@ export default function RegionalRecommendations() {
             ))}
           </div>
         ) : error ? (
-          <p className="py-10 text-center text-sm text-gray-400">
-            장소 정보를 불러오지 못했습니다.
-          </p>
+          <p className="py-10 text-center text-sm text-gray-400">장소 정보를 불러오지 못했습니다.</p>
         ) : places.length === 0 ? (
-          <p className="py-10 text-center text-sm text-gray-400">
-            검색된 장소가 없습니다.
-          </p>
+          <p className="py-10 text-center text-sm text-gray-400">검색된 장소가 없습니다.</p>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {places.map((place, i) => (

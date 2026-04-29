@@ -52,51 +52,47 @@ export default function MainBlogReviewSection() {
   }, [region, theme, fetchPosts])
 
   return (
-    <section className="bg-[#F9F7EF] py-12">
+    <section className="bg-[#F9F7EF] py-14">
       <div className="mx-auto max-w-6xl px-4">
         {/* 헤더 */}
-        <div className="mb-6">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-[#b05a42]">
-            후기
-          </p>
-          <h2 className="font-headline text-2xl font-bold text-[#1B1C1A]">
-            요즘 여행자들이 남긴 후기
-          </h2>
-          <p className="mt-1 text-sm text-gray-500">
-            네이버 블로그에서 확인할 수 있는 여행 후기를 모아봤어요.
-          </p>
+        <div className="mb-8">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-[#b05a42]">후기</p>
+          <h2 className="font-headline text-2xl font-bold text-[#1B1C1A]">요즘 여행자들이 남긴 후기</h2>
+          <p className="mt-1 text-sm text-gray-500">네이버 블로그에서 확인할 수 있는 여행 후기를 모아봤어요.</p>
         </div>
 
-        {/* 지역 탭 */}
-        <div className="mb-3 flex flex-wrap gap-2">
-          {REGIONS.map((r) => (
-            <button
-              key={r}
-              onClick={() => setRegion(r)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                region === r
-                  ? "bg-[#1B1C1A] text-white"
-                  : "bg-white text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              {r}
-            </button>
-          ))}
+        {/* 지역 탭 — 언더라인 세그먼트 */}
+        <div className="mb-5 border-b border-gray-300/60">
+          <div className="flex gap-0 overflow-x-auto scrollbar-none">
+            {REGIONS.map((r) => (
+              <button
+                key={r}
+                onClick={() => setRegion(r)}
+                className={`shrink-0 px-5 py-2.5 text-sm font-medium transition-colors relative whitespace-nowrap
+                  ${region === r
+                    ? "text-[#1B1C1A] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#1B1C1A] after:rounded-full"
+                    : "text-gray-400 hover:text-gray-600"
+                  }`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* 테마 탭 */}
-        <div className="mb-6 flex flex-wrap gap-2">
+        {/* 테마 칩 — 해시태그 스타일 */}
+        <div className="mb-8 flex flex-wrap gap-2">
           {THEMES.map((t) => (
             <button
               key={t}
               onClick={() => setTheme(t)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              className={`rounded-full border px-3.5 py-1 text-xs font-medium transition-all ${
                 theme === t
-                  ? "bg-[#b05a42] text-white"
-                  : "bg-white text-gray-600 hover:bg-gray-100"
+                  ? "border-[#b05a42] bg-[#b05a42]/8 text-[#b05a42]"
+                  : "border-gray-300 bg-white text-gray-500 hover:border-gray-400 hover:text-gray-700"
               }`}
             >
-              {t}
+              #{t}
             </button>
           ))}
         </div>
@@ -109,13 +105,9 @@ export default function MainBlogReviewSection() {
             ))}
           </div>
         ) : error ? (
-          <p className="py-10 text-center text-sm text-gray-400">
-            여행 후기를 불러오지 못했습니다.
-          </p>
+          <p className="py-10 text-center text-sm text-gray-400">여행 후기를 불러오지 못했습니다.</p>
         ) : posts.length === 0 ? (
-          <p className="py-10 text-center text-sm text-gray-400">
-            관련 여행 후기가 없습니다.
-          </p>
+          <p className="py-10 text-center text-sm text-gray-400">관련 여행 후기가 없습니다.</p>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {posts.map((post, i) => (
@@ -128,33 +120,19 @@ export default function MainBlogReviewSection() {
                     <BookOpen className="h-3 w-3" />
                     네이버 블로그
                   </span>
-
-                  <p className="line-clamp-2 font-semibold leading-snug text-[#1B1C1A]">
-                    {post.title}
-                  </p>
-
+                  <p className="line-clamp-2 font-semibold leading-snug text-[#1B1C1A]">{post.title}</p>
                   {post.description && (
-                    <p className="line-clamp-3 text-sm leading-relaxed text-gray-500">
-                      {post.description}
-                    </p>
+                    <p className="line-clamp-3 text-sm leading-relaxed text-gray-500">{post.description}</p>
                   )}
-
                   <div className="flex items-center gap-3 pt-1 text-xs text-gray-400">
                     {post.bloggername && (
                       <span className="flex items-center gap-1">
                         <User className="h-3 w-3" />
                         {post.bloggerlink ? (
-                          <a
-                            href={post.bloggerlink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:text-[#b05a42] hover:underline"
-                          >
+                          <a href={post.bloggerlink} target="_blank" rel="noopener noreferrer" className="hover:text-[#b05a42] hover:underline">
                             {post.bloggername}
                           </a>
-                        ) : (
-                          post.bloggername
-                        )}
+                        ) : post.bloggername}
                       </span>
                     )}
                     {post.postdate && (
@@ -165,7 +143,6 @@ export default function MainBlogReviewSection() {
                     )}
                   </div>
                 </div>
-
                 <a
                   href={post.link}
                   target="_blank"
