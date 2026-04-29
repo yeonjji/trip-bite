@@ -17,6 +17,7 @@ import WeatherWidget from "@/components/weather/WeatherWidget"
 import TravelMap from "../_components/TravelMap"
 import NearbyFacilities from "../_components/NearbyFacilities"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
+import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -96,6 +97,14 @@ export default async function TravelDetailPage({ params }: Props) {
   const ratingAvg = destination?.rating_avg ?? fallback?.rating_avg ?? 0
   const ratingCount = destination?.rating_count ?? fallback?.rating_count ?? 0
   const areaCode = destination?.area_code
+
+  // 주소에서 시군구명 추출 (예: "강원특별자치도 강릉시 ..." → "강릉")
+  const regionName = (() => {
+    const parts = addr1.split(" ").filter(Boolean)
+    const sigungu = parts[1]
+    if (!sigungu) return null
+    return sigungu.replace(/(특별자치시|광역시|특별시|시|군|구)$/, "")
+  })()
 
   const isWorldHeritage =
     intro?.heritage1 === "1" || intro?.heritage2 === "1" || intro?.heritage3 === "1"
@@ -474,6 +483,9 @@ export default async function TravelDetailPage({ params }: Props) {
           </div>
         </div>
       )}
+
+      {/* 이 근처에서 같이 가볼 곳 */}
+      {regionName && <NearbyNaverPlaces regionName={regionName} />}
 
       <div className="mb-6">
         <ReviewSection
