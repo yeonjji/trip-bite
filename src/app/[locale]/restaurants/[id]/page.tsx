@@ -12,6 +12,7 @@ import { getRestaurantDetail } from "@/lib/data/restaurants"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
+import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -167,6 +168,9 @@ export default async function RestaurantDetailPage({ params }: Props) {
           </div>
         </div>
       )}
+
+      {/* 여행 후기 */}
+      <TravelBlogReviewSection placeName={title} regionName={regionName} />
 
       <NearbyFacilities
         locale={locale}

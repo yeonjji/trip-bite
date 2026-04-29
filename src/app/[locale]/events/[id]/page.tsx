@@ -6,6 +6,7 @@ import { getFestivalById, computeStatus, getRegionName } from "@/lib/data/festiv
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
 import { buildAlternates } from "@/lib/utils/metadata"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
+import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import TravelMap from "../../travel/_components/TravelMap"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
@@ -298,6 +299,9 @@ export default async function EventDetailPage({ params }: Props) {
           </div>
         </>
       )}
+
+      {/* 여행 후기 */}
+      <TravelBlogReviewSection placeName={festival.title} regionName={regionName} />
 
       {/* 주변 시설 */}
       <NearbyFacilities

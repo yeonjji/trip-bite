@@ -8,6 +8,7 @@ import type { Metadata } from "next"
 import { Badge } from "@/components/ui/badge"
 import { getSpecialtyDetail } from "@/lib/data/specialties"
 import { buildAlternates } from "@/lib/utils/metadata"
+import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -104,6 +105,12 @@ export default async function SpecialtyDetailPage({ params }: Props) {
           </div>
         </div>
       )}
+
+      {/* 여행 후기 */}
+      <TravelBlogReviewSection
+        placeName={specialty.name_ko}
+        regionName={specialty.regions?.name_ko ?? null}
+      />
     </div>
   )
 }
