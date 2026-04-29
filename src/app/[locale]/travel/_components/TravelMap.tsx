@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 
 interface TravelMapProps {
@@ -13,6 +13,7 @@ export default function TravelMap({ lat, lng, title }: TravelMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
   const markerRef = useRef<any>(null)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     const scriptId = "naver-map-script"
@@ -34,6 +35,7 @@ export default function TravelMap({ lat, lng, title }: TravelMapProps) {
         map: mapInstanceRef.current,
         title,
       })
+      setIsLoaded(true)
     }
 
     if ((window as any).naver?.maps) {
@@ -57,7 +59,7 @@ export default function TravelMap({ lat, lng, title }: TravelMapProps) {
 
   return (
     <div className="relative h-64 w-full overflow-hidden rounded-xl">
-      <Skeleton className="absolute inset-0 z-10 rounded-xl" />
+      {!isLoaded && <Skeleton className="absolute inset-0 z-10 rounded-xl" />}
       <div ref={mapRef} className="h-full w-full" />
     </div>
   )

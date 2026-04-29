@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -14,6 +14,7 @@ export default function CampingMap({ lat, lng, title }: CampingMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const markerRef = useRef<any>(null)
   const mapInstanceRef = useRef<any>(null)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     const scriptId = "naver-map-script"
@@ -35,6 +36,7 @@ export default function CampingMap({ lat, lng, title }: CampingMapProps) {
         map: mapInstanceRef.current,
         title,
       })
+      setIsLoaded(true)
     }
 
     if ((window as any).naver?.maps) {
@@ -58,7 +60,7 @@ export default function CampingMap({ lat, lng, title }: CampingMapProps) {
 
   return (
     <div className="relative h-64 w-full overflow-hidden rounded-xl">
-      <Skeleton className="absolute inset-0 z-10 rounded-xl" />
+      {!isLoaded && <Skeleton className="absolute inset-0 z-10 rounded-xl" />}
       <div ref={mapRef} className="h-full w-full" />
     </div>
   )

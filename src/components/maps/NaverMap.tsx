@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -23,7 +23,7 @@ export default function NaverMap({
 }: NaverMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
-  const isLoadedRef = useRef(false)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     const scriptId = "naver-map-script"
@@ -43,7 +43,7 @@ export default function NaverMap({
           map: mapInstanceRef.current,
         })
       }
-      isLoadedRef.current = true
+      setIsLoaded(true)
     }
 
     if ((window as any).naver?.maps) {
@@ -66,7 +66,7 @@ export default function NaverMap({
   }, [lat, lng, zoom, showMarker])
 
   useEffect(() => {
-    if (!isLoadedRef.current || !mapInstanceRef.current) return
+    if (!isLoaded || !mapInstanceRef.current) return
     const naver = (window as any).naver
     if (!naver?.maps) return
     mapInstanceRef.current.setCenter(new naver.maps.LatLng(lat, lng))
@@ -74,7 +74,7 @@ export default function NaverMap({
 
   return (
     <div className={className}>
-      {!isLoadedRef.current && (
+      {!isLoaded && (
         <Skeleton className="absolute inset-0 z-10 rounded-md" />
       )}
       <div ref={mapRef} id="naver-map" className="h-full w-full" />
