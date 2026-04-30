@@ -190,13 +190,13 @@ export async function getRelatedRecipes({
         .select("*")
         .contains("hash_tags", [regionName])
         .not("main_image_url", "is", null)
-        .limit(POOL) as Promise<{ data: unknown[] | null }>,
+        .limit(POOL) as unknown as Promise<{ data: unknown[] | null }>,
       supabase
         .from("recipes")
         .select("*")
         .ilike("name", `%${regionName}%`)
         .not("main_image_url", "is", null)
-        .limit(POOL) as Promise<{ data: unknown[] | null }>,
+        .limit(POOL) as unknown as Promise<{ data: unknown[] | null }>,
     )
   }
 
@@ -207,7 +207,7 @@ export async function getRelatedRecipes({
         .select("*")
         .in("category", CAMPING_CATEGORIES)
         .not("main_image_url", "is", null)
-        .limit(POOL) as Promise<{ data: unknown[] | null }>,
+        .limit(POOL) as unknown as Promise<{ data: unknown[] | null }>,
     )
   }
 
@@ -218,7 +218,7 @@ export async function getRelatedRecipes({
       .select("*")
       .not("main_image_url", "is", null)
       .order("created_at", { ascending: false })
-      .limit(POOL) as Promise<{ data: unknown[] | null }>,
+      .limit(POOL) as unknown as Promise<{ data: unknown[] | null }>,
   )
 
   const results = await Promise.allSettled(queries)

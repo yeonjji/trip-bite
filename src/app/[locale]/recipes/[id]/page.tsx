@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation"
-import Image from "next/image"
 import Link from "next/link"
 import type { Metadata } from "next"
-import { ChefHat, Flame, ArrowRight, MapPin } from "lucide-react"
+import { Flame, ArrowRight, MapPin } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { getRecipeDetail } from "@/lib/data/recipes"
 import { buildAlternates } from "@/lib/utils/metadata"
 import RecipeIngredientList from "@/components/recipes/RecipeIngredientList"
+import SafeRecipeImage from "@/components/recipes/SafeRecipeImage"
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>
@@ -66,22 +66,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
 
       {/* Hero 이미지 */}
       <div className="relative mb-6 aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[#F4F1E9] sm:aspect-video">
-        {main_image_url ? (
-          <Image
-            src={main_image_url}
-            alt={name}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 768px"
-            priority
-            unoptimized
-          />
-        ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-2 text-gray-400">
-            <ChefHat className="h-12 w-12" />
-            <span className="text-sm">이미지 없음</span>
-          </div>
-        )}
+        <SafeRecipeImage src={main_image_url} alt={name} sizes="(max-width: 768px) 100vw, 768px" priority />
         {/* 배지 오버레이 */}
         <div className="absolute left-3 top-3 flex gap-2">
           {isTraditional && (
@@ -163,15 +148,8 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                 <div className="flex-1 pb-2">
                   <p className="text-sm leading-relaxed text-[#1B1C1A]">{s.description}</p>
                   {s.image_url && (
-                    <div className="relative mt-3 aspect-video w-full overflow-hidden rounded-xl bg-[#F4F1E9]">
-                      <Image
-                        src={s.image_url}
-                        alt={`조리 순서 ${s.step}`}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 600px"
-                        unoptimized
-                      />
+                    <div className="mt-3">
+                      <SafeRecipeImage src={s.image_url} alt={`조리 순서 ${s.step}`} compact sizes="(max-width: 768px) 100vw, 600px" />
                     </div>
                   )}
                 </div>
@@ -184,16 +162,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
       {/* 완성 이미지 */}
       {finished_image_url && finished_image_url !== main_image_url && (
         <section className="mb-8">
-          <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-[#F4F1E9]">
-            <Image
-              src={finished_image_url}
-              alt={`${name} 완성 이미지`}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 768px"
-              unoptimized
-            />
-          </div>
+          <SafeRecipeImage src={finished_image_url} alt={`${name} 완성 이미지`} compact sizes="(max-width: 768px) 100vw, 768px" />
         </section>
       )}
 
