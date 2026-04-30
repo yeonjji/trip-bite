@@ -97,6 +97,7 @@ export async function getRelatedRecipes({
       .from("recipes")
       .select("*")
       .contains("hash_tags", [regionName])
+      .not("main_image_url", "is", null)
       .limit(limit)
     if (byTag && byTag.length >= limit) return byTag as RecipeRow[]
 
@@ -104,6 +105,7 @@ export async function getRelatedRecipes({
       .from("recipes")
       .select("*")
       .ilike("name", `%${regionName}%`)
+      .not("main_image_url", "is", null)
       .limit(limit)
     const merged = [...(byTag ?? []), ...(byName ?? [])]
     const unique = Array.from(new Map(merged.map((r) => [r.id, r])).values())
