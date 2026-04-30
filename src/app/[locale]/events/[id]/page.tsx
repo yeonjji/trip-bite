@@ -7,6 +7,7 @@ import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
 import { buildAlternates } from "@/lib/utils/metadata"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
+import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import TravelMap from "../../travel/_components/TravelMap"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
@@ -302,6 +303,9 @@ export default async function EventDetailPage({ params }: Props) {
 
       {/* 여행 후기 */}
       <TravelBlogReviewSection placeName={festival.title} regionName={regionName} />
+
+      {/* 지역 레시피 추천 */}
+      <RecipeRecommendationSection regionName={regionName} context="festival" locale={locale} />
 
       {/* 주변 시설 */}
       <NearbyFacilities

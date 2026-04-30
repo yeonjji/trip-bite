@@ -11,9 +11,19 @@ interface RecipeCardProps {
 }
 
 export default function RecipeCard({ item, locale = "ko" }: RecipeCardProps) {
-  const { id, name, category, cooking_method, main_image_url, hash_tags, source } = item
+  const { id, name, category, cooking_method, main_image_url, ingredients, hash_tags, source } = item
   const isTraditional = source === "향토음식"
   const regionTag = isTraditional ? hash_tags[0] : null
+
+  // 재료 미리보기: 최대 3개
+  const ingredientPreview = ingredients
+    ? ingredients
+        .split("\n")
+        .map((l) => l.trim())
+        .filter(Boolean)
+        .slice(0, 3)
+        .join(" · ")
+    : null
 
   return (
     <Link href={`/${locale}/recipes/${id}`} className="block group">
@@ -26,10 +36,11 @@ export default function RecipeCard({ item, locale = "ko" }: RecipeCardProps) {
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              unoptimized
             />
           ) : (
             <div className="flex h-full items-center justify-center text-muted-foreground">
-              <span className="text-sm">이미지 없음</span>
+              <span className="text-sm">🍽</span>
             </div>
           )}
           {isTraditional && (
@@ -41,9 +52,7 @@ export default function RecipeCard({ item, locale = "ko" }: RecipeCardProps) {
         <CardContent className="pt-3">
           <div className="flex flex-wrap items-center gap-1">
             {category && (
-              <Badge variant="secondary" className="text-xs">
-                {category}
-              </Badge>
+              <Badge variant="secondary" className="text-xs">{category}</Badge>
             )}
             {regionTag && (
               <Badge variant="outline" className="text-xs text-amber-700 border-amber-200 bg-amber-50">
@@ -53,16 +62,10 @@ export default function RecipeCard({ item, locale = "ko" }: RecipeCardProps) {
           </div>
           <h3 className="mt-1 line-clamp-1 font-medium text-foreground">{name}</h3>
           {cooking_method && (
-            <p className="mt-1 text-xs text-muted-foreground">{cooking_method}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{cooking_method}</p>
           )}
-          {!isTraditional && hash_tags.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-1">
-              {hash_tags.slice(0, 2).map((tag) => (
-                <Badge key={tag} variant="outline" className="text-xs">
-                  #{tag}
-                </Badge>
-              ))}
-            </div>
+          {ingredientPreview && (
+            <p className="mt-1.5 line-clamp-1 text-xs text-gray-400">{ingredientPreview}</p>
           )}
         </CardContent>
       </Card>

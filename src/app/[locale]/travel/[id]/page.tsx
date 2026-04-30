@@ -19,6 +19,7 @@ import NearbyFacilities from "../_components/NearbyFacilities"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
+import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -454,6 +455,9 @@ export default async function TravelDetailPage({ params }: Props) {
 
       {/* 여행 후기 */}
       <TravelBlogReviewSection placeName={title} regionName={regionName} />
+
+      {/* 지역 레시피 추천 */}
+      <RecipeRecommendationSection regionName={regionName} context="travel" locale={locale} />
 
       {/* 주변 편의시설 */}
       <NearbyFacilities
