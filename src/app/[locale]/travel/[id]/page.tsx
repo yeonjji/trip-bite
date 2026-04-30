@@ -19,7 +19,6 @@ import NearbyFacilities from "../_components/NearbyFacilities"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
-import RelatedImageSearchSection from "@/components/travel/RelatedImageSearchSection"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -455,9 +454,6 @@ export default async function TravelDetailPage({ params }: Props) {
 
       {/* 여행 후기 */}
       <TravelBlogReviewSection placeName={title} regionName={regionName} />
-
-      {/* 관련 이미지 더보기 */}
-      <RelatedImageSearchSection placeName={title} regionName={regionName} />
 
       {/* 주변 편의시설 */}
       <NearbyFacilities
