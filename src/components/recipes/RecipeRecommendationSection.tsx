@@ -1,7 +1,5 @@
-import Link from "next/link"
-import Image from "next/image"
-import { ArrowRight, ChevronRight } from "lucide-react"
 import { getRelatedRecipes } from "@/lib/data/recipes"
+import HorizontalScrollSection from "@/components/shared/HorizontalScrollSection"
 
 type Context = "travel" | "restaurant" | "festival" | "camping" | "general"
 
@@ -20,86 +18,25 @@ interface Props {
 }
 
 export default async function RecipeRecommendationSection({ regionName, context, locale }: Props) {
-  const recipes = await getRelatedRecipes({ regionName, context, limit: 3 })
+  const recipes = await getRelatedRecipes({ regionName, context, limit: 5 })
   if (recipes.length === 0) return null
 
   const { title, sub } = SECTION_COPY[context]
 
   return (
-    <div className="mb-6">
-      <div className="mb-4 flex items-end justify-between">
-        <div>
-          <h2 className="font-headline text-xl font-bold text-[#1B1C1A]">{title}</h2>
-          <p className="mt-0.5 text-sm text-gray-400">{sub}</p>
-        </div>
-        <Link
-          href={`/${locale}/recipes`}
-          className="hidden shrink-0 items-center gap-1 text-sm font-medium text-[#D84315] hover:underline sm:flex"
-        >
-          더보기 <ArrowRight className="h-4 w-4" />
-        </Link>
-      </div>
-
-      <ul className="divide-y divide-gray-100 rounded-xl border border-gray-100 bg-white shadow-sm">
-        {recipes.map((r) => {
-          const ingredientPreview = r.ingredients
-            ? r.ingredients.split("\n").map((l) => l.trim()).filter(Boolean).slice(0, 3).join(" · ")
-            : null
-
-          return (
-            <li key={r.id}>
-              <Link
-                href={`/${locale}/recipes/${r.id}`}
-                className="flex items-center gap-4 px-4 py-3 transition-colors hover:bg-[#FFF8F5]"
-              >
-                {/* 썸네일 */}
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-[#F4F1E9]">
-                  {r.main_image_url ? (
-                    <Image
-                      src={r.main_image_url}
-                      alt={r.name}
-                      fill
-                      className="object-cover"
-                      sizes="56px"
-                      unoptimized
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-xl">🍽</div>
-                  )}
-                </div>
-
-                {/* 텍스트 */}
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-[#1B1C1A]">{r.name}</p>
-                  <div className="mt-0.5 flex items-center gap-2 text-xs text-gray-400">
-                    {r.category && <span>{r.category}</span>}
-                    {r.cooking_method && (
-                      <>
-                        <span>·</span>
-                        <span>{r.cooking_method}</span>
-                      </>
-                    )}
-                  </div>
-                  {ingredientPreview && (
-                    <p className="mt-0.5 truncate text-xs text-gray-400">{ingredientPreview}</p>
-                  )}
-                </div>
-
-                <ChevronRight className="h-4 w-4 shrink-0 text-gray-300" />
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
-
-      <div className="mt-3 sm:hidden">
-        <Link
-          href={`/${locale}/recipes`}
-          className="inline-flex items-center gap-1 text-sm font-medium text-[#D84315] hover:underline"
-        >
-          레시피 더 보기 <ArrowRight className="h-4 w-4" />
-        </Link>
-      </div>
-    </div>
+    <HorizontalScrollSection
+      title={title}
+      sub={sub}
+      moreHref={`/${locale}/recipes`}
+      moreLabel="레시피 전체"
+      items={recipes.map((r) => ({
+        href: `/${locale}/recipes/${r.id}`,
+        imageUrl: r.main_image_url,
+        imagePlaceholder: "🍽",
+        tag: r.category ?? undefined,
+        title: r.name,
+        sub: r.cooking_method ?? undefined,
+      }))}
+    />
   )
 }

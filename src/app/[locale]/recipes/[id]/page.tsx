@@ -184,7 +184,6 @@ export default async function RecipeDetailPage({ params }: PageProps) {
       {/* 완성 이미지 */}
       {finished_image_url && finished_image_url !== main_image_url && (
         <section className="mb-8">
-          <h2 className="mb-4 font-headline text-xl font-bold text-[#1B1C1A]">완성 모습</h2>
           <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-[#F4F1E9]">
             <Image
               src={finished_image_url}
