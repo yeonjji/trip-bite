@@ -13,13 +13,14 @@ const SECTION_COPY: Record<Context, { title: string; sub: string }> = {
 
 interface Props {
   regionName?: string | null
+  menuKeyword?: string | null
   context: Context
   locale: string
 }
 
-export default async function RecipeRecommendationSection({ regionName, context, locale }: Props) {
-  const recipes = await getRelatedRecipes({ regionName, context, limit: 5 })
-  if (recipes.length === 0) return null
+export default async function RecipeRecommendationSection({ regionName, menuKeyword, context, locale }: Props) {
+  const scored = await getRelatedRecipes({ regionName, menuKeyword, context, limit: 5 })
+  if (scored.length === 0) return null
 
   const { title, sub } = SECTION_COPY[context]
 
@@ -29,13 +30,13 @@ export default async function RecipeRecommendationSection({ regionName, context,
       sub={sub}
       moreHref={`/${locale}/recipes`}
       moreLabel="레시피 전체"
-      items={recipes.map((r) => ({
+      items={scored.map(({ recipe: r, reason }) => ({
         href: `/${locale}/recipes/${r.id}`,
         imageUrl: r.main_image_url,
         imagePlaceholder: "🍽",
         tag: r.category ?? undefined,
         title: r.name,
-        sub: r.cooking_method ?? undefined,
+        reason,
       }))}
     />
   )
