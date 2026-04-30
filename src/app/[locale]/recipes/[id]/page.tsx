@@ -65,15 +65,17 @@ export default async function RecipeDetailPage({ params }: PageProps) {
       </Link>
 
       {/* Hero 이미지 */}
-      <div className="relative mb-6 aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[#F4F1E9] sm:aspect-video">
-        <SafeRecipeImage src={main_image_url} alt={name} sizes="(max-width: 768px) 100vw, 768px" priority />
-        {/* 배지 오버레이 */}
-        <div className="absolute left-3 top-3 flex gap-2">
-          {isTraditional && (
-            <Badge className="bg-amber-500 text-white border-0 shadow">향토음식</Badge>
-          )}
+      {main_image_url && (
+        <div className="relative mb-6 aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[#F4F1E9] sm:aspect-video">
+          <SafeRecipeImage src={main_image_url} alt={name} sizes="(max-width: 768px) 100vw, 768px" priority />
+          {/* 배지 오버레이 */}
+          <div className="absolute left-3 top-3 flex gap-2">
+            {isTraditional && (
+              <Badge className="bg-amber-500 text-white border-0 shadow">향토음식</Badge>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 제목 & 기본 정보 */}
       <div className="mb-8">
@@ -148,9 +150,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                 <div className="flex-1 pb-2">
                   <p className="text-sm leading-relaxed text-[#1B1C1A]">{s.description}</p>
                   {s.image_url && (
-                    <div className="mt-3">
-                      <SafeRecipeImage src={s.image_url} alt={`조리 순서 ${s.step}`} compact sizes="(max-width: 768px) 100vw, 600px" />
-                    </div>
+                    <SafeRecipeImage src={s.image_url} alt={`조리 순서 ${s.step}`} compact sizes="(max-width: 768px) 100vw, 600px" />
                   )}
                 </div>
               </li>

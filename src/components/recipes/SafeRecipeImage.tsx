@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { ChefHat } from "lucide-react"
 
 interface Props {
   src: string | null | undefined
@@ -14,18 +13,12 @@ interface Props {
 
 export default function SafeRecipeImage({ src, alt, compact = false, sizes, priority }: Props) {
   const [failed, setFailed] = useState(false)
-  const showFallback = !src || failed
+
+  if (!src || failed) return null
 
   if (compact) {
-    if (showFallback) {
-      return (
-        <div className="flex h-24 items-center justify-center rounded-xl bg-[#F4F1E9]">
-          <ChefHat className="h-8 w-8 text-gray-300" />
-        </div>
-      )
-    }
     return (
-      <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-[#F4F1E9]">
+      <div className="relative mt-3 aspect-video w-full overflow-hidden rounded-xl bg-[#F4F1E9]">
         <Image
           src={src}
           alt={alt}
@@ -35,14 +28,6 @@ export default function SafeRecipeImage({ src, alt, compact = false, sizes, prio
           unoptimized
           onError={() => setFailed(true)}
         />
-      </div>
-    )
-  }
-
-  if (showFallback) {
-    return (
-      <div className="flex h-full flex-col items-center justify-center gap-2 text-gray-400">
-        <ChefHat className="h-12 w-12" />
       </div>
     )
   }
