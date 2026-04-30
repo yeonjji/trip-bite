@@ -106,6 +106,25 @@ export async function getFestivals(params: FestivalFilterParams): Promise<{
   }
 }
 
+export async function getUpcomingFestivals(limit = 4): Promise<FestivalItem[]> {
+  const supabase = await createClient()
+  const today = new Date()
+  const todayStr =
+    String(today.getFullYear()) +
+    String(today.getMonth() + 1).padStart(2, "0") +
+    String(today.getDate()).padStart(2, "0")
+
+  const { data } = await supabase
+    .from("festivals")
+    .select("*")
+    .gte("event_end_date", todayStr)
+    .order("event_start_date", { ascending: true })
+    .limit(limit)
+
+  if (!data) return []
+  return data.map(mapRow)
+}
+
 export async function getFestivalById(contentId: string): Promise<FestivalItem | null> {
   const supabase = await createClient()
   const { data } = await supabase
