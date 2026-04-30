@@ -9,6 +9,7 @@ export interface ScrollItem {
   tag?: string | null
   title: string
   sub?: string | null
+  reason?: string | null
 }
 
 interface Props {
@@ -73,7 +74,10 @@ export default function HorizontalScrollSection({ title, sub, items, moreHref, m
                 <p className="mt-0.5 line-clamp-2 text-sm font-bold leading-snug text-[#1B1C1A]">
                   {item.title}
                 </p>
-                {item.sub && (
+                {item.reason && (
+                  <p className="mt-1 line-clamp-1 text-xs text-[#D84315]/70 font-medium">{item.reason}</p>
+                )}
+                {!item.reason && item.sub && (
                   <p className="mt-1 line-clamp-1 text-xs text-gray-400">{item.sub}</p>
                 )}
               </div>

@@ -174,7 +174,7 @@ export default async function RestaurantDetailPage({ params }: Props) {
       <TravelBlogReviewSection placeName={title} regionName={regionName} />
 
       {/* 지역 레시피 추천 */}
-      <RecipeRecommendationSection regionName={regionName} context="restaurant" locale={locale} />
+      <RecipeRecommendationSection regionName={regionName} menuKeyword={firstmenu ?? undefined} context="restaurant" locale={locale} />
 
       <NearbyFacilities
         locale={locale}
