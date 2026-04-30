@@ -1,7 +1,7 @@
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
+import Image from "next/image"
+import { ArrowRight, ChevronRight } from "lucide-react"
 import { getRelatedRecipes } from "@/lib/data/recipes"
-import RecipeCard from "@/components/cards/RecipeCard"
 
 type Context = "travel" | "restaurant" | "festival" | "camping" | "general"
 
@@ -26,7 +26,7 @@ export default async function RecipeRecommendationSection({ regionName, context,
   const { title, sub } = SECTION_COPY[context]
 
   return (
-    <section className="mb-6">
+    <div className="mb-6">
       <div className="mb-4 flex items-end justify-between">
         <div>
           <h2 className="font-headline text-xl font-bold text-[#1B1C1A]">{title}</h2>
@@ -40,13 +40,59 @@ export default async function RecipeRecommendationSection({ regionName, context,
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {recipes.map((r) => (
-          <RecipeCard key={r.id} item={r} locale={locale} />
-        ))}
-      </div>
+      <ul className="divide-y divide-gray-100 rounded-xl border border-gray-100 bg-white shadow-sm">
+        {recipes.map((r) => {
+          const ingredientPreview = r.ingredients
+            ? r.ingredients.split("\n").map((l) => l.trim()).filter(Boolean).slice(0, 3).join(" · ")
+            : null
 
-      <div className="mt-4 sm:hidden">
+          return (
+            <li key={r.id}>
+              <Link
+                href={`/${locale}/recipes/${r.id}`}
+                className="flex items-center gap-4 px-4 py-3 transition-colors hover:bg-[#FFF8F5]"
+              >
+                {/* 썸네일 */}
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-[#F4F1E9]">
+                  {r.main_image_url ? (
+                    <Image
+                      src={r.main_image_url}
+                      alt={r.name}
+                      fill
+                      className="object-cover"
+                      sizes="56px"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-xl">🍽</div>
+                  )}
+                </div>
+
+                {/* 텍스트 */}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium text-[#1B1C1A]">{r.name}</p>
+                  <div className="mt-0.5 flex items-center gap-2 text-xs text-gray-400">
+                    {r.category && <span>{r.category}</span>}
+                    {r.cooking_method && (
+                      <>
+                        <span>·</span>
+                        <span>{r.cooking_method}</span>
+                      </>
+                    )}
+                  </div>
+                  {ingredientPreview && (
+                    <p className="mt-0.5 truncate text-xs text-gray-400">{ingredientPreview}</p>
+                  )}
+                </div>
+
+                <ChevronRight className="h-4 w-4 shrink-0 text-gray-300" />
+              </Link>
+            </li>
+          )
+        })}
+      </ul>
+
+      <div className="mt-3 sm:hidden">
         <Link
           href={`/${locale}/recipes`}
           className="inline-flex items-center gap-1 text-sm font-medium text-[#D84315] hover:underline"
@@ -54,6 +100,6 @@ export default async function RecipeRecommendationSection({ regionName, context,
           레시피 더 보기 <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
-    </section>
+    </div>
   )
 }

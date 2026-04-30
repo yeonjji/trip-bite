@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Home, Map, UtensilsCrossed, Search, Building2 } from "lucide-react";
+import { Home, Map, UtensilsCrossed, Search, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function MobileNav() {
@@ -14,8 +14,8 @@ export function MobileNav() {
   const tabs = [
     { href: `/${locale}`,              label: t("home"),        icon: Home },
     { href: `/${locale}/travel`,       label: t("travel"),      icon: Map },
-    { href: `/${locale}/facilities`,   label: t("facilities"),  icon: Building2 },
     { href: `/${locale}/restaurants`,  label: t("restaurants"), icon: UtensilsCrossed },
+    { href: `/${locale}/recipes`,      label: t("recipes"),     icon: BookOpen },
     { href: `/${locale}/search`,       label: t("search"),      icon: Search },
   ];
 
