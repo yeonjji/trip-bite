@@ -19,7 +19,7 @@ export async function getRecipes(params: {
   page?: number
   pageSize?: number
 }): Promise<{ items: RecipeRow[]; totalCount: number }> {
-  const { category, keyword, source = "향토음식", page = 1, pageSize = 12 } = params
+  const { category, keyword, source, page = 1, pageSize = 12 } = params
 
   const supabase = await createClient()
 
@@ -38,8 +38,12 @@ export async function getRecipes(params: {
     query = query.ilike("name", `%${keyword}%`)
   }
 
-  query = query.eq("source", source)
+  if (source) {
+    query = query.eq("source", source)
+  }
 
+  // 이미지 있는 항목 먼저
+  query = query.order("main_image_url", { ascending: false, nullsFirst: false })
   query = query.order("created_at", { ascending: false })
 
   const from = (page - 1) * pageSize
@@ -74,6 +78,59 @@ export async function getRecipeDetail(id: string): Promise<RecipeRow | null> {
   }
 
   return (data as RecipeRow) ?? null
+}
+
+export async function getRelatedRecipes({
+  regionName,
+  context = "general",
+  limit = 3,
+}: {
+  regionName?: string | null
+  context?: "camping" | "festival" | "restaurant" | "travel" | "general"
+  limit?: number
+}): Promise<RecipeRow[]> {
+  const supabase = await createClient()
+
+  // 1순위: 지역명으로 향토음식 hash_tags 매칭
+  if (regionName) {
+    const { data: byTag } = await supabase
+      .from("recipes")
+      .select("*")
+      .contains("hash_tags", [regionName])
+      .not("main_image_url", "is", null)
+      .limit(limit)
+    if (byTag && byTag.length >= limit) return byTag as RecipeRow[]
+
+    const { data: byName } = await supabase
+      .from("recipes")
+      .select("*")
+      .ilike("name", `%${regionName}%`)
+      .not("main_image_url", "is", null)
+      .limit(limit)
+    const merged = [...(byTag ?? []), ...(byName ?? [])]
+    const unique = Array.from(new Map(merged.map((r) => [r.id, r])).values())
+    if (unique.length > 0) return unique.slice(0, limit) as RecipeRow[]
+  }
+
+  // 2순위: 상황별 카테고리 매칭
+  if (context === "camping") {
+    const { data } = await supabase
+      .from("recipes")
+      .select("*")
+      .in("category", ["일품", "국&찌개"])
+      .not("main_image_url", "is", null)
+      .limit(limit)
+    if (data && data.length > 0) return data as RecipeRow[]
+  }
+
+  // Fallback: 이미지 있는 최신 레시피
+  const { data } = await supabase
+    .from("recipes")
+    .select("*")
+    .not("main_image_url", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(limit)
+  return (data as RecipeRow[]) ?? []
 }
 
 export async function getRecipesBySpecialty(specialtyId: string): Promise<RecipeRow[]> {

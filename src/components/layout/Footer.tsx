@@ -20,7 +20,6 @@ export function Footer({ locale }: Props) {
               <li><Link href={`/${locale}/travel`} className="hover:text-[#D84315] transition-colors">여행지</Link></li>
               <li><Link href={`/${locale}/restaurants`} className="hover:text-[#D84315] transition-colors">맛집</Link></li>
               <li><Link href={`/${locale}/camping`} className="hover:text-[#D84315] transition-colors">캠핑장</Link></li>
-              <li><Link href={`/${locale}/specialties`} className="hover:text-[#D84315] transition-colors">특산품</Link></li>
             </ul>
           </div>
           <div>

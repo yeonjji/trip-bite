@@ -71,10 +71,10 @@ export function Header({ locale }: Props) {
             ]}
           />
           <Link
-            href={`/${locale}/specialties`}
+            href={`/${locale}/recipes`}
             className="text-sm font-medium text-[#5A413A] hover:text-[#D84315] transition-colors"
           >
-            {t("specialties")}
+            {t("recipes")}
           </Link>
         </nav>
 

@@ -17,6 +17,7 @@ import CampingMap from "./_components/CampingMap"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
+import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>
@@ -491,6 +492,9 @@ export default async function CampingDetailPage({ params }: PageProps) {
       {/* 여행 후기 */}
       <Separator className="my-6" />
       <TravelBlogReviewSection placeName={name} regionName={regionName} />
+
+      <Separator className="my-6" />
+      <RecipeRecommendationSection regionName={regionName} context="camping" locale={locale} />
 
       <Separator className="my-6" />
       <NearbyFacilities

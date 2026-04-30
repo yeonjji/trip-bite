@@ -8,6 +8,8 @@ import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
 import RestaurantCard from "@/components/cards/RestaurantCard"
 import type { RestaurantDetail as RestaurantDetailType } from "@/types/tour-api"
 import { buildAlternates } from "@/lib/utils/metadata"
+import HorizontalScrollSection from "@/components/shared/HorizontalScrollSection"
+import { getAreaName } from "@/lib/constants/area-codes"
 import { getAccessibilityInfo } from "@/lib/data/accessibility"
 import Rating from "@/components/shared/Rating"
 import ImageGallery from "@/components/shared/ImageGallery"
@@ -19,6 +21,7 @@ import NearbyFacilities from "../_components/NearbyFacilities"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
+import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -455,6 +458,9 @@ export default async function TravelDetailPage({ params }: Props) {
       {/* 여행 후기 */}
       <TravelBlogReviewSection placeName={title} regionName={regionName} />
 
+      {/* 지역 레시피 추천 */}
+      <RecipeRecommendationSection regionName={regionName} context="travel" locale={locale} />
+
       {/* 주변 편의시설 */}
       <NearbyFacilities
         locale={locale}
@@ -466,26 +472,19 @@ export default async function TravelDetailPage({ params }: Props) {
 
       {/* 근처 맛집 */}
       {nearbyRestaurants.length > 0 && (
-        <div className="mb-6">
-          <h2 className="mb-4 font-headline text-xl font-bold text-[#1B1C1A]">
-            {isKo ? "근처 맛집" : "Nearby Restaurants"}
-          </h2>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            {nearbyRestaurants.map((r) => (
-              <RestaurantCard
-                key={r.content_id}
-                item={{
-                  contentid: r.content_id,
-                  title: r.title,
-                  addr1: r.addr1,
-                  areacode: r.area_code ?? "",
-                  firstimage: r.first_image ?? "",
-                } as RestaurantDetailType}
-                locale={locale}
-              />
-            ))}
-          </div>
-        </div>
+        <HorizontalScrollSection
+          title={isKo ? "근처 맛집" : "Nearby Restaurants"}
+          moreHref={`/${locale}/restaurants`}
+          moreLabel={isKo ? "맛집 전체" : "All Restaurants"}
+          items={nearbyRestaurants.map((r) => ({
+            href: `/${locale}/restaurants/${r.content_id}`,
+            imageUrl: r.first_image,
+            imagePlaceholder: "🍽",
+            tag: getAreaName(r.area_code ?? ""),
+            title: r.title,
+            sub: r.addr1,
+          }))}
+        />
       )}
 
       {/* 이 근처에서 같이 가볼 곳 */}
