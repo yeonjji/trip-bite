@@ -70,12 +70,6 @@ export function Header({ locale }: Props) {
               { href: "/facilities/parking",     label: t("parking") },
             ]}
           />
-          <Link
-            href={`/${locale}/specialties`}
-            className="text-sm font-medium text-[#5A413A] hover:text-[#D84315] transition-colors"
-          >
-            {t("specialties")}
-          </Link>
         </nav>
 
         <div className="flex items-center gap-3">
