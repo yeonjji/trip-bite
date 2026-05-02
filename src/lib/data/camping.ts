@@ -8,6 +8,7 @@ import type { CampingSite } from "@/types/database";
 interface GetCampingSitesParams {
   doNm?: string;
   induty?: string;
+  search?: string;
   page?: number;
   pageSize?: number;
   sort?: "rating" | "created";
@@ -16,7 +17,7 @@ interface GetCampingSitesParams {
 export async function getCampingSites(
   params: GetCampingSitesParams
 ): Promise<{ items: CampingSite[]; totalCount: number }> {
-  const { doNm, induty, page = 1, pageSize = 12, sort = "rating" } = params;
+  const { doNm, induty, search, page = 1, pageSize = 12, sort = "rating" } = params;
 
   const supabase = await createClient();
 
@@ -27,6 +28,9 @@ export async function getCampingSites(
   }
   if (induty) {
     query = query.eq("induty", induty);
+  }
+  if (search) {
+    query = query.ilike("faclt_nm", `%${search}%`);
   }
 
   query = query.order("has_image", { ascending: false, nullsFirst: false });

@@ -11,10 +11,11 @@ export async function getSpecialties(params: {
   areaCode?: string
   category?: string
   season?: string
+  search?: string
   page?: number
   pageSize?: number
 }): Promise<{ items: SpecialtyWithRegion[]; totalCount: number }> {
-  const { areaCode, category, season, page = 1, pageSize = 12 } = params
+  const { areaCode, category, season, search, page = 1, pageSize = 12 } = params
 
   const supabase = await createClient()
 
@@ -33,6 +34,10 @@ export async function getSpecialties(params: {
 
   if (areaCode) {
     query = query.eq("regions.area_code", areaCode)
+  }
+
+  if (search) {
+    query = query.ilike("name", `%${search}%`)
   }
 
   const from = (page - 1) * pageSize

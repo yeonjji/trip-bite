@@ -15,6 +15,7 @@ interface PageProps {
   searchParams: Promise<{
     doNm?: string
     induty?: string
+    q?: string
     page?: string
   }>
 }
@@ -55,12 +56,13 @@ function toCardItem(site: CampingSite) {
 
 export default async function CampingPage({ params, searchParams }: PageProps) {
   const { locale } = await params
-  const { doNm, induty, page: pageStr } = await searchParams
+  const { doNm, induty, q, page: pageStr } = await searchParams
   const page = Number(pageStr ?? "1") || 1
 
   const { items, totalCount } = await getCampingSites({
     doNm,
     induty,
+    search: q || undefined,
     page,
     pageSize: PAGE_SIZE,
     sort: "rating",
@@ -68,7 +70,7 @@ export default async function CampingPage({ params, searchParams }: PageProps) {
 
   return (
     <>
-      <HeroSearch variant="compact" locale={locale} />
+      <HeroSearch variant="compact" locale={locale} categoryPath="camping" defaultValue={q} />
       <div className="bg-[#F9F7F0] min-h-screen">
         <div className="max-w-7xl mx-auto flex">
 

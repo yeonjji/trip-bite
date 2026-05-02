@@ -6,9 +6,11 @@ const POPULAR_KEYWORDS = ["제주도", "경복궁", "설악산", "부산 해운�
 interface HeroSearchProps {
   locale: string
   variant: "overlay" | "compact"
+  categoryPath?: string // e.g. "travel", "camping" — scopes search to category
+  defaultValue?: string // current search query shown in input
 }
 
-export default function HeroSearch({ locale, variant }: HeroSearchProps) {
+export default function HeroSearch({ locale, variant, categoryPath, defaultValue }: HeroSearchProps) {
   const isKo = locale === "ko"
   const placeholder = isKo
     ? "여행지, 맛집, 캠핑장을 검색하세요"
@@ -19,7 +21,11 @@ export default function HeroSearch({ locale, variant }: HeroSearchProps) {
       {POPULAR_KEYWORDS.map((keyword) => (
         <Link
           key={keyword}
-          href={`/${locale}/search?q=${encodeURIComponent(keyword)}`}
+          href={
+            categoryPath
+              ? `/${locale}/${categoryPath}?q=${encodeURIComponent(keyword)}`
+              : `/${locale}/search?q=${encodeURIComponent(keyword)}`
+          }
           className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
             variant === "overlay"
               ? "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -37,7 +43,7 @@ export default function HeroSearch({ locale, variant }: HeroSearchProps) {
       <>
         <div className="mx-auto max-w-lg">
           <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-3 warm-shadow">
-            <SearchBar placeholder={placeholder} />
+            <SearchBar placeholder={placeholder} categoryPath={categoryPath} defaultValue={defaultValue} />
           </div>
         </div>
         {keywords}
@@ -49,7 +55,7 @@ export default function HeroSearch({ locale, variant }: HeroSearchProps) {
     <section className="bg-[#FFFDF5] border-b border-stone-100 py-6 px-4">
       <div className="mx-auto max-w-2xl">
         <div className="bg-white rounded-2xl p-2.5 warm-shadow">
-          <SearchBar placeholder={placeholder} />
+          <SearchBar placeholder={placeholder} categoryPath={categoryPath} defaultValue={defaultValue} />
         </div>
         {keywords}
       </div>

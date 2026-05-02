@@ -1,7 +1,7 @@
 "use client"
 
 import { Search } from "lucide-react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -12,15 +12,18 @@ interface SearchBarProps {
   defaultValue?: string
   placeholder?: string
   className?: string
+  categoryPath?: string // e.g. "travel", "camping" — searches within that category
 }
 
 export default function SearchBar({
   defaultValue = "",
   placeholder = "여행지, 캠핑장을 검색하세요",
   className,
+  categoryPath,
 }: SearchBarProps) {
   const router = useRouter()
   const params = useParams()
+  const searchParams = useSearchParams()
   const locale = (params?.locale as string) ?? "ko"
   const [query, setQuery] = useState(defaultValue)
 
@@ -28,7 +31,15 @@ export default function SearchBar({
     e.preventDefault()
     const trimmed = query.trim()
     if (!trimmed) return
-    router.push(`/${locale}/search?q=${encodeURIComponent(trimmed)}`)
+
+    if (categoryPath) {
+      const newParams = new URLSearchParams(searchParams.toString())
+      newParams.set("q", trimmed)
+      newParams.delete("page")
+      router.push(`/${locale}/${categoryPath}?${newParams.toString()}`)
+    } else {
+      router.push(`/${locale}/search?q=${encodeURIComponent(trimmed)}`)
+    }
   }
 
   return (

@@ -17,5 +17,6 @@ export type FestivalStatus = "ongoing" | "upcoming" | "ended"
 export interface FestivalFilterParams {
   region?: string
   status?: FestivalStatus | ""
+  search?: string
   page?: number
 }

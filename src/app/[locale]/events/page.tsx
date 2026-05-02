@@ -18,6 +18,7 @@ type Props = {
   searchParams: Promise<{
     region?: string
     status?: string
+    q?: string
     page?: string
   }>
 }
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function EventsPage({ params, searchParams }: Props) {
   const { locale } = await params
-  const { region = "", status = "", page: pageStr = "1" } = await searchParams
+  const { region = "", status = "", q = "", page: pageStr = "1" } = await searchParams
 
   setRequestLocale(locale)
 
@@ -47,6 +48,7 @@ export default async function EventsPage({ params, searchParams }: Props) {
     getFestivals({
       region: region || undefined,
       status: (status as FestivalStatus) || undefined,
+      search: q || undefined,
       page,
     }),
     getFestivalRegions(),
@@ -54,7 +56,7 @@ export default async function EventsPage({ params, searchParams }: Props) {
 
   return (
     <>
-      <HeroSearch variant="compact" locale={locale} />
+      <HeroSearch variant="compact" locale={locale} categoryPath="events" defaultValue={q} />
       <div className="bg-[#F9F7F0] min-h-screen">
         <div className="max-w-7xl mx-auto flex">
 

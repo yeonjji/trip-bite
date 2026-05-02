@@ -19,7 +19,7 @@ const PAGE_SIZE = 30
 
 type Props = {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ areaCode?: string; sigunguCode?: string; cat3?: string; page?: string }>
+  searchParams: Promise<{ areaCode?: string; sigunguCode?: string; cat3?: string; q?: string; page?: string }>
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -55,7 +55,7 @@ function toRestaurantDetail(destination: Destination): RestaurantDetail {
 
 export default async function RestaurantsPage({ params, searchParams }: Props) {
   const { locale } = await params
-  const { areaCode, sigunguCode, cat3, page: pageStr } = await searchParams
+  const { areaCode, sigunguCode, cat3, q, page: pageStr } = await searchParams
 
   setRequestLocale(locale)
 
@@ -65,6 +65,7 @@ export default async function RestaurantsPage({ params, searchParams }: Props) {
     areaCode,
     sigunguCode,
     cat3,
+    search: q || undefined,
     page,
     pageSize: PAGE_SIZE,
     sort: "rating",
@@ -72,7 +73,7 @@ export default async function RestaurantsPage({ params, searchParams }: Props) {
 
   return (
     <>
-      <HeroSearch variant="compact" locale={locale} />
+      <HeroSearch variant="compact" locale={locale} categoryPath="restaurants" defaultValue={q} />
       <div className="bg-[#F9F7F0] min-h-screen">
         <div className="max-w-7xl mx-auto flex">
 

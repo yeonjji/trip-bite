@@ -38,11 +38,12 @@ export async function getDestinations(params: {
   areaCode?: string;
   sigunguCode?: string;
   contentTypeId?: string;
+  search?: string;
   page?: number;
   pageSize?: number;
   sort?: "rating" | "created";
 }): Promise<{ items: Destination[]; totalCount: number }> {
-  const { areaCode, sigunguCode, contentTypeId, page = 1, pageSize = 12, sort = "rating" } = params;
+  const { areaCode, sigunguCode, contentTypeId, search, page = 1, pageSize = 12, sort = "rating" } = params;
 
   const supabase = await createClient();
 
@@ -63,6 +64,10 @@ export async function getDestinations(params: {
   } else {
     // 음식점(39)은 맛집 목록에서 별도 관리
     query = query.neq("content_type_id", "39");
+  }
+
+  if (search) {
+    query = query.ilike("title", `%${search}%`);
   }
 
   query = query.order("has_image", { ascending: false, nullsFirst: false });

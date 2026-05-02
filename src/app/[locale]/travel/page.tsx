@@ -17,6 +17,7 @@ type Props = {
     areaCode?: string
     sigunguCode?: string
     contentTypeId?: string
+    q?: string
     page?: string
   }>
 }
@@ -58,7 +59,7 @@ function destinationToSpotBase(d: Destination): TourSpotBase {
 
 export default async function TravelPage({ params, searchParams }: Props) {
   const { locale } = await params
-  const { areaCode = "", sigunguCode = "", contentTypeId = "", page: pageStr = "1" } = await searchParams
+  const { areaCode = "", sigunguCode = "", contentTypeId = "", q = "", page: pageStr = "1" } = await searchParams
 
   setRequestLocale(locale)
 
@@ -68,6 +69,7 @@ export default async function TravelPage({ params, searchParams }: Props) {
     areaCode: areaCode || undefined,
     sigunguCode: sigunguCode || undefined,
     contentTypeId: contentTypeId || undefined,
+    search: q || undefined,
     page,
     pageSize: PAGE_SIZE,
     sort: "rating",
@@ -75,7 +77,7 @@ export default async function TravelPage({ params, searchParams }: Props) {
 
   return (
     <>
-      <HeroSearch variant="compact" locale={locale} />
+      <HeroSearch variant="compact" locale={locale} categoryPath="travel" defaultValue={q} />
       <div className="bg-[#F9F7F0] min-h-screen">
         <div className="max-w-7xl mx-auto flex">
 

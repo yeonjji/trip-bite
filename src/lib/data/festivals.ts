@@ -67,7 +67,7 @@ export async function getFestivals(params: FestivalFilterParams): Promise<{
   items: FestivalItem[]
   totalCount: number
 }> {
-  const { region = "", status = "", page = 1 } = params
+  const { region = "", status = "", search = "", page = 1 } = params
   const pageSize = 12
   const supabase = await createClient()
 
@@ -90,6 +90,10 @@ export async function getFestivals(params: FestivalFilterParams): Promise<{
     query = query.gt("event_start_date", todayStr)
   } else if (status === "ended") {
     query = query.lt("event_end_date", todayStr)
+  }
+
+  if (search) {
+    query = query.ilike("title", `%${search}%`)
   }
 
   query = query.order("event_start_date", { ascending: true })

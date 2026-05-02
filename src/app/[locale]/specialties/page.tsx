@@ -17,7 +17,7 @@ const PAGE_SIZE = 30
 
 type Props = {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ areaCode?: string; category?: string; season?: string; page?: string }>
+  searchParams: Promise<{ areaCode?: string; category?: string; season?: string; q?: string; page?: string }>
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function SpecialtiesPage({ params, searchParams }: Props) {
   const { locale } = await params
-  const { areaCode, category, season, page: pageStr } = await searchParams
+  const { areaCode, category, season, q, page: pageStr } = await searchParams
 
   setRequestLocale(locale)
 
@@ -44,13 +44,14 @@ export default async function SpecialtiesPage({ params, searchParams }: Props) {
     areaCode,
     category,
     season,
+    search: q || undefined,
     page,
     pageSize: PAGE_SIZE,
   })
 
   return (
     <>
-      <HeroSearch variant="compact" locale={locale} />
+      <HeroSearch variant="compact" locale={locale} categoryPath="specialties" defaultValue={q} />
       <div className="mx-auto max-w-7xl px-4 pt-4 pb-8">
       <h1 className="mb-6 text-2xl font-bold text-foreground">
         {locale === "ko" ? "특산품" : "Local Specialties"}

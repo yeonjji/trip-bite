@@ -9,11 +9,12 @@ export async function getRestaurants(params: {
   areaCode?: string;
   sigunguCode?: string;
   cat3?: string;
+  search?: string;
   page?: number;
   pageSize?: number;
   sort?: "rating" | "created";
 }): Promise<{ items: Destination[]; totalCount: number }> {
-  const { areaCode, sigunguCode, cat3, page = 1, pageSize = 12, sort = "rating" } = params;
+  const { areaCode, sigunguCode, cat3, search, page = 1, pageSize = 12, sort = "rating" } = params;
 
   const supabase = await createClient();
 
@@ -32,6 +33,10 @@ export async function getRestaurants(params: {
 
   if (cat3) {
     query = query.eq("cat3", cat3);
+  }
+
+  if (search) {
+    query = query.ilike("title", `%${search}%`);
   }
 
   query = query.order("has_image", { ascending: false, nullsFirst: false });
