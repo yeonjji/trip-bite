@@ -18,6 +18,7 @@ import NearbyFacilities from "../../travel/_components/NearbyFacilities"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
+import TransitSection from "@/components/transit/TransitSection"
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>
@@ -472,6 +473,13 @@ export default async function CampingDetailPage({ params }: PageProps) {
             <CampingMap lat={Number(lat)} lng={Number(lng)} title={name} />
             <p className="mt-2 text-xs text-muted-foreground">{addr}</p>
           </section>
+        </>
+      )}
+
+      {hasMap && !isNaN(lat!) && !isNaN(lng!) && (
+        <>
+          <Separator className="my-6" />
+          <TransitSection lat={lat!} lng={lng!} locale={locale} />
         </>
       )}
 

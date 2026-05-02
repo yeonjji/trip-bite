@@ -14,6 +14,7 @@ import NearbyFacilities from "../../travel/_components/NearbyFacilities"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
+import TransitSection from "@/components/transit/TransitSection"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -168,6 +169,10 @@ export default async function RestaurantDetailPage({ params }: Props) {
             />
           </div>
         </div>
+      )}
+
+      {lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng) && (
+        <TransitSection lat={lat} lng={lng} locale={locale} />
       )}
 
       {/* 여행 후기 */}

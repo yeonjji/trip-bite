@@ -22,6 +22,7 @@ import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
+import TransitSection from "@/components/transit/TransitSection"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -444,6 +445,10 @@ export default async function TravelDetailPage({ params }: Props) {
           </h2>
           <TravelMap lat={lat} lng={lng} title={title} />
         </div>
+      )}
+
+      {hasCoords && (
+        <TransitSection lat={lat!} lng={lng!} locale={locale} />
       )}
 
       {areaCode && (
