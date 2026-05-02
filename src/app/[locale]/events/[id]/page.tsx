@@ -11,6 +11,7 @@ import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendati
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import TravelMap from "../../travel/_components/TravelMap"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
+import TransitSection from "@/components/transit/TransitSection"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -300,6 +301,8 @@ export default async function EventDetailPage({ params }: Props) {
           </div>
         </>
       )}
+
+      {hasMap && <TransitSection lat={lat!} lng={lng!} locale={locale} />}
 
       {/* 여행 후기 */}
       <TravelBlogReviewSection placeName={festival.title} regionName={regionName} />
