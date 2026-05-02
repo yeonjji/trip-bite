@@ -100,47 +100,45 @@ export default async function WeatherWidget({ areaCode, locale = "ko" }: Weather
 
   return (
     <Card className="w-full">
-      <CardContent className="p-4">
+      <CardContent className="p-3">
         {/* 현재 날씨 */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-muted-foreground">{cityName}</p>
-            <div className="flex items-end gap-2 mt-1">
-              <span className="text-3xl font-bold">{current.temp}°</span>
-              <span className="text-base text-muted-foreground mb-0.5">{skyLabel}</span>
+            <p className="text-xs font-medium text-muted-foreground">{cityName}</p>
+            <div className="flex items-end gap-1.5 mt-0.5">
+              <span className="text-2xl font-bold">{current.temp}°</span>
+              <span className="text-sm text-muted-foreground mb-0.5">{skyLabel}</span>
             </div>
           </div>
-          <span className="text-4xl" role="img" aria-label={skyLabel}>
+          <span className="text-3xl" role="img" aria-label={skyLabel}>
             {skyIcon}
           </span>
         </div>
 
         {/* 3일 예보 */}
         {dailyForecasts.length > 0 && (
-          <>
-            <div className="mt-4 border-t pt-3">
-              <div className="grid grid-cols-3 gap-2">
-                {dailyForecasts.map((day) => {
-                  const { icon, label } = getSkyLabelFromCode(day.sky);
-                  return (
-                    <div key={day.date} className="flex flex-col items-center gap-1">
-                      <span className="text-xs text-muted-foreground">
-                        {formatDate(day.date)}
-                      </span>
-                      <span className="text-xl" role="img" aria-label={label}>
-                        {icon}
-                      </span>
-                      <div className="flex gap-1 text-xs">
-                        <span className="text-blue-500">{Math.round(day.minTemp)}°</span>
-                        <span className="text-muted-foreground">/</span>
-                        <span className="text-red-500">{Math.round(day.maxTemp)}°</span>
-                      </div>
+          <div className="mt-2 border-t pt-2">
+            <div className="grid grid-cols-3 gap-1">
+              {dailyForecasts.map((day) => {
+                const { icon, label } = getSkyLabelFromCode(day.sky);
+                return (
+                  <div key={day.date} className="flex flex-col items-center gap-0.5">
+                    <span className="text-xs text-muted-foreground">
+                      {formatDate(day.date)}
+                    </span>
+                    <span className="text-base" role="img" aria-label={label}>
+                      {icon}
+                    </span>
+                    <div className="flex gap-1 text-xs">
+                      <span className="text-blue-500">{Math.round(day.minTemp)}°</span>
+                      <span className="text-muted-foreground">/</span>
+                      <span className="text-red-500">{Math.round(day.maxTemp)}°</span>
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
             </div>
-          </>
+          </div>
         )}
       </CardContent>
     </Card>

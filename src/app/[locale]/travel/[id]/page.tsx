@@ -447,16 +447,17 @@ export default async function TravelDetailPage({ params }: Props) {
         </div>
       )}
 
-      {hasCoords && (
-        <TransitSection lat={lat!} lng={lng!} locale={locale} />
-      )}
-
-      {areaCode && (
-        <div className="mb-6">
-          <h2 className="mb-2 font-headline text-xl font-bold text-[#1B1C1A]">
-            {isKo ? "현재 날씨" : "Current Weather"}
-          </h2>
-          <WeatherWidget areaCode={areaCode} />
+      {(hasCoords || areaCode) && (
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 items-start">
+          {hasCoords && <TransitSection lat={lat!} lng={lng!} locale={locale} />}
+          {areaCode && (
+            <div>
+              <h2 className="mb-2 font-headline text-xl font-bold text-[#1B1C1A]">
+                {isKo ? "현재 날씨" : "Current Weather"}
+              </h2>
+              <WeatherWidget areaCode={areaCode} />
+            </div>
+          )}
         </div>
       )}
 

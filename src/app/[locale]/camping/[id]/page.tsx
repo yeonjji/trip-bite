@@ -476,25 +476,24 @@ export default async function CampingDetailPage({ params }: PageProps) {
         </>
       )}
 
-      {hasMap && !isNaN(lat!) && !isNaN(lng!) && (
+      {(hasMap && !isNaN(lat!) && !isNaN(lng!)) || doNm ? (
         <>
           <Separator className="my-6" />
-          <TransitSection lat={lat!} lng={lng!} locale={locale} />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 items-start">
+            {hasMap && !isNaN(lat!) && !isNaN(lng!) && (
+              <TransitSection lat={lat!} lng={lng!} locale={locale} />
+            )}
+            {doNm && (
+              <section>
+                <h2 className="mb-2 text-xl font-bold font-headline text-[#1B1C1A]">
+                  {isKo ? "현지 날씨" : "Local Weather"}
+                </h2>
+                <WeatherWidget areaCode={doNmToAreaCode(doNm)} locale={locale} />
+              </section>
+            )}
+          </div>
         </>
-      )}
-
-      {/* 날씨 */}
-      {doNm && (
-        <>
-          <Separator className="my-6" />
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-foreground">
-              {isKo ? "현지 날씨" : "Local Weather"}
-            </h2>
-            <WeatherWidget areaCode={doNmToAreaCode(doNm)} locale={locale} />
-          </section>
-        </>
-      )}
+      ) : null}
 
       {/* 주변 시설 */}
       {/* 여행 후기 */}

@@ -172,7 +172,9 @@ export default async function RestaurantDetailPage({ params }: Props) {
       )}
 
       {lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng) && (
-        <TransitSection lat={lat} lng={lng} locale={locale} />
+        <div className="mb-6">
+          <TransitSection lat={lat} lng={lng} locale={locale} />
+        </div>
       )}
 
       {/* 여행 후기 */}

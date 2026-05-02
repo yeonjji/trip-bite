@@ -302,7 +302,11 @@ export default async function EventDetailPage({ params }: Props) {
         </>
       )}
 
-      {hasMap && <TransitSection lat={lat!} lng={lng!} locale={locale} />}
+      {hasMap && (
+        <div className="mb-6">
+          <TransitSection lat={lat!} lng={lng!} locale={locale} />
+        </div>
+      )}
 
       {/* 여행 후기 */}
       <TravelBlogReviewSection placeName={festival.title} regionName={regionName} />
