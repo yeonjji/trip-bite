@@ -4,6 +4,7 @@ import type { Metadata } from "next"
 
 import { getDestinationDetail } from "@/lib/data/destinations"
 import { getNearbyRestaurants } from "@/lib/data/restaurants"
+import { getSpecialtiesByRegionName } from "@/lib/data/specialties"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
 import RestaurantCard from "@/components/cards/RestaurantCard"
 import type { RestaurantDetail as RestaurantDetailType } from "@/types/tour-api"
@@ -22,6 +23,7 @@ import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
+import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSection"
 import TransitSection from "@/components/transit/TransitSection"
 
 type Props = {
@@ -84,9 +86,12 @@ export default async function TravelDetailPage({ params }: Props) {
 
   const hasCoords = lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
 
-  const [nearbyRestaurants, nearbyFacilities] = await Promise.all([
+  const provinceFullName = addr1.split(" ")[0] ?? ""
+
+  const [nearbyRestaurants, nearbyFacilities, specialties] = await Promise.all([
     hasCoords ? getNearbyRestaurants(lat!, lng!, id) : Promise.resolve([]),
     hasCoords ? getNearbyFacilities(lat!, lng!) : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
+    provinceFullName ? getSpecialtiesByRegionName(provinceFullName, 5) : Promise.resolve([]),
   ])
 
   const galleryImages = images.map((img) => ({
@@ -466,6 +471,9 @@ export default async function TravelDetailPage({ params }: Props) {
 
       {/* 지역 레시피 추천 */}
       <RecipeRecommendationSection regionName={regionName} context="travel" locale={locale} />
+
+      {/* 이 지역 특산품 */}
+      <TravelSpecialtiesSection specialties={specialties} regionName={regionName} />
 
       {/* 주변 편의시설 */}
       <NearbyFacilities

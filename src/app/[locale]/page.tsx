@@ -7,6 +7,7 @@ import HeroSearch from "@/components/shared/HeroSearch"
 import HeroCarousel from "@/components/home/HeroCarousel"
 import HomeQuickLinks from "@/components/home/HomeQuickLinks"
 import TodayTripSection from "@/components/home/TodayTripSection"
+import RecommendedCourseSection from "@/components/home/RecommendedCourseSection"
 import TravelTypeSection from "@/components/home/TravelTypeSection"
 import HomeFestivalsSection from "@/components/home/HomeFestivalsSection"
 import FacilitiesCheckSection from "@/components/home/FacilitiesCheckSection"
@@ -56,16 +57,19 @@ export default async function HomePage({ params }: Props) {
       {/* 2. 오늘의 여행 조합 */}
       <TodayTripSection locale={locale} />
 
-      {/* 3. 상황별 여행 선택 */}
+      {/* 3. 자동 여행 코스 생성 */}
+      <RecommendedCourseSection locale={locale} />
+
+      {/* 4. 상황별 여행 선택 */}
       <TravelTypeSection locale={locale} />
 
-      {/* 4. 이번에 가볼 만한 축제 */}
+      {/* 5. 이번에 가볼 만한 축제 */}
       <HomeFestivalsSection festivals={festivals} locale={locale} />
 
-      {/* 5. 여행 전 체크 */}
+      {/* 6. 여행 전 체크 */}
       <FacilitiesCheckSection locale={locale} />
 
-      {/* 6. 지역 축제·관광 소식 (보조) */}
+      {/* 7. 지역 축제·관광 소식 (보조) */}
       <MainTravelNewsSection />
     </div>
   )

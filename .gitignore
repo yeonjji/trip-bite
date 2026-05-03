@@ -40,6 +40,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Codex/Claude local agent state
+.claude/
+.omx/
+
 # oh-my-claudecode internal state
 .omc/sessions/
 .omc/state/
@@ -58,3 +62,5 @@ supabase/.temp/
 
 # Root-level screenshot captures
 /*.png
+/*.jpg
+/*.jpeg
