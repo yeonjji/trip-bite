@@ -27,7 +27,7 @@ export interface TourApiListParams {
   areaCode?: string;
   sigunguCode?: string;
   contentTypeId?: string;
-  arrange?: "A" | "B" | "C" | "D"; // A:제목순 B:조회순 C:수정일순 D:생성일순
+  arrange?: "A" | "B" | "C" | "D" | "E" | "O" | "Q"; // A:제목순 B:조회순 C:수정일순 D:생성일순 E:거리순 O/Q:이미지 우선
   mapX?: number;
   mapY?: number;
   radius?: number;

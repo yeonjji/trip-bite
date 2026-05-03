@@ -4,8 +4,10 @@ import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 import { getFestivalById, computeStatus, getRegionName } from "@/lib/data/festivals"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
+import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations"
 import { buildAlternates } from "@/lib/utils/metadata"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
+import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
@@ -132,9 +134,20 @@ export default async function EventDetailPage({ params }: Props) {
   const lng = festival.mapx
   const hasMap = lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
 
-  const nearbyFacilities = hasMap
-    ? await getNearbyFacilities(lat!, lng!)
-    : { toilets: [], wifi: [], parking: [], evStations: [] }
+  const [nearbyFacilities, nearbyTourRecommendations] = hasMap
+    ? await Promise.all([
+        getNearbyFacilities(lat!, lng!),
+        getNearbyTourRecommendations({
+          lat: lat!,
+          lng: lng!,
+          excludeContentId: id,
+          types: ["travel", "accommodation"],
+        }),
+      ])
+    : [
+        { toilets: [], wifi: [], parking: [], evStations: [] },
+        { travel: [], festival: [], accommodation: [] },
+      ]
 
   const venue = detail.eventplace || festival.addr1
   const homepage = detail.eventhomepage || detail.homepage
@@ -307,6 +320,13 @@ export default async function EventDetailPage({ params }: Props) {
           <TransitSection lat={lat!} lng={lng!} locale={locale} />
         </div>
       )}
+
+      {/* 주변 추천 정보 */}
+      <NearbyTourRecommendationsSection
+        recommendations={nearbyTourRecommendations}
+        tabOrder={["travel", "accommodation"]}
+        locale={locale}
+      />
 
       {/* 여행 후기 */}
       <TravelBlogReviewSection placeName={festival.title} regionName={regionName} />

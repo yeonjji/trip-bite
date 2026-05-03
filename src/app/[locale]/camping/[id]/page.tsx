@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { getCampingSiteDetail } from "@/lib/data/camping"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
+import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import WeatherWidget from "@/components/weather/WeatherWidget"
 import ReviewSection from "@/components/reviews/ReviewSection"
@@ -16,6 +17,7 @@ import ReviewSection from "@/components/reviews/ReviewSection"
 import CampingMap from "./_components/CampingMap"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
+import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 import TransitSection from "@/components/transit/TransitSection"
@@ -126,10 +128,21 @@ export default async function CampingDetailPage({ params }: PageProps) {
   const lng = detail?.mapX ? Number(detail.mapX) : site?.mapx ?? null
   const hasMap = lat !== null && lng !== null
 
-  const nearbyFacilities =
+  const [nearbyFacilities, nearbyTourRecommendations] =
     hasMap && !isNaN(lat!) && !isNaN(lng!)
-      ? await getNearbyFacilities(lat!, lng!)
-      : { toilets: [], wifi: [], parking: [], evStations: [] }
+      ? await Promise.all([
+          getNearbyFacilities(lat!, lng!),
+          getNearbyTourRecommendations({
+            lat: lat!,
+            lng: lng!,
+            excludeContentId: id,
+            types: ["travel", "festival", "accommodation"],
+          }),
+        ])
+      : [
+          { toilets: [], wifi: [], parking: [], evStations: [] },
+          { travel: [], festival: [], accommodation: [] },
+        ]
 
   const galleryImages = images.map((img) => ({ url: img.imageUrl, alt: name }))
   const coverImage = detail?.firstImageUrl ?? site?.first_image_url
@@ -495,7 +508,14 @@ export default async function CampingDetailPage({ params }: PageProps) {
         </>
       ) : null}
 
-      {/* 주변 시설 */}
+      {/* 주변 추천 정보 */}
+      <Separator className="my-6" />
+      <NearbyTourRecommendationsSection
+        recommendations={nearbyTourRecommendations}
+        tabOrder={["travel", "festival", "accommodation"]}
+        locale={locale}
+      />
+
       {/* 여행 후기 */}
       <Separator className="my-6" />
       <TravelBlogReviewSection placeName={name} regionName={regionName} />

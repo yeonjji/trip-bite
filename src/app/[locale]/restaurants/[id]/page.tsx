@@ -10,8 +10,10 @@ import Rating from "@/components/shared/Rating"
 import NaverMap from "@/components/maps/NaverMap"
 import { getRestaurantDetail } from "@/lib/data/restaurants"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
+import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
+import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 import TransitSection from "@/components/transit/TransitSection"
@@ -72,10 +74,21 @@ export default async function RestaurantDetailPage({ params }: Props) {
 
   const lat = mapy ? parseFloat(mapy) : null
   const lng = mapx ? parseFloat(mapx) : null
-  const nearbyFacilities =
+  const [nearbyFacilities, nearbyTourRecommendations] =
     lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
-      ? await getNearbyFacilities(lat, lng)
-      : { toilets: [], wifi: [], parking: [], evStations: [] }
+      ? await Promise.all([
+          getNearbyFacilities(lat, lng),
+          getNearbyTourRecommendations({
+            lat,
+            lng,
+            excludeContentId: id,
+            types: ["travel", "festival", "accommodation"],
+          }),
+        ])
+      : [
+          { toilets: [], wifi: [], parking: [], evStations: [] },
+          { travel: [], festival: [], accommodation: [] },
+        ]
 
   const galleryImages = images.map((img) => ({
     url: img.originimgurl,
@@ -176,6 +189,13 @@ export default async function RestaurantDetailPage({ params }: Props) {
           <TransitSection lat={lat} lng={lng} locale={locale} />
         </div>
       )}
+
+      {/* 주변 추천 정보 */}
+      <NearbyTourRecommendationsSection
+        recommendations={nearbyTourRecommendations}
+        tabOrder={["travel", "festival", "accommodation"]}
+        locale={locale}
+      />
 
       {/* 여행 후기 */}
       <TravelBlogReviewSection placeName={title} regionName={regionName} />

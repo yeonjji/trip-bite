@@ -6,8 +6,7 @@ import { getDestinationDetail } from "@/lib/data/destinations"
 import { getNearbyRestaurants } from "@/lib/data/restaurants"
 import { getSpecialtiesByRegionName } from "@/lib/data/specialties"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
-import RestaurantCard from "@/components/cards/RestaurantCard"
-import type { RestaurantDetail as RestaurantDetailType } from "@/types/tour-api"
+import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations"
 import { buildAlternates } from "@/lib/utils/metadata"
 import HorizontalScrollSection from "@/components/shared/HorizontalScrollSection"
 import { getAreaName } from "@/lib/constants/area-codes"
@@ -21,6 +20,7 @@ import TravelMap from "../_components/TravelMap"
 import NearbyFacilities from "../_components/NearbyFacilities"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
+import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSection"
@@ -88,10 +88,18 @@ export default async function TravelDetailPage({ params }: Props) {
 
   const provinceFullName = addr1.split(" ")[0] ?? ""
 
-  const [nearbyRestaurants, nearbyFacilities, specialties] = await Promise.all([
+  const [nearbyRestaurants, nearbyFacilities, specialties, nearbyTourRecommendations] = await Promise.all([
     hasCoords ? getNearbyRestaurants(lat!, lng!, id) : Promise.resolve([]),
     hasCoords ? getNearbyFacilities(lat!, lng!) : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
     provinceFullName ? getSpecialtiesByRegionName(provinceFullName, 5) : Promise.resolve([]),
+    hasCoords
+      ? getNearbyTourRecommendations({
+          lat: lat!,
+          lng: lng!,
+          excludeContentId: id,
+          types: ["festival", "accommodation", "travel"],
+        })
+      : Promise.resolve({ travel: [], festival: [], accommodation: [] }),
   ])
 
   const galleryImages = images.map((img) => ({
@@ -465,6 +473,13 @@ export default async function TravelDetailPage({ params }: Props) {
           )}
         </div>
       )}
+
+      {/* 주변 추천 정보 */}
+      <NearbyTourRecommendationsSection
+        recommendations={nearbyTourRecommendations}
+        tabOrder={["festival", "accommodation", "travel"]}
+        locale={locale}
+      />
 
       {/* 여행 후기 */}
       <TravelBlogReviewSection placeName={title} regionName={regionName} />
