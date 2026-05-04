@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Loader2, MapPin, Route, Sparkles } from "lucide-react";
+import { ArrowRight, Loader2, MapPin, Map, Route, Sparkles } from "lucide-react";
+import CourseRouteMap from "@/components/home/CourseRouteMap";
 
 type TravelCoursePlaceType = "travel" | "restaurant" | "festival" | "camping";
 type TravelCourseTripType = "dayTrip" | "overnight" | "twoNights";
@@ -72,6 +73,9 @@ export default function RecommendedCourseSection({ locale }: { locale: string })
   const [course, setCourse] = useState<TravelCourseStop[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showMap, setShowMap] = useState(false);
+  const [hasOpenedMap, setHasOpenedMap] = useState(false);
+  const [courseKey, setCourseKey] = useState(0);
 
   const groupedCourse = useMemo(() => {
     return course.reduce<Record<string, TravelCourseStop[]>>((acc, stop) => {
@@ -106,6 +110,7 @@ export default function RecommendedCourseSection({ locale }: { locale: string })
         }
 
         setCourse(data.course ?? []);
+        setCourseKey((k) => k + 1);
       } catch (err) {
         if ((err as Error).name !== "AbortError") {
           setError((err as Error).message);
@@ -228,7 +233,28 @@ export default function RecommendedCourseSection({ locale }: { locale: string })
                   {STYLE_OPTIONS.find((option) => option.value === style)?.label}
                 </h3>
               </div>
-              <Route className="h-6 w-6 text-[#D84315]" />
+              {course.length > 0 && !isLoading && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!hasOpenedMap) setHasOpenedMap(true);
+                    setShowMap((v) => !v);
+                  }}
+                  className="flex shrink-0 items-center gap-1.5 rounded-xl border border-[#D84315]/20 bg-[#FFF3EF] px-3 py-1.5 text-sm font-semibold text-[#D84315] transition-all hover:bg-[#D84315] hover:text-white"
+                >
+                  {showMap ? (
+                    <>
+                      <Route className="h-4 w-4" />
+                      지도 접기
+                    </>
+                  ) : (
+                    <>
+                      <Map className="h-4 w-4" />
+                      지도 보기
+                    </>
+                  )}
+                </button>
+              )}
             </div>
 
             {isLoading ? (
@@ -242,57 +268,83 @@ export default function RecommendedCourseSection({ locale }: { locale: string })
                 조건에 맞는 코스를 만들 데이터가 부족합니다. 지역명을 넓게 입력해보세요. 예: 강릉 → 강원
               </div>
             ) : (
-              <div className="space-y-5">
-                {Object.entries(groupedCourse).map(([day, stops]) => (
-                  <div key={day}>
-                    <p className="mb-3 text-xs font-bold tracking-widest text-gray-400">{day}</p>
-                    <div className="space-y-3">
-                      {stops.map((stop, index) => {
-                        const content = (
-                          <div className="group flex gap-3 rounded-2xl border border-gray-100 bg-[#FAFAF8] p-4 transition-all hover:border-[#D84315]/30 hover:bg-white">
-                            <div className="flex w-14 shrink-0 flex-col items-center">
-                              <span className="text-sm font-bold text-[#1B1C1A]">{stop.time}</span>
-                              {index < stops.length - 1 && <span className="mt-2 h-full min-h-8 w-px bg-gray-200" />}
-                            </div>
-                            <div className="flex min-w-0 flex-1 gap-3">
-                              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FFF3EF] text-lg">
-                                {TYPE_EMOJI[stop.type]}
-                              </span>
-                              <div className="min-w-0 flex-1">
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-[#D84315]">
-                                    {TYPE_LABEL[stop.type]}
-                                  </span>
-                                  {stop.distanceFromPreviousKm !== null && (
-                                    <span className="text-[11px] text-gray-400">
-                                      이전 장소에서 {stop.distanceFromPreviousKm}km
+              <>
+                <div className="space-y-5">
+                  {Object.entries(groupedCourse).map(([day, stops]) => (
+                    <div key={day}>
+                      <p className="mb-3 text-xs font-bold tracking-widest text-gray-400">{day}</p>
+                      <div className="space-y-3">
+                        {stops.map((stop, index) => {
+                          const content = (
+                            <div className="group flex gap-3 rounded-2xl border border-gray-100 bg-[#FAFAF8] p-4 transition-all hover:border-[#D84315]/30 hover:bg-white">
+                              <div className="flex w-14 shrink-0 flex-col items-center">
+                                <span className="text-sm font-bold text-[#1B1C1A]">{stop.time}</span>
+                                {index < stops.length - 1 && <span className="mt-2 h-full min-h-8 w-px bg-gray-200" />}
+                              </div>
+                              <div className="flex min-w-0 flex-1 gap-3">
+                                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FFF3EF] text-lg">
+                                  {TYPE_EMOJI[stop.type]}
+                                </span>
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-[#D84315]">
+                                      {TYPE_LABEL[stop.type]}
                                     </span>
+                                    {stop.distanceFromPreviousKm !== null && (
+                                      <span className="text-[11px] text-gray-400">
+                                        이전 장소에서 {stop.distanceFromPreviousKm}km
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="mt-1 line-clamp-1 font-semibold text-[#1B1C1A]">{stop.name}</p>
+                                  {stop.address && (
+                                    <p className="mt-1 flex items-center gap-1 line-clamp-1 text-xs text-gray-400">
+                                      <MapPin className="h-3 w-3" /> {stop.address}
+                                    </p>
                                   )}
                                 </div>
-                                <p className="mt-1 line-clamp-1 font-semibold text-[#1B1C1A]">{stop.name}</p>
-                                {stop.address && (
-                                  <p className="mt-1 flex items-center gap-1 line-clamp-1 text-xs text-gray-400">
-                                    <MapPin className="h-3 w-3" /> {stop.address}
-                                  </p>
-                                )}
+                                {stop.href && <ArrowRight className="h-4 w-4 shrink-0 text-gray-300 group-hover:text-[#D84315]" />}
                               </div>
-                              {stop.href && <ArrowRight className="h-4 w-4 shrink-0 text-gray-300 group-hover:text-[#D84315]" />}
                             </div>
-                          </div>
-                        );
+                          );
 
-                        return stop.href ? (
-                          <Link key={`${stop.type}-${stop.id}-${stop.time}`} href={stop.href}>
-                            {content}
-                          </Link>
-                        ) : (
-                          <div key={`${stop.type}-${stop.id}-${stop.time}`}>{content}</div>
-                        );
-                      })}
+                          return stop.href ? (
+                            <Link key={`${stop.type}-${stop.id}-${stop.time}`} href={stop.href}>
+                              {content}
+                            </Link>
+                          ) : (
+                            <div key={`${stop.type}-${stop.id}-${stop.time}`}>{content}</div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 지도 패널 — grid-rows 트릭으로 부드럽게 펼쳐짐 */}
+                <div
+                  className={`grid transition-[grid-template-rows] duration-500 ease-in-out ${
+                    showMap ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                  }`}
+                >
+                  <div className="min-h-0 overflow-hidden">
+                    <div className="pt-5">
+                      <div className="rounded-2xl border border-[#D84315]/10 bg-[#FFF8F5] p-4">
+                        <div className="mb-3 flex items-center gap-2">
+                          <Route className="h-4 w-4 text-[#D84315]" />
+                          <div>
+                            <p className="text-sm font-bold text-[#1B1C1A]">추천 경로 지도</p>
+                            <p className="text-xs text-gray-400">일정 순서대로 이동 경로를 확인해보세요</p>
+                          </div>
+                        </div>
+                        {hasOpenedMap && (
+                          <CourseRouteMap key={courseKey} stops={course} />
+                        )}
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              </>
             )}
           </div>
         </div>
