@@ -43,6 +43,7 @@ interface Props {
   value: string
   onChange: (region: string) => void
   showNational?: boolean  // "전국" 탭 노출 여부
+  showSearch?: boolean
   accentColor?: string
 }
 
@@ -50,6 +51,7 @@ export default function RegionSelector({
   value,
   onChange,
   showNational = false,
+  showSearch = true,
   accentColor = "#1B1C1A",
 }: Props) {
   const [query, setQuery] = useState("")
@@ -119,7 +121,7 @@ export default function RegionSelector({
       </div>
 
       {/* ② 검색 + 전체보기 */}
-      <div className="flex items-center gap-2">
+      {showSearch && <div className="flex items-center gap-2">
         {/* 검색창 */}
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
@@ -204,7 +206,7 @@ export default function RegionSelector({
             </div>
           </DialogContent>
         </Dialog>
-      </div>
+      </div>}
 
       {/* 현재 선택 지역 표시 */}
       {!tabs.includes(value as any) && (
