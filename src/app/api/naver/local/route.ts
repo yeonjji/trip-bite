@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "네이버 API 키가 설정되지 않았습니다." }, { status: 500 })
   }
 
-  const url = `https://openapi.naver.com/v1/search/local.json?query=${encodeURIComponent(query)}&display=5&sort=random`
+  const url = `https://openapi.naver.com/v1/search/local.json?query=${encodeURIComponent(query)}&display=6&sort=random`
 
   try {
     const res = await fetch(url, {
