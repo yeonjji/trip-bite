@@ -71,8 +71,8 @@ export default function NearbyNaverPlaces({ regionName }: Props) {
 
       {/* 결과 */}
       {loading ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {Array.from({ length: 5 }).map((_, i) => (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6">
+          {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-44 rounded-xl" />
           ))}
         </div>
@@ -85,8 +85,8 @@ export default function NearbyNaverPlaces({ regionName }: Props) {
           주변에 검색된 장소가 없습니다.
         </p>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {places.map((place, i) => (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6">
+          {places.slice(0, 6).map((place, i) => (
             <NaverPlaceCard key={i} place={place} />
           ))}
         </div>
