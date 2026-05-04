@@ -17,6 +17,7 @@ import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourReco
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 import TransitSection from "@/components/transit/TransitSection"
+import WeatherWidget from "@/components/weather/WeatherWidget"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -184,11 +185,30 @@ export default async function RestaurantDetailPage({ params }: Props) {
         </div>
       )}
 
-      {lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng) && (
-        <div className="mb-6">
-          <TransitSection lat={lat} lng={lng} locale={locale} />
+      {(lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)) || destination?.area_code ? (
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 items-start">
+          {lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng) && (
+            <TransitSection lat={lat} lng={lng} locale={locale} />
+          )}
+          {destination?.area_code && (
+            <div>
+              <h2 className="mb-2 font-headline text-xl font-bold text-[#1B1C1A]">
+                {locale === "ko" ? "현지 날씨" : "Local Weather"}
+              </h2>
+              <WeatherWidget areaCode={destination.area_code} locale={locale} />
+            </div>
+          )}
         </div>
-      )}
+      ) : null}
+
+      {/* 주변 시설 */}
+      <NearbyFacilities
+        locale={locale}
+        toilets={nearbyFacilities.toilets}
+        wifi={nearbyFacilities.wifi}
+        parking={nearbyFacilities.parking}
+        evStations={nearbyFacilities.evStations}
+      />
 
       {/* 주변 추천 정보 */}
       <NearbyTourRecommendationsSection
@@ -202,14 +222,6 @@ export default async function RestaurantDetailPage({ params }: Props) {
 
       {/* 지역 레시피 추천 */}
       <RecipeRecommendationSection regionName={regionName} menuKeyword={firstmenu ?? undefined} context="restaurant" locale={locale} />
-
-      <NearbyFacilities
-        locale={locale}
-        toilets={nearbyFacilities.toilets}
-        wifi={nearbyFacilities.wifi}
-        parking={nearbyFacilities.parking}
-        evStations={nearbyFacilities.evStations}
-      />
 
       {/* 이 근처에서 같이 가볼 곳 */}
       {regionName && <NearbyNaverPlaces regionName={regionName} />}

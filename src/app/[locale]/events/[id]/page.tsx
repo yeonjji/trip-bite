@@ -16,6 +16,7 @@ import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import TravelMap from "../../travel/_components/TravelMap"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
 import TransitSection from "@/components/transit/TransitSection"
+import WeatherWidget from "@/components/weather/WeatherWidget"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -93,6 +94,27 @@ async function fetchFestivalDetail(contentId: string): Promise<FestivalDetail> {
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────
+
+function addrToAreaCode(province: string): string {
+  if (province.includes("서울")) return "11"
+  if (province.includes("부산")) return "26"
+  if (province.includes("대구")) return "27"
+  if (province.includes("인천")) return "28"
+  if (province.includes("광주")) return "29"
+  if (province.includes("대전")) return "30"
+  if (province.includes("울산")) return "31"
+  if (province.includes("세종")) return "36"
+  if (province.includes("경기")) return "41"
+  if (province.includes("강원")) return "42"
+  if (province.includes("충북") || province.includes("충청북")) return "43"
+  if (province.includes("충남") || province.includes("충청남")) return "44"
+  if (province.includes("전북") || province.includes("전라북")) return "45"
+  if (province.includes("전남") || province.includes("전라남")) return "46"
+  if (province.includes("경북") || province.includes("경상북")) return "47"
+  if (province.includes("경남") || province.includes("경상남")) return "48"
+  if (province.includes("제주")) return "50"
+  return ""
+}
 
 const STATUS_CONFIG = {
   ongoing: { ko: "진행중", en: "Ongoing", className: "bg-green-100 text-green-800" },
@@ -321,11 +343,28 @@ export default async function EventDetailPage({ params }: Props) {
         </>
       )}
 
-      {hasMap && (
-        <div className="mb-6">
-          <TransitSection lat={lat!} lng={lng!} locale={locale} />
+      {(hasMap || provinceFullName) && (
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 items-start">
+          {hasMap && <TransitSection lat={lat!} lng={lng!} locale={locale} />}
+          {provinceFullName && addrToAreaCode(provinceFullName) && (
+            <div>
+              <h2 className="mb-2 font-headline text-xl font-bold text-[#1B1C1A]">
+                {isKo ? "현지 날씨" : "Local Weather"}
+              </h2>
+              <WeatherWidget areaCode={addrToAreaCode(provinceFullName)} locale={locale} />
+            </div>
+          )}
         </div>
       )}
+
+      {/* 주변 시설 */}
+      <NearbyFacilities
+        locale={locale}
+        toilets={nearbyFacilities.toilets}
+        wifi={nearbyFacilities.wifi}
+        parking={nearbyFacilities.parking}
+        evStations={nearbyFacilities.evStations}
+      />
 
       {/* 주변 추천 정보 */}
       <NearbyTourRecommendationsSection
@@ -342,15 +381,6 @@ export default async function EventDetailPage({ params }: Props) {
 
       {/* 이 지역 특산품 */}
       <TravelSpecialtiesSection specialties={specialties} regionName={regionName} />
-
-      {/* 주변 시설 */}
-      <NearbyFacilities
-        locale={locale}
-        toilets={nearbyFacilities.toilets}
-        wifi={nearbyFacilities.wifi}
-        parking={nearbyFacilities.parking}
-        evStations={nearbyFacilities.evStations}
-      />
 
       {/* 이 근처에서 같이 가볼 곳 */}
       {regionName && <NearbyNaverPlaces regionName={regionName} />}
