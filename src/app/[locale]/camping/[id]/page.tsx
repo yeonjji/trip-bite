@@ -8,6 +8,7 @@ import Rating from "@/components/shared/Rating"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { getCampingSiteDetail } from "@/lib/data/camping"
+import { getSpecialtiesByRegionName } from "@/lib/data/specialties"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
 import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
@@ -20,6 +21,7 @@ import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
+import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSection"
 import TransitSection from "@/components/transit/TransitSection"
 
 interface PageProps {
@@ -128,21 +130,20 @@ export default async function CampingDetailPage({ params }: PageProps) {
   const lng = detail?.mapX ? Number(detail.mapX) : site?.mapx ?? null
   const hasMap = lat !== null && lng !== null
 
-  const [nearbyFacilities, nearbyTourRecommendations] =
+  const [nearbyFacilities, nearbyTourRecommendations, specialties] = await Promise.all([
     hasMap && !isNaN(lat!) && !isNaN(lng!)
-      ? await Promise.all([
-          getNearbyFacilities(lat!, lng!),
-          getNearbyTourRecommendations({
-            lat: lat!,
-            lng: lng!,
-            excludeContentId: id,
-            types: ["travel", "festival", "accommodation"],
-          }),
-        ])
-      : [
-          { toilets: [], wifi: [], parking: [], evStations: [] },
-          { travel: [], festival: [], accommodation: [] },
-        ]
+      ? getNearbyFacilities(lat!, lng!)
+      : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
+    hasMap && !isNaN(lat!) && !isNaN(lng!)
+      ? getNearbyTourRecommendations({
+          lat: lat!,
+          lng: lng!,
+          excludeContentId: id,
+          types: ["travel", "festival", "accommodation"],
+        })
+      : Promise.resolve({ travel: [], festival: [], accommodation: [] }),
+    doNm ? getSpecialtiesByRegionName(doNm, 5) : Promise.resolve([]),
+  ])
 
   const galleryImages = images.map((img) => ({ url: img.imageUrl, alt: name }))
   const coverImage = detail?.firstImageUrl ?? site?.first_image_url
@@ -522,6 +523,9 @@ export default async function CampingDetailPage({ params }: PageProps) {
 
       <Separator className="my-6" />
       <RecipeRecommendationSection regionName={regionName} context="camping" locale={locale} />
+
+      <Separator className="my-6" />
+      <TravelSpecialtiesSection specialties={specialties} regionName={regionName} />
 
       <Separator className="my-6" />
       <NearbyFacilities

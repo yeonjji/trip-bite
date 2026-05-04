@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 import { getFestivalById, computeStatus, getRegionName } from "@/lib/data/festivals"
+import { getSpecialtiesByRegionName } from "@/lib/data/specialties"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
 import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations"
 import { buildAlternates } from "@/lib/utils/metadata"
@@ -10,6 +11,7 @@ import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
+import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSection"
 import { buildNaverMapUrl } from "@/lib/api/kakao-api"
 import TravelMap from "../../travel/_components/TravelMap"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
@@ -134,20 +136,24 @@ export default async function EventDetailPage({ params }: Props) {
   const lng = festival.mapx
   const hasMap = lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
 
-  const [nearbyFacilities, nearbyTourRecommendations] = hasMap
-    ? await Promise.all([
-        getNearbyFacilities(lat!, lng!),
-        getNearbyTourRecommendations({
+  const provinceFullName = (festival.addr1 ?? "").split(" ")[0]
+
+  const [nearbyFacilities, nearbyTourRecommendations, specialties] = await Promise.all([
+    hasMap
+      ? getNearbyFacilities(lat!, lng!)
+      : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
+    hasMap
+      ? getNearbyTourRecommendations({
           lat: lat!,
           lng: lng!,
           excludeContentId: id,
           types: ["travel", "accommodation"],
-        }),
-      ])
-    : [
-        { toilets: [], wifi: [], parking: [], evStations: [] },
-        { travel: [], festival: [], accommodation: [] },
-      ]
+        })
+      : Promise.resolve({ travel: [], festival: [], accommodation: [] }),
+    provinceFullName
+      ? getSpecialtiesByRegionName(provinceFullName, 5)
+      : Promise.resolve([]),
+  ])
 
   const venue = detail.eventplace || festival.addr1
   const homepage = detail.eventhomepage || detail.homepage
@@ -333,6 +339,9 @@ export default async function EventDetailPage({ params }: Props) {
 
       {/* 지역 레시피 추천 */}
       <RecipeRecommendationSection regionName={regionName} context="festival" locale={locale} />
+
+      {/* 이 지역 특산품 */}
+      <TravelSpecialtiesSection specialties={specialties} regionName={regionName} />
 
       {/* 주변 시설 */}
       <NearbyFacilities
