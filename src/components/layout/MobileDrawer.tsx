@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { X, ChevronDown, Search } from "lucide-react"
-import { useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { LanguageSwitcher } from "./LanguageSwitcher"
@@ -16,8 +15,8 @@ interface Props {
 }
 
 export function MobileDrawer({ locale, isOpen, onClose }: Props) {
-  const t = useTranslations("nav")
   const pathname = usePathname()
+  const isKo = locale === "ko"
   const [expanded, setExpanded] = useState<string[]>([])
 
   // 스크롤 잠금
@@ -37,7 +36,7 @@ export function MobileDrawer({ locale, isOpen, onClose }: Props) {
       <div
         className={cn(
           "fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-300 md:hidden",
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          isOpen ? "opacity-100" : "pointer-events-none opacity-0"
         )}
         onClick={onClose}
         aria-hidden="true"
@@ -51,9 +50,8 @@ export function MobileDrawer({ locale, isOpen, onClose }: Props) {
         )}
         aria-modal="true"
         role="dialog"
-        aria-label="내비게이션 메뉴"
       >
-        {/* 헤더 */}
+        {/* 드로어 헤더 */}
         <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
           <Link
             href={`/${locale}`}
@@ -74,39 +72,21 @@ export function MobileDrawer({ locale, isOpen, onClose }: Props) {
         {/* 네비게이션 항목 */}
         <nav className="flex-1 overflow-y-auto px-3 py-3">
           {NAV_ITEMS.map((item) => {
-            const topHref = `/${locale}${item.href}`
-            const isActive =
-              pathname === topHref || pathname.startsWith(`${topHref}/`)
-            const isExpanded = expanded.includes(item.labelKey)
-
-            if (item.children.length === 0) {
-              return (
-                <Link
-                  key={item.labelKey}
-                  href={topHref}
-                  onClick={onClose}
-                  className={cn(
-                    "flex w-full items-center rounded-xl px-4 py-3 text-sm font-medium transition-colors",
-                    isActive
-                      ? "bg-[#FFF3EF] text-[#D84315]"
-                      : "text-gray-700 hover:bg-gray-50"
-                  )}
-                >
-                  {t(item.labelKey as any)}
-                </Link>
-              )
-            }
+            const label = isKo ? item.labelKo : item.labelEn
+            const topPath = `/${locale}${item.href}`
+            const isActive = pathname === topPath || pathname.startsWith(`${topPath}/`)
+            const isExpanded = expanded.includes(item.labelKo)
 
             return (
-              <div key={item.labelKey}>
+              <div key={item.labelKo} className="mb-0.5">
                 <button
-                  onClick={() => toggle(item.labelKey)}
+                  onClick={() => toggle(item.labelKo)}
                   className={cn(
-                    "flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-colors",
-                    isActive ? "text-[#D84315]" : "text-gray-700 hover:bg-gray-50"
+                    "flex min-h-[48px] w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-colors",
+                    isActive ? "text-[#D84315]" : "text-gray-800 hover:bg-gray-50"
                   )}
                 >
-                  <span>{t(item.labelKey as any)}</span>
+                  <span>{label}</span>
                   <ChevronDown
                     size={16}
                     className={cn(
@@ -116,32 +96,64 @@ export function MobileDrawer({ locale, isOpen, onClose }: Props) {
                   />
                 </button>
 
-                {isExpanded && (
-                  <div className="mb-1 ml-4 border-l border-gray-100 pl-3">
-                    {item.children.map((child) => {
-                      const childHref = `/${locale}${child.href}`
-                      const childPath = childHref.split("?")[0]
-                      const childActive =
-                        pathname === childPath ||
-                        pathname.startsWith(`${childPath}/`)
-                      return (
-                        <Link
-                          key={child.href}
-                          href={childHref}
-                          onClick={onClose}
-                          className={cn(
-                            "block rounded-lg px-3 py-2.5 text-sm transition-colors",
-                            childActive
-                              ? "font-semibold text-[#D84315]"
-                              : "text-gray-500 hover:text-gray-800"
-                          )}
-                        >
-                          {t(child.labelKey as any)}
-                        </Link>
-                      )
-                    })}
+                {/* 서브메뉴 아코디언 */}
+                <div
+                  className={cn(
+                    "grid transition-[grid-template-rows] duration-300 ease-in-out",
+                    isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                  )}
+                >
+                  <div className="min-h-0 overflow-hidden">
+                    <div className="ml-2 mb-2 space-y-0.5 pt-0.5">
+                      {item.children.map((child) => {
+                        const Icon = child.icon
+                        const childLabel = isKo ? child.labelKo : child.labelEn
+                        const childDesc = isKo ? child.descKo : child.descEn
+                        const childHref = `/${locale}${child.href}`
+                        const childPath = childHref.split("?")[0]
+                        const childActive =
+                          pathname === childPath ||
+                          pathname.startsWith(`${childPath}/`)
+
+                        return (
+                          <Link
+                            key={child.href}
+                            href={childHref}
+                            onClick={onClose}
+                            className={cn(
+                              "flex min-h-[52px] items-center gap-3 rounded-xl px-3 py-2.5 transition-colors",
+                              childActive
+                                ? "bg-[#FFF3EF] text-[#D84315]"
+                                : "text-gray-600 hover:bg-gray-50"
+                            )}
+                          >
+                            <div
+                              className={cn(
+                                "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
+                                childActive ? "bg-[#D84315]/10" : "bg-gray-100"
+                              )}
+                            >
+                              <Icon
+                                size={17}
+                                className={
+                                  childActive ? "text-[#D84315]" : "text-gray-500"
+                                }
+                              />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium leading-tight">
+                                {childLabel}
+                              </p>
+                              <p className="mt-0.5 text-[11px] leading-tight text-gray-400">
+                                {childDesc}
+                              </p>
+                            </div>
+                          </Link>
+                        )
+                      })}
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             )
           })}
@@ -152,10 +164,10 @@ export function MobileDrawer({ locale, isOpen, onClose }: Props) {
           <Link
             href={`/${locale}/search`}
             onClick={onClose}
-            className="mb-3 flex items-center gap-2 rounded-xl bg-gray-50 px-4 py-3 text-sm text-gray-600 transition-colors hover:bg-gray-100"
+            className="mb-3 flex min-h-[44px] items-center gap-2 rounded-xl bg-gray-50 px-4 py-3 text-sm text-gray-600 transition-colors hover:bg-gray-100"
           >
             <Search size={16} />
-            <span>{t("search")}</span>
+            <span>{isKo ? "검색" : "Search"}</span>
           </Link>
           <div className="flex justify-center">
             <LanguageSwitcher />
