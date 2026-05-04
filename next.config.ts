@@ -13,7 +13,7 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://openapi.map.naver.com https://oapi.map.naver.com https://maps.googleapis.com https://*.pstatic.net",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://openapi.map.naver.com https://oapi.map.naver.com https://maps.googleapis.com https://*.pstatic.net https://vercel.live https://*.vercel-scripts.com",
       "style-src 'self' 'unsafe-inline' https://oapi.map.naver.com https://*.pstatic.net",
       "img-src 'self' data: blob: https: http:",
       "font-src 'self' data: https://oapi.map.naver.com https://*.pstatic.net",
