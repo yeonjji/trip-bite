@@ -23,7 +23,7 @@ export const CONTENT_TYPE_MAP = Object.fromEntries(
 
 // 여행지 탭에서 사용하는 테마 필터 (관광지, 문화시설, 레포츠 등)
 export const TRAVEL_CONTENT_TYPES = CONTENT_TYPES.filter((c) =>
-  ["12", "14", "15", "25", "28"].includes(c.id)
+  ["12", "14", "28"].includes(c.id)
 );
 
 // 맛집 contentTypeId

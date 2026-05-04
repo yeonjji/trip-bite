@@ -129,11 +129,8 @@ export default function RecommendedCourseSection({ locale }: { locale: string })
               <Sparkles className="h-3.5 w-3.5" /> 자동 추천
             </p>
             <h2 className="font-headline text-2xl font-bold text-[#1B1C1A]">
-              조건에 맞는 여행 코스를 만들어드려요
+              나에게 맞는 여행 코스를 추천받아보세요
             </h2>
-            <p className="mt-1 text-sm text-gray-500">
-              여행지·맛집·축제·캠핑장을 거리와 스타일 기준으로 조합합니다.
-            </p>
           </div>
         </div>
 

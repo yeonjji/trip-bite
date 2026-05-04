@@ -72,6 +72,7 @@ export default function MainTravelNewsSection() {
           value={region}
           onChange={setRegion}
           showNational={true}
+          showSearch={false}
           accentColor="#D84315"
         />
 
