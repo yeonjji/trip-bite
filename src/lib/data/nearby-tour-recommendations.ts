@@ -87,7 +87,7 @@ export async function getNearbyTourItems({
   lng,
   type,
   excludeContentId,
-  limit = 5,
+  limit = 6,
   radiusMeters = DEFAULT_RADIUS_METERS,
 }: {
   lat: number;
@@ -129,7 +129,7 @@ export async function getNearbyTourRecommendations({
   lng,
   excludeContentId,
   types = ["travel", "festival", "accommodation"],
-  limitPerType = 5,
+  limitPerType = 6,
 }: {
   lat: number;
   lng: number;

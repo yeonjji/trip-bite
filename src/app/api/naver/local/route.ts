@@ -14,31 +14,36 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "네이버 API 키가 설정되지 않았습니다." }, { status: 500 })
   }
 
-  const url = `https://openapi.naver.com/v1/search/local.json?query=${encodeURIComponent(query)}&display=5&sort=random`
+  const base = `https://openapi.naver.com/v1/search/local.json?query=${encodeURIComponent(query)}&sort=random`
+  const headers = {
+    "X-Naver-Client-Id": clientId,
+    "X-Naver-Client-Secret": clientSecret,
+  }
 
   try {
-    const res = await fetch(url, {
-      headers: {
-        "X-Naver-Client-Id": clientId,
-        "X-Naver-Client-Secret": clientSecret,
-      },
-      next: { revalidate: 300 },
-    })
+    const [res1, res2] = await Promise.all([
+      fetch(`${base}&display=5&start=1`, { headers, next: { revalidate: 300 } }),
+      fetch(`${base}&display=1&start=6`, { headers, next: { revalidate: 300 } }),
+    ])
 
-    if (!res.ok) {
-      return NextResponse.json({ error: "네이버 API 호출에 실패했습니다." }, { status: res.status })
-    }
+    const [data1, data2] = await Promise.all([
+      res1.ok ? res1.json() : { items: [] },
+      res2.ok ? res2.json() : { items: [] },
+    ])
 
-    const data = await res.json()
-
-    const items = (data.items ?? []).map((item: any) => ({
+    const normalize = (item: any) => ({
       title: item.title.replace(/<[^>]*>/g, ""),
       category: item.category,
       roadAddress: item.roadAddress,
       address: item.address,
       telephone: item.telephone,
       link: item.link,
-    }))
+    })
+
+    const items = [
+      ...(data1.items ?? []).map(normalize),
+      ...(data2.items ?? []).map(normalize),
+    ]
 
     return NextResponse.json({ items })
   } catch {

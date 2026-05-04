@@ -84,7 +84,6 @@ export async function getSpecialtiesByRegionName(
     .from("specialties")
     .select("*, regions(area_code, name_ko, name_en)")
     .eq("regions.name_ko", dbName)
-    .not("image_url", "is", null)
     .limit(limit)
 
   if (error) return []
