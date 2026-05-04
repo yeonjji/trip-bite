@@ -474,6 +474,15 @@ export default async function TravelDetailPage({ params }: Props) {
         </div>
       )}
 
+      {/* 주변 편의시설 */}
+      <NearbyFacilities
+        locale={locale}
+        toilets={nearbyFacilities.toilets}
+        wifi={nearbyFacilities.wifi}
+        parking={nearbyFacilities.parking}
+        evStations={nearbyFacilities.evStations}
+      />
+
       {/* 주변 추천 정보 */}
       <NearbyTourRecommendationsSection
         recommendations={nearbyTourRecommendations}
@@ -489,15 +498,6 @@ export default async function TravelDetailPage({ params }: Props) {
 
       {/* 이 지역 특산품 */}
       <TravelSpecialtiesSection specialties={specialties} regionName={regionName} />
-
-      {/* 주변 편의시설 */}
-      <NearbyFacilities
-        locale={locale}
-        toilets={nearbyFacilities.toilets}
-        wifi={nearbyFacilities.wifi}
-        parking={nearbyFacilities.parking}
-        evStations={nearbyFacilities.evStations}
-      />
 
       {/* 근처 맛집 */}
       {nearbyRestaurants.length > 0 && (

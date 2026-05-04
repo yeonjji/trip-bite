@@ -509,6 +509,16 @@ export default async function CampingDetailPage({ params }: PageProps) {
         </>
       ) : null}
 
+      {/* 주변 시설 */}
+      <Separator className="my-6" />
+      <NearbyFacilities
+        locale={locale}
+        toilets={nearbyFacilities.toilets}
+        wifi={nearbyFacilities.wifi}
+        parking={nearbyFacilities.parking}
+        evStations={nearbyFacilities.evStations}
+      />
+
       {/* 주변 추천 정보 */}
       <Separator className="my-6" />
       <NearbyTourRecommendationsSection
@@ -526,15 +536,6 @@ export default async function CampingDetailPage({ params }: PageProps) {
 
       <Separator className="my-6" />
       <TravelSpecialtiesSection specialties={specialties} regionName={regionName} />
-
-      <Separator className="my-6" />
-      <NearbyFacilities
-        locale={locale}
-        toilets={nearbyFacilities.toilets}
-        wifi={nearbyFacilities.wifi}
-        parking={nearbyFacilities.parking}
-        evStations={nearbyFacilities.evStations}
-      />
 
       {/* 이 근처에서 같이 가볼 곳 */}
       {regionName && (
