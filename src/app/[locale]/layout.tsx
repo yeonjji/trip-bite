@@ -4,7 +4,6 @@ import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { MobileNav } from "@/components/layout/MobileNav";
 
 type Props = {
   children: React.ReactNode;
@@ -28,11 +27,10 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <NextIntlClientProvider messages={messages}>
       <Header locale={locale} />
-      <main className="min-h-screen pb-14 md:pb-0">
+      <main className="min-h-screen">
         {children}
       </main>
       <Footer locale={locale} />
-      <MobileNav />
     </NextIntlClientProvider>
   );
 }

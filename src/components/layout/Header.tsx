@@ -1,94 +1,63 @@
-import Link from "next/link";
-import { useTranslations } from "next-intl";
-import { Search } from "lucide-react";
-import { LanguageSwitcher } from "./LanguageSwitcher";
-import { NavDropdown } from "./NavDropdown";
+"use client"
 
-type Props = { locale: string };
+import { useState } from "react"
+import Link from "next/link"
+import { Menu, Search } from "lucide-react"
+import { LanguageSwitcher } from "./LanguageSwitcher"
+import { MegaMenu } from "./MegaMenu"
+import { MobileDrawer } from "./MobileDrawer"
+
+type Props = { locale: string }
 
 export function Header({ locale }: Props) {
-  const t = useTranslations("nav");
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const isKo = locale === "ko"
 
   return (
-    <header className="sticky top-0 z-50 h-16 w-full shadow-sm bg-[#FFFDF5]/80 backdrop-blur-md">
-      <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 md:px-6">
-        <Link
-          href={`/${locale}`}
-          className="text-xl font-bold text-[#D84315] hover:text-[#B71C1C] transition-colors"
-        >
-          Trip Bite
-        </Link>
-
-        <nav className="hidden md:flex items-center gap-6">
-          <NavDropdown
-            label={t("travel")}
-            locale={locale}
-            items={[
-              { href: "/travel", label: t("allDestinations") },
-            ]}
-          />
-          <NavDropdown
-            label={t("camping")}
-            locale={locale}
-            items={[
-              { href: "/camping", label: t("allCamping") },
-              { href: "/camping?induty=일반야영장", label: t("generalCamping") },
-              { href: "/camping?induty=자동차야영장", label: t("carCamping") },
-              { href: "/camping?induty=카라반", label: t("caravan") },
-              { href: "/camping?induty=글램핑", label: t("glamping") },
-            ]}
-          />
-          <NavDropdown
-            label={t("events")}
-            locale={locale}
-            items={[
-              { href: "/events", label: t("allEvents") },
-              { href: "/events?status=ongoing", label: t("ongoingEvents") },
-              { href: "/events?status=upcoming", label: t("upcomingEvents") },
-            ]}
-          />
-          <NavDropdown
-            label={t("restaurants")}
-            locale={locale}
-            items={[
-              { href: "/restaurants", label: t("allRestaurants") },
-              { href: "/restaurants?cat3=A05020100", label: t("korean") },
-              { href: "/restaurants?cat3=A05020200", label: t("western") },
-              { href: "/restaurants?cat3=A05020300", label: t("japanese") },
-              { href: "/restaurants?cat3=A05020400", label: t("chinese") },
-              { href: "/restaurants?cat3=A05020900", label: t("cafe") },
-            ]}
-          />
-          <NavDropdown
-            label={t("facilities")}
-            locale={locale}
-            labelHref="/facilities"
-            items={[
-              { href: "/facilities/ev-charging", label: t("evCharging") },
-              { href: "/facilities/wifi",        label: t("publicWifi") },
-              { href: "/facilities/restrooms",   label: t("restrooms") },
-              { href: "/facilities/parking",     label: t("parking") },
-            ]}
-          />
+    <>
+      <header className="sticky top-0 z-50 h-16 w-full bg-[#FFFDF5]/90 shadow-sm backdrop-blur-md">
+        <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 md:px-6">
+          {/* 로고 */}
           <Link
-            href={`/${locale}/recipes`}
-            className="text-sm font-medium text-[#5A413A] hover:text-[#D84315] transition-colors"
+            href={`/${locale}`}
+            className="shrink-0 text-xl font-bold text-[#D84315] transition-colors hover:text-[#B71C1C]"
           >
-            {t("recipes")}
+            Trip Bite
           </Link>
-        </nav>
 
-        <div className="flex items-center gap-3">
-          <Link
-            href={`/${locale}/search`}
-            aria-label="검색"
-            className="p-2 text-[#5A413A] hover:text-[#D84315] transition-colors"
-          >
-            <Search size={20} />
-          </Link>
-          <LanguageSwitcher />
+          {/* PC 메가메뉴 */}
+          <MegaMenu locale={locale} isKo={isKo} />
+
+          {/* 우측 액션 */}
+          <div className="flex items-center gap-1">
+            <Link
+              href={`/${locale}/search`}
+              aria-label="검색"
+              className="rounded-full p-2 text-[#5A413A] transition-colors hover:bg-gray-100 hover:text-[#D84315]"
+            >
+              <Search size={20} />
+            </Link>
+            <div className="hidden md:block">
+              <LanguageSwitcher />
+            </div>
+            {/* 햄버거 버튼 (모바일) */}
+            <button
+              onClick={() => setDrawerOpen(true)}
+              className="rounded-xl p-2 text-[#5A413A] transition-colors hover:bg-[#FFF3EF] hover:text-[#D84315] md:hidden"
+              aria-label="메뉴 열기"
+              aria-expanded={drawerOpen}
+            >
+              <Menu size={22} />
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
-  );
+      </header>
+
+      <MobileDrawer
+        locale={locale}
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+      />
+    </>
+  )
 }
