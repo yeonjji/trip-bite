@@ -1,29 +1,67 @@
-// 메뉴 정의 중앙화: 헤더·모바일 네비게이션 모두 이 파일에서 가져옵니다.
+export interface NavSubItem {
+  href: string
+  labelKey: string
+}
 
 export interface NavItem {
-  labelKo: string
-  labelEn: string
-  href: string
+  labelKey: string
+  href: string        // top-level href (used as labelHref in PC dropdown, direct link in mobile)
+  children: NavSubItem[]
 }
 
-export interface NavGroup {
-  labelKo: string
-  labelEn: string
-  href?: string
-  items?: NavItem[]
-}
-
-export const NAV_GROUPS: NavGroup[] = [
+export const NAV_ITEMS: NavItem[] = [
   {
-    labelKo: "여행",
-    labelEn: "Travel",
-    items: [
-      { labelKo: "전체 여행지", labelEn: "All Destinations", href: "/travel" },
-      { labelKo: "캠핑", labelEn: "Camping", href: "/camping" },
-      { labelKo: "무장애 여행", labelEn: "Barrier-Free", href: "/travel/barrier-free" },
-      { labelKo: "반려동물 여행", labelEn: "Pet-Friendly", href: "/travel/pet" },
+    labelKey: "travel",
+    href: "/travel",
+    children: [
+      { href: "/travel", labelKey: "allDestinations" },
     ],
   },
-  { labelKo: "맛집", labelEn: "Restaurants", href: "/restaurants" },
-  { labelKo: "특산품", labelEn: "Specialties", href: "/specialties" },
+  {
+    labelKey: "camping",
+    href: "/camping",
+    children: [
+      { href: "/camping",                       labelKey: "allCamping" },
+      { href: "/camping?induty=일반야영장",      labelKey: "generalCamping" },
+      { href: "/camping?induty=자동차야영장",    labelKey: "carCamping" },
+      { href: "/camping?induty=카라반",          labelKey: "caravan" },
+      { href: "/camping?induty=글램핑",          labelKey: "glamping" },
+    ],
+  },
+  {
+    labelKey: "events",
+    href: "/events",
+    children: [
+      { href: "/events",                  labelKey: "allEvents" },
+      { href: "/events?status=ongoing",   labelKey: "ongoingEvents" },
+      { href: "/events?status=upcoming",  labelKey: "upcomingEvents" },
+    ],
+  },
+  {
+    labelKey: "restaurants",
+    href: "/restaurants",
+    children: [
+      { href: "/restaurants",                      labelKey: "allRestaurants" },
+      { href: "/restaurants?cat3=A05020100",       labelKey: "korean" },
+      { href: "/restaurants?cat3=A05020200",       labelKey: "western" },
+      { href: "/restaurants?cat3=A05020300",       labelKey: "japanese" },
+      { href: "/restaurants?cat3=A05020400",       labelKey: "chinese" },
+      { href: "/restaurants?cat3=A05020900",       labelKey: "cafe" },
+    ],
+  },
+  {
+    labelKey: "facilities",
+    href: "/facilities",
+    children: [
+      { href: "/facilities/ev-charging", labelKey: "evCharging" },
+      { href: "/facilities/wifi",        labelKey: "publicWifi" },
+      { href: "/facilities/restrooms",   labelKey: "restrooms" },
+      { href: "/facilities/parking",     labelKey: "parking" },
+    ],
+  },
+  {
+    labelKey: "recipes",
+    href: "/recipes",
+    children: [],
+  },
 ]
