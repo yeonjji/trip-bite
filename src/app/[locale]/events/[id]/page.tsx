@@ -181,6 +181,15 @@ function formatDate(d: string, isKo: boolean): string {
   return `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`
 }
 
+function parseDate(d: string): Date | null {
+  if (!d || d.length < 8) return null
+  const y = parseInt(d.slice(0, 4))
+  const m = parseInt(d.slice(4, 6)) - 1
+  const day = parseInt(d.slice(6, 8))
+  if (isNaN(y) || isNaN(m) || isNaN(day)) return null
+  return new Date(y, m, day)
+}
+
 function computeDDay(
   startDate: string,
   endDate: string,
@@ -192,23 +201,18 @@ function computeDDay(
   today.setHours(0, 0, 0, 0)
 
   if (status === "upcoming") {
-    const start = new Date(
-      parseInt(startDate.slice(0, 4)),
-      parseInt(startDate.slice(4, 6)) - 1,
-      parseInt(startDate.slice(6, 8))
-    )
+    const start = parseDate(startDate)
+    if (!start) return null
     const diff = Math.round((start.getTime() - today.getTime()) / 86400000)
+    if (isNaN(diff)) return null
     if (diff === 0) return { label: isKo ? "오늘 시작!" : "Starts today!", urgent: false }
     return { label: `D-${diff}`, urgent: false }
   }
 
-  // ongoing
-  const end = new Date(
-    parseInt(endDate.slice(0, 4)),
-    parseInt(endDate.slice(4, 6)) - 1,
-    parseInt(endDate.slice(6, 8))
-  )
+  const end = parseDate(endDate)
+  if (!end) return null
   const diff = Math.round((end.getTime() - today.getTime()) / 86400000)
+  if (isNaN(diff)) return null
   if (diff <= 0) return { label: isKo ? "오늘 마지막!" : "Last day!", urgent: true }
   if (diff === 1) return { label: isKo ? "내일 종료" : "Ends tomorrow", urgent: true }
   if (diff <= 7) return { label: isKo ? `${diff}일 후 종료` : `${diff}d left`, urgent: true }
@@ -362,16 +366,25 @@ export default async function EventDetailPage({ params }: Props) {
         </div>
       )}
 
-      {/* Date range */}
-      <p className="mb-3 text-base font-medium text-[#5A413A]">
-        📅 {formatDate(festival.eventStartDate, isKo)} ~ {formatDate(festival.eventEndDate, isKo)}
-      </p>
+      {/* Date range — 날짜가 있을 때만 표시 */}
+      {(festival.eventStartDate || festival.eventEndDate) && (
+        <p className="mb-3 text-base font-medium text-[#5A413A]">
+          📅{" "}
+          {festival.eventStartDate
+            ? formatDate(festival.eventStartDate, isKo)
+            : (isKo ? "미정" : "TBD")}
+          {" ~ "}
+          {festival.eventEndDate
+            ? formatDate(festival.eventEndDate, isKo)
+            : (isKo ? "미정" : "TBD")}
+        </p>
+      )}
 
-      {/* Venue one-liner */}
-      {venue && (
+      {/* Venue one-liner — detail.eventplace 있을 때만 (addr1 중복 방지) */}
+      {detail.eventplace && (
         <p className="mb-4 flex items-center gap-1.5 text-sm text-[#7B5E57]">
           <span>📍</span>
-          <span>{venue}</span>
+          <span>{detail.eventplace}</span>
         </p>
       )}
 
