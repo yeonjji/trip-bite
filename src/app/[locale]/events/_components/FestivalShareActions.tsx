@@ -24,6 +24,8 @@ function toGoogleCalDate(d: Date): string {
 }
 
 export default function FestivalShareActions({ title, isKo, startDate, endDate, venue }: Props) {
+  const hasValidDates = !!parseYYYYMMDD(startDate) && !!parseYYYYMMDD(endDate)
+
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -42,7 +44,6 @@ export default function FestivalShareActions({ title, isKo, startDate, endDate, 
     const end = parseYYYYMMDD(endDate)
     if (!start || !end) return
 
-    // Google Calendar adds 1 day to end for all-day events
     const endPlusOne = new Date(end)
     endPlusOne.setDate(endPlusOne.getDate() + 1)
 
@@ -65,13 +66,15 @@ export default function FestivalShareActions({ title, isKo, startDate, endDate, 
         <Share2 size={14} />
         {isKo ? "공유" : "Share"}
       </button>
-      <button
-        onClick={handleCalendar}
-        className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-[#5A413A] transition hover:border-[#D84315] hover:text-[#D84315]"
-      >
-        <CalendarPlus size={14} />
-        {isKo ? "캘린더 추가" : "Add to Calendar"}
-      </button>
+      {hasValidDates && (
+        <button
+          onClick={handleCalendar}
+          className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-[#5A413A] transition hover:border-[#D84315] hover:text-[#D84315]"
+        >
+          <CalendarPlus size={14} />
+          {isKo ? "캘린더 추가" : "Add to Calendar"}
+        </button>
+      )}
     </div>
   )
 }
