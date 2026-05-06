@@ -13,7 +13,7 @@ interface Props {
 
 export function MegaMenu({ locale, isKo }: Props) {
   const [openKey, setOpenKey] = useState<string | null>(null)
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const closeTimer = useRef<ReturnType<typeof setTimeout>>()
   const pathname = usePathname()
 
   const open = (key: string) => {
