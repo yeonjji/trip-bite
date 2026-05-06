@@ -81,52 +81,48 @@ export async function getFestivals(params: FestivalFilterParams): Promise<{
     ? Object.entries(AREA_CODE_TO_REGION).find(([, v]) => v === region)?.[0]
     : undefined
 
-  function applyFilters(q: ReturnType<typeof supabase.from<"festivals">>) {
-    if (areaCode) q = q.eq("area_code", areaCode)
-    if (search) q = q.ilike("title", `%${search}%`)
+  function base() {
+    let q = supabase.from("festivals").select("*", { count: "exact" })
+    if (areaCode) q = q.eq("area_code", areaCode) as typeof q
+    if (search) q = q.ilike("title", `%${search}%`) as typeof q
     return q
   }
 
   // When a specific status is selected, single query with appropriate ordering
   if (status === "ongoing" || status === "upcoming" || status === "ended") {
-    let q = supabase.from("festivals").select("*", { count: "exact" })
-    q = applyFilters(q)
+    let q = base()
 
     if (status === "ongoing") {
       q = q.lte("event_start_date", todayStr).gte("event_end_date", todayStr)
-      q = q.order("event_end_date", { ascending: true }) // ending soonest first
+        .order("event_end_date", { ascending: true }) as typeof q
     } else if (status === "upcoming") {
       q = q.gt("event_start_date", todayStr)
-      q = q.order("event_start_date", { ascending: true }) // starting soonest first
+        .order("event_start_date", { ascending: true }) as typeof q
     } else {
       q = q.lt("event_end_date", todayStr)
-      q = q.order("event_end_date", { ascending: false }) // most recently ended first
+        .order("event_end_date", { ascending: false }) as typeof q
     }
 
     const from = (page - 1) * pageSize
-    q = q.range(from, from + pageSize - 1)
-    const { data, count } = await q
+    const { data, count } = await q.range(from, from + pageSize - 1)
     if (!data) return { items: [], totalCount: 0 }
     return { items: data.map(mapRow), totalCount: count ?? 0 }
   }
 
-  // No status filter: fetch all three groups separately, merge with priority order
+  // No status filter: fetch all three groups with priority order
   const [ongoingRes, upcomingRes, endedRes] = await Promise.all([
-    applyFilters(
-      supabase.from("festivals").select("*", { count: "exact" })
-        .lte("event_start_date", todayStr)
-        .gte("event_end_date", todayStr)
-    ).order("event_end_date", { ascending: true }),
+    base()
+      .lte("event_start_date", todayStr)
+      .gte("event_end_date", todayStr)
+      .order("event_end_date", { ascending: true }),
 
-    applyFilters(
-      supabase.from("festivals").select("*", { count: "exact" })
-        .gt("event_start_date", todayStr)
-    ).order("event_start_date", { ascending: true }),
+    base()
+      .gt("event_start_date", todayStr)
+      .order("event_start_date", { ascending: true }),
 
-    applyFilters(
-      supabase.from("festivals").select("*", { count: "exact" })
-        .lt("event_end_date", todayStr)
-    ).order("event_end_date", { ascending: false }),
+    base()
+      .lt("event_end_date", todayStr)
+      .order("event_end_date", { ascending: false }),
   ])
 
   const allRows = [
