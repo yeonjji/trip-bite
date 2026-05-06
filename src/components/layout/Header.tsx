@@ -23,8 +23,8 @@ export function Header({ locale }: Props) {
             <Image
               src="/logo.svg"
               alt="TRIP BITE 여행한입"
-              width={190}
-              height={42}
+              width={76}
+              height={64}
               priority
             />
           </Link>
