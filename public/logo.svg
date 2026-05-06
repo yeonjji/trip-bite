@@ -1,37 +1,78 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
-  <!-- Outer red circle (thick border) -->
-  <circle cx="100" cy="100" r="98" fill="#C8392B" />
-  <!-- Cream inner fill -->
-  <circle cx="100" cy="100" r="86" fill="#F5EFE0" />
-  <!-- Inner thin red ring -->
-  <circle cx="100" cy="100" r="86" fill="none" stroke="#C8392B" stroke-width="2" />
-  <circle cx="100" cy="100" r="79" fill="none" stroke="#C8392B" stroke-width="1.5" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 58" width="260" height="58">
+  <g fill="#5C2208">
 
-  <!-- TB large text -->
+    <!-- ── Swoosh arc (bowl/orbit around building) ── -->
+    <path d="M22 50 Q50 62 82 50" stroke="#5C2208" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+
+    <!-- ── Airplane (lower-left, pointing up-right) ── -->
+    <g transform="translate(10,42) rotate(-35)">
+      <!-- fuselage -->
+      <ellipse cx="0" cy="0" rx="9" ry="2.8" />
+      <!-- left wing -->
+      <path d="M-3,-1 L-9,-8 L-2,-4 Z"/>
+      <!-- right wing -->
+      <path d="M-3,1 L-9,8 L-2,4 Z"/>
+      <!-- tail -->
+      <path d="M-8,-1 L-12,-4 L-9,0 Z"/>
+    </g>
+
+    <!-- ── Korean traditional building (한옥) ── -->
+    <!-- body -->
+    <rect x="26" y="30" width="52" height="20" rx="1.5"/>
+    <!-- doors/windows cutout (light) -->
+    <rect x="30" y="34" width="7" height="10" rx="1" fill="#8B3C12"/>
+    <rect x="40" y="34" width="7" height="10" rx="1" fill="#8B3C12"/>
+    <rect x="50" y="34" width="7" height="10" rx="1" fill="#8B3C12"/>
+    <rect x="60" y="34" width="7" height="10" rx="1" fill="#8B3C12"/>
+    <!-- eave pillars suggestion -->
+    <rect x="27" y="30" width="2" height="20"/>
+    <rect x="75" y="30" width="2" height="20"/>
+
+    <!-- Roof tier 2 (lower, wider) -->
+    <path d="M18,30 Q52,16 86,30 Z"/>
+    <!-- Roof tier 1 (upper, narrower) -->
+    <path d="M28,22 Q52,10 76,22 Z"/>
+    <!-- Roof ridge cap -->
+    <rect x="46" y="9" width="12" height="3" rx="1.5"/>
+
+    <!-- ── Location pin (on top of building center) ── -->
+    <!-- pin body (teardrop) -->
+    <path d="M52,9 C44,9 44,0 52,0 C60,0 60,9 52,9 Z"/>
+    <path d="M49,8 Q52,18 52,18 Q52,18 55,8 Z"/>
+    <!-- pin inner circle (hole) -->
+    <circle cx="52" cy="4.5" r="2.2" fill="white"/>
+
+    <!-- ── Bottle (upper right of pin) ── -->
+    <g transform="translate(57, 0)">
+      <!-- bottle neck -->
+      <rect x="0" y="2" width="5" height="3" rx="1"/>
+      <!-- bottle cap -->
+      <rect x="0.5" y="0" width="4" height="2.5" rx="1"/>
+      <!-- bottle body -->
+      <path d="M-1,5 Q-3,8 -2,16 L7,16 Q8,8 6,5 Z"/>
+    </g>
+
+  </g>
+
+  <!-- ── TRIP BITE text ── -->
   <text
     x="100"
-    y="92"
-    text-anchor="middle"
-    font-family="Georgia, 'Times New Roman', serif"
-    font-size="64"
-    font-weight="700"
-    fill="#C8392B"
+    y="30"
+    font-family="'Arial Black', 'Impact', 'Arial Bold', sans-serif"
+    font-size="26"
+    font-weight="900"
+    fill="#5C2208"
+    letter-spacing="3"
+  >TRIP BITE</text>
+
+  <!-- ── 여행 한입 subtitle ── -->
+  <text
+    x="101"
+    y="48"
+    font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif"
+    font-size="12"
+    font-weight="400"
+    fill="#5C2208"
     letter-spacing="4"
-  >TB</text>
-
-  <!-- Horizontal divider lines -->
-  <line x1="38" y1="104" x2="162" y2="104" stroke="#C8392B" stroke-width="2.5"/>
-  <line x1="38" y1="108" x2="162" y2="108" stroke="#C8392B" stroke-width="1"/>
-
-  <!-- KOREA text with dots -->
-  <text
-    x="100"
-    y="138"
-    text-anchor="middle"
-    font-family="Georgia, 'Times New Roman', serif"
-    font-size="20"
-    font-weight="600"
-    fill="#C8392B"
-    letter-spacing="5"
-  >•KOREA•</text>
+  >여행 한입</text>
 </svg>
