@@ -26,7 +26,7 @@ export function Header({ locale }: Props) {
               width={96}
               height={64}
               priority
-              className="h-10 w-auto md:h-16"
+              className="h-10 w-auto md:h-14"
             />
           </Link>
 
