@@ -22,9 +22,9 @@ export function Header({ locale }: Props) {
           <Link href={`/${locale}`} className="shrink-0 transition-opacity hover:opacity-80">
             <Image
               src="/logo.svg"
-              alt="TripBite"
-              width={140}
-              height={38}
+              alt="여행한입"
+              width={52}
+              height={52}
               priority
             />
           </Link>
