@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 60" width="220" height="60">
+  <!-- Location pin above the 'i' in Trip -->
+  <g transform="translate(74, 2)">
+    <!-- Pin circle top -->
+    <circle cx="7" cy="7" r="7" fill="#F0A030"/>
+    <!-- Pin bottom triangle -->
+    <path d="M3.5 11 Q7 20 7 20 Q7 20 10.5 11 Z" fill="#F0A030"/>
+    <!-- Pin inner circle (hole) -->
+    <circle cx="7" cy="7" r="2.8" fill="white" opacity="0.9"/>
+  </g>
+  <!-- TripBite text -->
+  <text
+    x="110"
+    y="48"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="38"
+    font-weight="700"
+    fill="#7B4A28"
+    letter-spacing="1"
+  >TripBite</text>
+</svg>
