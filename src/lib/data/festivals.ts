@@ -77,37 +77,71 @@ export async function getFestivals(params: FestivalFilterParams): Promise<{
     String(today.getMonth() + 1).padStart(2, "0") +
     String(today.getDate()).padStart(2, "0")
 
-  let query = supabase.from("festivals").select("*", { count: "exact" })
+  const areaCode = region
+    ? Object.entries(AREA_CODE_TO_REGION).find(([, v]) => v === region)?.[0]
+    : undefined
 
-  if (region) {
-    const areaCode = Object.entries(AREA_CODE_TO_REGION).find(([, v]) => v === region)?.[0]
-    if (areaCode) query = query.eq("area_code", areaCode)
+  function applyFilters(q: ReturnType<typeof supabase.from<"festivals">>) {
+    if (areaCode) q = q.eq("area_code", areaCode)
+    if (search) q = q.ilike("title", `%${search}%`)
+    return q
   }
 
-  if (status === "ongoing") {
-    query = query.lte("event_start_date", todayStr).gte("event_end_date", todayStr)
-  } else if (status === "upcoming") {
-    query = query.gt("event_start_date", todayStr)
-  } else if (status === "ended") {
-    query = query.lt("event_end_date", todayStr)
+  // When a specific status is selected, single query with appropriate ordering
+  if (status === "ongoing" || status === "upcoming" || status === "ended") {
+    let q = supabase.from("festivals").select("*", { count: "exact" })
+    q = applyFilters(q)
+
+    if (status === "ongoing") {
+      q = q.lte("event_start_date", todayStr).gte("event_end_date", todayStr)
+      q = q.order("event_end_date", { ascending: true }) // ending soonest first
+    } else if (status === "upcoming") {
+      q = q.gt("event_start_date", todayStr)
+      q = q.order("event_start_date", { ascending: true }) // starting soonest first
+    } else {
+      q = q.lt("event_end_date", todayStr)
+      q = q.order("event_end_date", { ascending: false }) // most recently ended first
+    }
+
+    const from = (page - 1) * pageSize
+    q = q.range(from, from + pageSize - 1)
+    const { data, count } = await q
+    if (!data) return { items: [], totalCount: 0 }
+    return { items: data.map(mapRow), totalCount: count ?? 0 }
   }
 
-  if (search) {
-    query = query.ilike("title", `%${search}%`)
-  }
+  // No status filter: fetch all three groups separately, merge with priority order
+  const [ongoingRes, upcomingRes, endedRes] = await Promise.all([
+    applyFilters(
+      supabase.from("festivals").select("*", { count: "exact" })
+        .lte("event_start_date", todayStr)
+        .gte("event_end_date", todayStr)
+    ).order("event_end_date", { ascending: true }),
 
-  query = query.order("event_start_date", { ascending: true })
+    applyFilters(
+      supabase.from("festivals").select("*", { count: "exact" })
+        .gt("event_start_date", todayStr)
+    ).order("event_start_date", { ascending: true }),
+
+    applyFilters(
+      supabase.from("festivals").select("*", { count: "exact" })
+        .lt("event_end_date", todayStr)
+    ).order("event_end_date", { ascending: false }),
+  ])
+
+  const allRows = [
+    ...(ongoingRes.data ?? []),
+    ...(upcomingRes.data ?? []),
+    ...(endedRes.data ?? []),
+  ]
+
+  const totalCount =
+    (ongoingRes.count ?? 0) + (upcomingRes.count ?? 0) + (endedRes.count ?? 0)
 
   const from = (page - 1) * pageSize
-  query = query.range(from, from + pageSize - 1)
+  const paged = allRows.slice(from, from + pageSize)
 
-  const { data, count } = await query
-  if (!data) return { items: [], totalCount: 0 }
-
-  return {
-    items: data.map(mapRow),
-    totalCount: count ?? 0,
-  }
+  return { items: paged.map(mapRow), totalCount }
 }
 
 export async function getUpcomingFestivals(limit = 4): Promise<FestivalItem[]> {
