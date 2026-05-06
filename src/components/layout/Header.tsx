@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Menu, Search } from "lucide-react"
 import { LanguageSwitcher } from "./LanguageSwitcher"
 import { MegaMenu } from "./MegaMenu"
@@ -18,11 +19,14 @@ export function Header({ locale }: Props) {
       <header className="sticky top-0 z-50 h-16 w-full bg-[#FFFDF5]/90 shadow-sm backdrop-blur-md">
         <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 md:px-6">
           {/* 로고 */}
-          <Link
-            href={`/${locale}`}
-            className="shrink-0 text-xl font-bold text-[#D84315] transition-colors hover:text-[#B71C1C]"
-          >
-            Trip Bite
+          <Link href={`/${locale}`} className="shrink-0 transition-opacity hover:opacity-80">
+            <Image
+              src="/logo.svg"
+              alt="TRIP BITE 여행한입"
+              width={76}
+              height={64}
+              priority
+            />
           </Link>
 
           {/* PC 메가메뉴 */}
