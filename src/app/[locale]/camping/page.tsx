@@ -17,6 +17,7 @@ interface PageProps {
     induty?: string
     q?: string
     page?: string
+    petOnly?: string
   }>
 }
 
@@ -56,7 +57,7 @@ function toCardItem(site: CampingSite) {
 
 export default async function CampingPage({ params, searchParams }: PageProps) {
   const { locale } = await params
-  const { doNm, induty, q, page: pageStr } = await searchParams
+  const { doNm, induty, q, page: pageStr, petOnly } = await searchParams
   const page = Number(pageStr ?? "1") || 1
 
   const { items, totalCount } = await getCampingSites({
@@ -66,6 +67,7 @@ export default async function CampingPage({ params, searchParams }: PageProps) {
     page,
     pageSize: PAGE_SIZE,
     sort: "rating",
+    petOnly: petOnly === "true",
   })
 
   return (

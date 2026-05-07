@@ -25,6 +25,7 @@ import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSection"
 import TransitSection from "@/components/transit/TransitSection"
+import PetInfoSection from "@/components/travel/PetInfoSection"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -32,22 +33,27 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
-  const { detail } = await getDestinationDetail(id)
+  const { detail, petPlace } = await getDestinationDetail(id)
 
   if (!detail) {
     return { title: "여행지" }
   }
 
+  const baseDescription = detail.overview
+    ? detail.overview.replace(/<[^>]*>/g, "").slice(0, 120)
+    : undefined
+
+  const petTitle = petPlace ? `${detail.title} - 반려동물 동반 가능 여행지` : detail.title
+  const petDescription = petPlace
+    ? `${detail.title}의 반려동물 동반 가능 여부, 동반 구분, 크기 제한, 추가 요금 등 강아지와 함께 방문하기 전 확인할 정보를 제공합니다.${baseDescription ? ` ${baseDescription}` : ""}`
+    : baseDescription
+
   return {
-    title: detail.title,
-    description: detail.overview
-      ? detail.overview.replace(/<[^>]*>/g, "").slice(0, 160)
-      : undefined,
+    title: petTitle,
+    description: petDescription,
     openGraph: {
-      title: detail.title,
-      description: detail.overview
-        ? detail.overview.replace(/<[^>]*>/g, "").slice(0, 160)
-        : undefined,
+      title: petTitle,
+      description: petDescription,
       images: detail.firstimage ? [{ url: detail.firstimage }] : [],
     },
     alternates: buildAlternates(`/travel/${id}`),
@@ -59,7 +65,7 @@ export default async function TravelDetailPage({ params }: Props) {
 
   setRequestLocale(locale)
 
-  const { destination, detail, intro, images, wiki, kakaoPlace, petPlace, barrierFreePlace } = await getDestinationDetail(id)
+  const { destination, detail, intro, images, wiki, kakaoPlace, petPlace, petTourInfo, barrierFreePlace } = await getDestinationDetail(id)
 
   const fallback = petPlace ?? barrierFreePlace ?? null
 
@@ -257,36 +263,6 @@ export default async function TravelDetailPage({ params }: Props) {
             <span className="text-foreground">{intro.chkpet}</span>
           </div>
         )}
-        {petPlace && (
-          <>
-            {petPlace.pet_acmpny_cl && (
-              <div className="flex gap-2 text-sm">
-                <span className="w-24 shrink-0 font-medium text-muted-foreground">
-                  {isKo ? "반려동물 동반" : "Pet Area"}
-                </span>
-                <span className="text-foreground">
-                  🐾 {({"1": "실내", "2": "실외", "3": "실내외"} as Record<string, string>)[petPlace.pet_acmpny_cl] ?? petPlace.pet_acmpny_cl}
-                </span>
-              </div>
-            )}
-            {petPlace.acmpny_type_cd && (
-              <div className="flex gap-2 text-sm">
-                <span className="w-24 shrink-0 font-medium text-muted-foreground">
-                  {isKo ? "동반 동물" : "Pet Types"}
-                </span>
-                <span className="text-foreground">{petPlace.acmpny_type_cd}</span>
-              </div>
-            )}
-            {petPlace.rel_pet_info && (
-              <div className="flex gap-2 text-sm">
-                <span className="w-24 shrink-0 font-medium text-muted-foreground">
-                  {isKo ? "반려동물 안내" : "Pet Info"}
-                </span>
-                <span className="text-foreground">{petPlace.rel_pet_info}</span>
-              </div>
-            )}
-          </>
-        )}
         {barrierFreePlace && (
           <>
             {barrierFreePlace.wheelchair && (
@@ -348,6 +324,11 @@ export default async function TravelDetailPage({ params }: Props) {
           </div>
         )}
       </div>
+
+      {/* 반려동물 동반 정보 */}
+      {petPlace && (
+        <PetInfoSection petPlace={petPlace} petTourInfo={petTourInfo} isKo={isKo} />
+      )}
 
       {/* 체험 안내 */}
       {(intro?.expguide || intro?.expagerange) && (

@@ -44,6 +44,7 @@ export default function CampingFilters({ locale }: Props) {
 
   const doNm = searchParams.get("doNm") ?? ""
   const induty = searchParams.get("induty") ?? ""
+  const petOnly = searchParams.get("petOnly") ?? ""
   const regionCode = DONM_TO_CODE[doNm] ?? ""
 
   const [regionOpen, setRegionOpen] = useState(false)
@@ -75,7 +76,7 @@ export default function CampingFilters({ locale }: Props) {
     ? (isKo ? AREA_CODE_MAP[regionCode]?.nameKo : AREA_CODE_MAP[regionCode]?.nameEn) ?? ""
     : isKo ? "전체 지역" : "All Regions"
 
-  const hasFilters = doNm || induty
+  const hasFilters = doNm || induty || petOnly
 
   return (
     <div className="flex flex-col gap-0.5">
@@ -166,6 +167,25 @@ export default function CampingFilters({ locale }: Props) {
           </div>
         )}
       </div>
+
+      <div className="border-t border-gray-100 my-3" />
+
+      {/* 반려동물 필터 */}
+      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest px-4 mb-1">
+        {isKo ? "반려동물" : "Pets"}
+      </p>
+      <button
+        onClick={() => pushParams({ petOnly: petOnly === "true" ? "" : "true" })}
+        className={cn(
+          "flex items-center gap-3 w-full rounded-lg px-4 py-2.5 text-sm font-medium transition-all text-left",
+          petOnly === "true"
+            ? "bg-white text-orange-700 font-bold shadow-sm"
+            : "text-slate-500 hover:bg-orange-50 hover:text-orange-700"
+        )}
+      >
+        <span className={cn("text-base shrink-0", petOnly === "true" ? "" : "opacity-60")}>🐾</span>
+        {isKo ? "동반 가능" : "Pet-friendly"}
+      </button>
 
       {hasFilters && (
         <>
