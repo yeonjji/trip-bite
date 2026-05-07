@@ -19,6 +19,8 @@ type Props = {
     contentTypeId?: string
     q?: string
     page?: string
+    petOnly?: string
+    petCl?: string
   }>
 }
 
@@ -59,13 +61,13 @@ function destinationToSpotBase(d: Destination): TourSpotBase {
 
 export default async function TravelPage({ params, searchParams }: Props) {
   const { locale } = await params
-  const { areaCode = "", sigunguCode = "", contentTypeId = "", q = "", page: pageStr = "1" } = await searchParams
+  const { areaCode = "", sigunguCode = "", contentTypeId = "", q = "", page: pageStr = "1", petOnly = "", petCl = "" } = await searchParams
 
   setRequestLocale(locale)
 
   const page = Math.max(1, parseInt(pageStr, 10) || 1)
 
-  const { items, totalCount } = await getDestinations({
+  const { items, totalCount, petInfoMap } = await getDestinations({
     areaCode: areaCode || undefined,
     sigunguCode: sigunguCode || undefined,
     contentTypeId: contentTypeId || undefined,
@@ -73,6 +75,8 @@ export default async function TravelPage({ params, searchParams }: Props) {
     page,
     pageSize: PAGE_SIZE,
     sort: "rating",
+    petOnly: petOnly === "true",
+    petCl: petCl || undefined,
   })
 
   return (
@@ -113,6 +117,7 @@ export default async function TravelPage({ params, searchParams }: Props) {
                       key={destination.id}
                       item={destinationToSpotBase(destination)}
                       locale={locale}
+                      petInfo={petInfoMap.get(destination.content_id) ?? null}
                     />
                   ))}
                 </div>
