@@ -31,8 +31,9 @@ export function computeStatus(item: FestivalItem): FestivalStatus {
     String(today.getFullYear()) +
     String(today.getMonth() + 1).padStart(2, "0") +
     String(today.getDate()).padStart(2, "0")
-  if (!item.eventStartDate || !item.eventEndDate) return "upcoming"
+  if (!item.eventStartDate) return "unknown"
   if (todayStr < item.eventStartDate) return "upcoming"
+  if (!item.eventEndDate) return "ongoing"
   if (todayStr > item.eventEndDate) return "ended"
   return "ongoing"
 }

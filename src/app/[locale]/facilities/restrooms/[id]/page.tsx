@@ -18,6 +18,7 @@ import {
   PersonStanding,
 } from "lucide-react";
 import { setRequestLocale } from "next-intl/server";
+import ShareButton from "@/components/shared/ShareButton";
 import { cn } from "@/lib/utils";
 import { getToiletById } from "@/lib/data/public-toilets";
 import NaverMap from "@/components/maps/NaverMap";
@@ -332,6 +333,13 @@ export default async function RestroomDetailPage({ params }: PageProps) {
                 {isKo ? "네이버 지도에서 길찾기" : "Get Directions on Naver Maps"}
               </a>
             )}
+            <div className="mt-3">
+              <ShareButton
+                title={toilet.name}
+                isKo={isKo}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium text-[#5A413A] transition hover:border-[#D84315] hover:text-[#D84315]"
+              />
+            </div>
           </div>
         </div>
       </div>

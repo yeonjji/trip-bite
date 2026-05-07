@@ -1,4 +1,4 @@
-import { MapPin, Clock, Ticket, Users, ShoppingCart, Tag, Star, Timer } from "lucide-react"
+import { MapPin, Clock, Ticket, Users, ShoppingCart, Tag, Star, Timer, CalendarDays } from "lucide-react"
 
 interface Props {
   isKo: boolean
@@ -11,6 +11,8 @@ interface Props {
   discountinfofestival?: string | null
   festivalgrade?: string | null
   spendtimefestival?: string | null
+  eventStartDate?: string | null
+  eventEndDate?: string | null
 }
 
 interface InfoItem {
@@ -18,6 +20,22 @@ interface InfoItem {
   label: string
   value: string
   highlight?: boolean
+}
+
+function formatDateRange(start: string | null | undefined, end: string | null | undefined, isKo: boolean): string | null {
+  if (!start && !end) return null
+  const fmt = (d: string) =>
+    isKo
+      ? `${d.slice(0, 4)}년 ${d.slice(4, 6)}월 ${d.slice(6, 8)}일`
+      : `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`
+  if (start && end) {
+    const endShort =
+      isKo && start.slice(0, 4) === end.slice(0, 4)
+        ? `${end.slice(4, 6)}월 ${end.slice(6, 8)}일`
+        : fmt(end)
+    return isKo ? `${fmt(start)} ~ ${endShort}` : `${fmt(start)} – ${fmt(end)}`
+  }
+  return fmt((start || end)!)
 }
 
 function clean(val: string | null | undefined): string | null {
@@ -37,10 +55,18 @@ export default function FestivalInfoCards({
   discountinfofestival,
   festivalgrade,
   spendtimefestival,
+  eventStartDate,
+  eventEndDate,
 }: Props) {
   const venue = clean(eventplace) || clean(addr1)
+  const dateRange = formatDateRange(eventStartDate, eventEndDate, isKo)
 
   const items: InfoItem[] = [
+    dateRange && {
+      icon: <CalendarDays size={16} />,
+      label: isKo ? "기간" : "Date",
+      value: dateRange,
+    },
     venue && {
       icon: <MapPin size={16} />,
       label: isKo ? "개최 장소" : "Venue",

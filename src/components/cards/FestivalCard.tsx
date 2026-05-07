@@ -14,6 +14,7 @@ const STATUS_CONFIG = {
   ongoing: { ko: "진행중", en: "Ongoing", className: "bg-green-100 text-green-800" },
   upcoming: { ko: "예정", en: "Upcoming", className: "bg-blue-100 text-blue-800" },
   ended: { ko: "종료", en: "Ended", className: "bg-gray-100 text-gray-600" },
+  unknown: { ko: "미정", en: "TBD", className: "bg-gray-100 text-gray-500" },
 }
 
 function formatDateRange(start: string, end: string, locale: string): string {

@@ -8,6 +8,7 @@ import { getRecipeDetail } from "@/lib/data/recipes"
 import { buildAlternates } from "@/lib/utils/metadata"
 import RecipeIngredientList from "@/components/recipes/RecipeIngredientList"
 import SafeRecipeImage from "@/components/recipes/SafeRecipeImage"
+import ShareButton from "@/components/shared/ShareButton"
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>
@@ -65,6 +66,13 @@ export default async function RecipeDetailPage({ params }: PageProps) {
       </Link>
 
       {/* Hero 이미지 */}
+      <div className="mb-2 flex justify-end">
+        <ShareButton
+          title={name}
+          isKo={locale === "ko"}
+          className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-[#5A413A] transition hover:border-[#D84315] hover:text-[#D84315]"
+        />
+      </div>
       <div className="relative mb-6 aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[#F4F1E9] sm:aspect-video">
         <SafeRecipeImage src={main_image_url} alt={name} sizes="(max-width: 768px) 100vw, 768px" priority />
         {/* 배지 오버레이 */}
