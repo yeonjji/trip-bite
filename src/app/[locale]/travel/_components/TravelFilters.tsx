@@ -28,7 +28,6 @@ export default function TravelFilters({ locale }: Props) {
   const sigunguCode = searchParams.get("sigunguCode") ?? ""
   const contentTypeId = searchParams.get("contentTypeId") ?? ""
   const petOnly = searchParams.get("petOnly") ?? ""
-  const petCl = searchParams.get("petCl") ?? ""
 
   const [regionOpen, setRegionOpen] = useState(false)
   const [sigunguOpen, setSigunguOpen] = useState(false)
@@ -79,7 +78,7 @@ export default function TravelFilters({ locale }: Props) {
     ? (isKo ? currentSigungu.name_ko : currentSigungu.name_en)
     : isKo ? "전체 시/군/구" : "All Districts"
 
-  const hasFilters = areaCode || sigunguCode || contentTypeId || petOnly || petCl
+  const hasFilters = areaCode || sigunguCode || contentTypeId || petOnly
 
   return (
     <div className="flex flex-col gap-0.5">
@@ -222,45 +221,18 @@ export default function TravelFilters({ locale }: Props) {
       <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest px-4 mb-1">
         {isKo ? "반려동물" : "Pets"}
       </p>
-
-      {/* 동반 가능 전체 */}
       <button
         onClick={() => pushParams({ petOnly: petOnly === "true" ? "" : "true", petCl: "" })}
         className={cn(
           "flex items-center gap-3 w-full rounded-lg px-4 py-2.5 text-sm font-medium transition-all text-left",
-          petOnly === "true" && !petCl
+          petOnly === "true"
             ? "bg-white text-orange-700 font-bold shadow-sm"
             : "text-slate-500 hover:bg-orange-50 hover:text-orange-700"
         )}
       >
-        <span className={cn("text-base shrink-0", petOnly === "true" && !petCl ? "" : "opacity-60")}>🐾</span>
+        <span className={cn("text-base shrink-0", petOnly === "true" ? "" : "opacity-60")}>🐾</span>
         {isKo ? "동반 가능" : "Pet-friendly"}
       </button>
-
-      {/* 실내 가능 */}
-      {[
-        { value: "1", labelKo: "실내 가능", labelEn: "Indoor" },
-        { value: "2", labelKo: "야외 가능", labelEn: "Outdoor" },
-        { value: "3", labelKo: "실내외 가능", labelEn: "Indoor & outdoor" },
-      ].map((opt) => {
-        const isActive = petCl === opt.value
-        return (
-          <button
-            key={opt.value}
-            onClick={() => pushParams({ petOnly: "true", petCl: isActive ? "" : opt.value })}
-            className={cn(
-              "flex items-center gap-3 w-full rounded-lg px-4 py-2.5 text-sm font-medium transition-all text-left",
-              isActive
-                ? "bg-white text-orange-700 font-bold shadow-sm"
-                : "text-slate-500 hover:bg-orange-50 hover:text-orange-700"
-            )}
-          >
-            <span className={cn("w-4 h-4 shrink-0 flex items-center justify-center text-[8px]",
-              isActive ? "text-orange-600" : "text-slate-300")}>●</span>
-            {isKo ? opt.labelKo : opt.labelEn}
-          </button>
-        )
-      })}
 
       {/* 필터 초기화 */}
       {hasFilters && (
