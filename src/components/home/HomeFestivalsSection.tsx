@@ -12,10 +12,12 @@ function formatDate(d: string) {
 const STATUS_LABEL: Record<string, string> = {
   ongoing: "진행 중",
   upcoming: "예정",
+  unknown: "미정",
 }
 const STATUS_COLOR: Record<string, string> = {
   ongoing: "bg-emerald-50 text-emerald-700",
   upcoming: "bg-blue-50 text-blue-600",
+  unknown: "bg-gray-50 text-gray-500",
 }
 
 export default function HomeFestivalsSection({

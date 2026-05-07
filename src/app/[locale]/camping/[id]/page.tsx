@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { setRequestLocale } from "next-intl/server"
 
 import ImageGallery from "@/components/shared/ImageGallery"
+import ShareButton from "@/components/shared/ShareButton"
 import { buildAlternates } from "@/lib/utils/metadata"
 import Rating from "@/components/shared/Rating"
 import { Badge } from "@/components/ui/badge"
@@ -184,6 +185,13 @@ export default async function CampingDetailPage({ params }: PageProps) {
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">
       {/* 이미지 갤러리 */}
+      <div className="mb-2 flex justify-end">
+        <ShareButton
+          title={name}
+          isKo={isKo}
+          className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-[#5A413A] transition hover:border-[#D84315] hover:text-[#D84315]"
+        />
+      </div>
       {galleryImages.length > 0 && (
         <ImageGallery images={galleryImages} />
       )}

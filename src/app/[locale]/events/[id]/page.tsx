@@ -173,6 +173,7 @@ const STATUS_CONFIG = {
   ongoing: { ko: "진행중", en: "Ongoing", className: "bg-green-100 text-green-800" },
   upcoming: { ko: "예정", en: "Upcoming", className: "bg-blue-100 text-blue-800" },
   ended: { ko: "종료", en: "Ended", className: "bg-gray-100 text-gray-500" },
+  unknown: { ko: "미정", en: "TBD", className: "bg-gray-100 text-gray-500" },
 }
 
 function formatDate(d: string, isKo: boolean): string {
@@ -193,10 +194,10 @@ function parseDate(d: string): Date | null {
 function computeDDay(
   startDate: string,
   endDate: string,
-  status: "ongoing" | "upcoming" | "ended",
+  status: "ongoing" | "upcoming" | "ended" | "unknown",
   isKo: boolean
 ): { label: string; urgent: boolean } | null {
-  if (status === "ended") return null
+  if (status === "ended" || status === "unknown") return null
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
@@ -402,8 +403,8 @@ export default async function EventDetailPage({ params }: Props) {
         </div>
       )}
 
-      {/* Share / Calendar */}
-      <div className="mb-6">
+      {/* ── Image Gallery ──────────────────────────────────────────── */}
+      <div className="mb-2 flex justify-end">
         <FestivalShareActions
           title={festival.title}
           isKo={isKo}
@@ -412,8 +413,6 @@ export default async function EventDetailPage({ params }: Props) {
           venue={venue}
         />
       </div>
-
-      {/* ── Image Gallery ──────────────────────────────────────────── */}
       <FestivalImageGallery images={images} title={festival.title} />
 
       {/* ── 축제 한눈에 보기 카드 ──────────────────────────────────── */}
@@ -428,6 +427,8 @@ export default async function EventDetailPage({ params }: Props) {
         discountinfofestival={detail.discountinfofestival}
         festivalgrade={detail.festivalgrade}
         spendtimefestival={detail.spendtimefestival}
+        eventStartDate={festival.eventStartDate}
+        eventEndDate={festival.eventEndDate}
       />
 
       {/* ── 행사 소개 ──────────────────────────────────────────────── */}

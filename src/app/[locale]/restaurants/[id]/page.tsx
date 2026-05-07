@@ -5,6 +5,7 @@ import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 
 import ImageGallery from "@/components/shared/ImageGallery"
+import ShareButton from "@/components/shared/ShareButton"
 import { buildAlternates } from "@/lib/utils/metadata"
 import Rating from "@/components/shared/Rating"
 import NaverMap from "@/components/maps/NaverMap"
@@ -115,6 +116,13 @@ export default async function RestaurantDetailPage({ params }: Props) {
         </div>
       )}
 
+      <div className="mb-2 flex justify-end">
+        <ShareButton
+          title={title}
+          isKo={locale === "ko"}
+          className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-[#5A413A] transition hover:border-[#D84315] hover:text-[#D84315]"
+        />
+      </div>
       {galleryImages.length > 0 && (
         <div className="mb-6">
           <ImageGallery images={galleryImages} />
