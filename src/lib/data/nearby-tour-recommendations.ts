@@ -114,6 +114,7 @@ export async function getNearbyTourItems({
 
     return rawItems
       .filter((item) => String(item.contentid) !== String(excludeContentId ?? ""))
+      .filter((item) => item.firstimage || item.firstimage2)
       .map((item) => normalizeNearbyTourItem(item, type, { lat, lng }))
       .filter((item): item is NearbyTourItem => item !== null)
       .sort((a, b) => a.distance - b.distance)
