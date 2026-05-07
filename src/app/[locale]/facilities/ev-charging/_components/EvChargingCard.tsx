@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Zap, MapPin } from "lucide-react";
+import { Zap, MapPin, ChevronRight } from "lucide-react";
 import { formatDistance } from "@/lib/utils/haversine";
 import type { EvStationSummary } from "@/lib/data/ev-charging";
 
@@ -13,7 +13,11 @@ export default function EvChargingCard({ station, locale, distance }: EvCharging
   const isKo = locale === "ko";
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border border-transparent hover:shadow-[0px_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-between gap-6">
+    <Link
+      href={`/${locale}/facilities/ev-charging/${station.statId}`}
+      className="block bg-white rounded-xl p-6 shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border border-transparent hover:shadow-[0px_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-300"
+    >
+    <div className="flex items-center justify-between gap-6">
       {/* 아이콘 */}
       <div className="flex-shrink-0 w-14 h-14 bg-[#F9F7F0] rounded-xl flex items-center justify-center text-primary">
         <Zap className="w-7 h-7" />
@@ -68,13 +72,8 @@ export default function EvChargingCard({ station, locale, distance }: EvCharging
         </p>
       </div>
 
-      {/* View Details 버튼 */}
-      <Link
-        href={`/${locale}/facilities/ev-charging/${station.statId}`}
-        className="flex-shrink-0 inline-flex items-center justify-center px-5 py-3 rounded-lg bg-primary text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity shadow-md"
-      >
-        {isKo ? "상세보기" : "View Details"}
-      </Link>
+      <ChevronRight className="w-4 h-4 text-slate-300 shrink-0" />
     </div>
+    </Link>
   );
 }
