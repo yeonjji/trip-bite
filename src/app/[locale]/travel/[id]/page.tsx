@@ -25,6 +25,7 @@ import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSection"
 import TransitSection from "@/components/transit/TransitSection"
+import TravelTipSection from "@/components/travel/TravelTipSection"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -473,6 +474,9 @@ export default async function TravelDetailPage({ params }: Props) {
           )}
         </div>
       )}
+
+      {/* 관광 빅데이터 기반 방문 팁 */}
+      <TravelTipSection signguCode={destination?.sigungu_code} />
 
       {/* 주변 편의시설 */}
       <NearbyFacilities
