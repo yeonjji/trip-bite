@@ -12,6 +12,7 @@ import TravelTypeSection from "@/components/home/TravelTypeSection"
 import HomeFestivalsSection from "@/components/home/HomeFestivalsSection"
 import FacilitiesCheckSection from "@/components/home/FacilitiesCheckSection"
 import MainTravelNewsSection from "@/components/home/MainTravelNewsSection"
+import VisitorCurationSection from "@/components/home/VisitorCurationSection"
 
 type Props = {
   params: Promise<{ locale: string }>
@@ -63,13 +64,16 @@ export default async function HomePage({ params }: Props) {
       {/* 4. 상황별 여행 선택 */}
       <TravelTypeSection locale={locale} />
 
-      {/* 5. 이번에 가볼 만한 축제 */}
+      {/* 5. 빅데이터 여행지 큐레이션 */}
+      <VisitorCurationSection locale={locale} />
+
+      {/* 6. 이번에 가볼 만한 축제 */}
       <HomeFestivalsSection festivals={festivals} locale={locale} />
 
-      {/* 6. 여행 전 체크 */}
+      {/* 7. 여행 전 체크 */}
       <FacilitiesCheckSection locale={locale} />
 
-      {/* 7. 지역 축제·관광 소식 (보조) */}
+      {/* 8. 지역 축제·관광 소식 (보조) */}
       <MainTravelNewsSection />
     </div>
   )
