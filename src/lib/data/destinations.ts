@@ -34,6 +34,11 @@ export async function getHeroImages(): Promise<string[]> {
   return (data ?? []).map(d => d.first_image).filter(Boolean) as string[]
 }
 
+export interface PetBadgeInfo {
+  cl?: string;   // pet_acmpny_cl: "1"=실내 "2"=실외 "3"=실내외
+  typeCd?: string;
+}
+
 export async function getDestinations(params: {
   areaCode?: string;
   sigunguCode?: string;
@@ -42,14 +47,32 @@ export async function getDestinations(params: {
   page?: number;
   pageSize?: number;
   sort?: "rating" | "created";
-}): Promise<{ items: Destination[]; totalCount: number }> {
-  const { areaCode, sigunguCode, contentTypeId, search, page = 1, pageSize = 12, sort = "rating" } = params;
+  petOnly?: boolean;
+  petCl?: string;
+}): Promise<{ items: Destination[]; totalCount: number; petInfoMap: Map<string, PetBadgeInfo> }> {
+  const { areaCode, sigunguCode, contentTypeId, search, page = 1, pageSize = 12, sort = "rating", petOnly, petCl } = params;
 
   const supabase = await createClient();
+
+  // pet 필터가 활성화된 경우 먼저 pet content_id 목록 조회
+  let petFilterIds: string[] | null = null;
+  if (petOnly || petCl) {
+    let petQuery = supabase.from("pet_friendly_places").select("content_id");
+    if (petCl) petQuery = petQuery.eq("pet_acmpny_cl", petCl);
+    const { data: petData } = await petQuery;
+    petFilterIds = petData?.map((p: { content_id: string }) => p.content_id) ?? [];
+  }
 
   let query = supabase
     .from("destinations")
     .select("*", { count: "exact" });
+
+  if (petFilterIds !== null) {
+    if (petFilterIds.length === 0) {
+      return { items: [], totalCount: 0, petInfoMap: new Map() };
+    }
+    query = query.in("content_id", petFilterIds);
+  }
 
   if (areaCode) {
     query = query.eq("area_code", areaCode);
@@ -85,13 +108,25 @@ export async function getDestinations(params: {
 
   if (error) {
     console.error("destinations fetch error:", error.message);
-    return { items: [], totalCount: 0 };
+    return { items: [], totalCount: 0, petInfoMap: new Map() };
   }
 
-  return {
-    items: (data as Destination[]) ?? [],
-    totalCount: count ?? 0,
-  };
+  const items = (data as Destination[]) ?? [];
+
+  // 현재 페이지 항목 중 반려동물 동반 가능 여부 조회 (카드 배지용)
+  const petInfoMap = new Map<string, PetBadgeInfo>();
+  if (items.length > 0) {
+    const ids = items.map((i) => i.content_id);
+    const { data: petBadgeData } = await supabase
+      .from("pet_friendly_places")
+      .select("content_id, pet_acmpny_cl, acmpny_type_cd")
+      .in("content_id", ids);
+    for (const p of petBadgeData ?? []) {
+      petInfoMap.set(p.content_id, { cl: p.pet_acmpny_cl ?? undefined, typeCd: p.acmpny_type_cd ?? undefined });
+    }
+  }
+
+  return { items, totalCount: count ?? 0, petInfoMap };
 }
 
 export async function getDestinationDetail(contentId: string): Promise<{
@@ -102,6 +137,7 @@ export async function getDestinationDetail(contentId: string): Promise<{
   wiki: WikiSummary | null;
   kakaoPlace: KakaoPlace | null;
   petPlace: PetFriendlyPlace | null;
+  petTourInfo: import("@/types/tour-api").TourPetInfo | null;
   barrierFreePlace: BarrierFreePlace | null;
 }> {
   const supabase = await createClient();
@@ -194,7 +230,7 @@ export async function getDestinationDetail(contentId: string): Promise<{
   const resolvedLat = detail?.mapy ? parseFloat(detail.mapy) : (destination?.mapy ?? undefined)
   const resolvedLng = detail?.mapx ? parseFloat(detail.mapx) : (destination?.mapx ?? undefined)
 
-  const [wikiRes, kakaoRes, petRes, barrierFreeRes] = await Promise.allSettled([
+  const [wikiRes, kakaoRes, petRes, barrierFreeRes, petTourRes] = await Promise.allSettled([
     resolvedTitle ? getWikiSummary(resolvedTitle) : Promise.resolve(null),
     resolvedTitle
       ? searchKakaoPlace(
@@ -205,6 +241,7 @@ export async function getDestinationDetail(contentId: string): Promise<{
       : Promise.resolve(null),
     supabase.from("pet_friendly_places").select("*").eq("content_id", contentId).maybeSingle(),
     supabase.from("barrier_free_places").select("*").eq("content_id", contentId).maybeSingle(),
+    tourApi.detailPetTour(contentId),
   ])
 
   const wiki = wikiRes.status === "fulfilled" ? wikiRes.value : null
@@ -212,5 +249,15 @@ export async function getDestinationDetail(contentId: string): Promise<{
   const petPlace = petRes.status === "fulfilled" ? (petRes.value.data as PetFriendlyPlace | null) : null
   const barrierFreePlace = barrierFreeRes.status === "fulfilled" ? (barrierFreeRes.value.data as BarrierFreePlace | null) : null
 
-  return { destination, detail, intro, images, wiki, kakaoPlace, petPlace, barrierFreePlace };
+  let petTourInfo: import("@/types/tour-api").TourPetInfo | null = null
+  if (petTourRes.status === "fulfilled") {
+    try {
+      const petItems = petTourRes.value.response.body.items
+      petTourInfo = petItems !== "" && petItems.item.length > 0 ? petItems.item[0] : null
+    } catch {
+      petTourInfo = null
+    }
+  }
+
+  return { destination, detail, intro, images, wiki, kakaoPlace, petPlace, petTourInfo, barrierFreePlace };
 }

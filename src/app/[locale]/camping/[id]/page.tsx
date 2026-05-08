@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { setRequestLocale } from "next-intl/server"
 
 import ImageGallery from "@/components/shared/ImageGallery"
+import ShareButton from "@/components/shared/ShareButton"
 import { buildAlternates } from "@/lib/utils/metadata"
 import Rating from "@/components/shared/Rating"
 import { Badge } from "@/components/ui/badge"
@@ -54,13 +55,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { site, detail } = await getCampingSiteDetail(id)
 
   const name = detail?.facltNm ?? site?.faclt_nm ?? "캠핑장"
-  const description = detail?.lineIntro ?? detail?.intro ?? site?.line_intro ?? ""
+  const animalCmgCl = detail?.animalCmgCl ?? site?.animal_cmg_cl
+  const baseDescription = detail?.lineIntro ?? detail?.intro ?? site?.line_intro ?? ""
+
+  const isPetFriendly = animalCmgCl && animalCmgCl !== "불가"
+  const title = isPetFriendly ? `${name} - 반려동물 동반 가능 캠핑장` : name
+  const description = isPetFriendly
+    ? `${name}은 반려동물 동반이 가능한 캠핑장입니다. 강아지와 함께 캠핑하기 전 동반 조건을 확인하세요.${baseDescription ? ` ${baseDescription}` : ""}`
+    : baseDescription
 
   return {
-    title: name,
+    title,
     description,
     openGraph: {
-      title: name,
+      title,
       description,
       images: detail?.firstImageUrl
         ? [{ url: detail.firstImageUrl }]
@@ -177,6 +185,13 @@ export default async function CampingDetailPage({ params }: PageProps) {
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">
       {/* 이미지 갤러리 */}
+      <div className="mb-2 flex justify-end">
+        <ShareButton
+          title={name}
+          isKo={isKo}
+          className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-[#5A413A] transition hover:border-[#D84315] hover:text-[#D84315]"
+        />
+      </div>
       {galleryImages.length > 0 && (
         <ImageGallery images={galleryImages} />
       )}
@@ -246,15 +261,6 @@ export default async function CampingDetailPage({ params }: PageProps) {
           </div>
         )}
 
-        {animalCmgCl && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-24 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "반려동물" : "Pets"}
-            </span>
-            <span className="text-foreground">{animalCmgCl}</span>
-          </div>
-        )}
-
         {brazierCl && (
           <div className="flex gap-2 text-sm">
             <span className="w-24 shrink-0 font-medium text-muted-foreground">
@@ -305,6 +311,70 @@ export default async function CampingDetailPage({ params }: PageProps) {
           </a>
         </div>
       )}
+
+      {/* 반려동물 동반 정보 */}
+      {animalCmgCl && (() => {
+        const isAllowed = !animalCmgCl.includes("불가")
+        const isUncertain = animalCmgCl.includes("확인") || animalCmgCl.length < 3
+        return (
+          <>
+            <Separator className="my-6" />
+            <section className="rounded-xl bg-[#F9F7EF] p-5 soft-card-shadow">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xl">🐾</span>
+                <h2 className="font-headline text-base font-bold text-[#1B1C1A]">
+                  {isKo ? "반려동물 동반 정보" : "Pet-Friendly Info"}
+                </h2>
+              </div>
+
+              {isAllowed ? (
+                <p className="text-sm text-[#5A413A] mb-4 leading-relaxed">
+                  {isKo
+                    ? "이 캠핑장은 반려동물과 함께 이용할 수 있습니다."
+                    : "This campsite welcomes visitors with their pets."}
+                </p>
+              ) : (
+                <p className="text-sm text-slate-500 mb-4 leading-relaxed">
+                  {isKo
+                    ? "이 캠핑장은 반려동물 동반이 불가합니다."
+                    : "Pets are not allowed at this campsite."}
+                </p>
+              )}
+
+              <div className="flex flex-wrap gap-2 mb-3">
+                {isAllowed ? (
+                  <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-amber-100 text-amber-800">
+                    {isKo ? "반려동물 동반 가능" : "Pets allowed"}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-slate-100 text-slate-600">
+                    {isKo ? "반려동물 동반 불가" : "No pets"}
+                  </span>
+                )}
+              </div>
+
+              {animalCmgCl.length > 2 && (
+                <div className="border-t border-[#E8E4D8] pt-3 mt-2">
+                  <div className="flex gap-2 text-sm">
+                    <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                      {isKo ? "상세 조건" : "Details"}
+                    </span>
+                    <span className="text-foreground leading-relaxed">{animalCmgCl}</span>
+                  </div>
+                </div>
+              )}
+
+              {(isUncertain || isAllowed) && (
+                <p className="mt-3 text-xs text-slate-500">
+                  {isKo
+                    ? "* 방문 전 캠핑장에 직접 동반 조건을 확인하시기 바랍니다."
+                    : "* Please confirm pet policies directly with the campsite before visiting."}
+                </p>
+              )}
+            </section>
+          </>
+        )
+      })()}
 
       {/* 사이트 정보 */}
       {hasSiteInfo && (

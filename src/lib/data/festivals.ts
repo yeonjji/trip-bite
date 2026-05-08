@@ -31,8 +31,9 @@ export function computeStatus(item: FestivalItem): FestivalStatus {
     String(today.getFullYear()) +
     String(today.getMonth() + 1).padStart(2, "0") +
     String(today.getDate()).padStart(2, "0")
-  if (!item.eventStartDate || !item.eventEndDate) return "upcoming"
+  if (!item.eventStartDate) return "unknown"
   if (todayStr < item.eventStartDate) return "upcoming"
+  if (!item.eventEndDate) return "ongoing"
   if (todayStr > item.eventEndDate) return "ended"
   return "ongoing"
 }
@@ -84,19 +85,29 @@ export async function getFestivals(params: FestivalFilterParams): Promise<{
     if (areaCode) query = query.eq("area_code", areaCode)
   }
 
-  if (status === "ongoing") {
-    query = query.lte("event_start_date", todayStr).gte("event_end_date", todayStr)
-  } else if (status === "upcoming") {
-    query = query.gt("event_start_date", todayStr)
-  } else if (status === "ended") {
-    query = query.lt("event_end_date", todayStr)
-  }
-
   if (search) {
     query = query.ilike("title", `%${search}%`)
   }
 
-  query = query.order("event_start_date", { ascending: true })
+  if (status === "ongoing") {
+    query = query
+      .lte("event_start_date", todayStr)
+      .gte("event_end_date", todayStr)
+      .order("event_end_date", { ascending: true })
+  } else if (status === "upcoming") {
+    query = query
+      .gt("event_start_date", todayStr)
+      .order("event_start_date", { ascending: true })
+  } else if (status === "ended") {
+    query = query
+      .lt("event_end_date", todayStr)
+      .order("event_end_date", { ascending: false })
+  } else {
+    // 기본: event_end_date DESC 정렬 → 종료 안 된 축제(큰 날짜)가 위로
+    query = query
+      .order("event_end_date", { ascending: false })
+      .order("event_start_date", { ascending: true })
+  }
 
   const from = (page - 1) * pageSize
   query = query.range(from, from + pageSize - 1)

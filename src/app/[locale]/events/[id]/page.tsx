@@ -1,4 +1,3 @@
-import Image from "next/image"
 import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
@@ -17,6 +16,11 @@ import TravelMap from "../../travel/_components/TravelMap"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
 import TransitSection from "@/components/transit/TransitSection"
 import WeatherWidget from "@/components/weather/WeatherWidget"
+import FestivalImageGallery from "../_components/FestivalImageGallery"
+import FestivalInfoCards from "../_components/FestivalInfoCards"
+import FestivalProgramSection from "../_components/FestivalProgramSection"
+import FestivalContactSection from "../_components/FestivalContactSection"
+import FestivalShareActions from "../_components/FestivalShareActions"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -47,6 +51,15 @@ interface FestivalDetail {
   eventprice: string | null
   program: string | null
   bookingplace: string | null
+  agelimit: string | null
+  spendtimefestival: string | null
+  discountinfofestival: string | null
+  festivalgrade: string | null
+  sponsor1: string | null
+  sponsor1tel: string | null
+  sponsor2: string | null
+  sponsor2tel: string | null
+  subevent: string | null
 }
 
 async function fetchFestivalDetail(contentId: string): Promise<FestivalDetail> {
@@ -54,6 +67,9 @@ async function fetchFestivalDetail(contentId: string): Promise<FestivalDetail> {
     overview: null, tel: null, homepage: null,
     eventplace: null, eventhomepage: null, playtime: null,
     eventprice: null, program: null, bookingplace: null,
+    agelimit: null, spendtimefestival: null, discountinfofestival: null,
+    festivalgrade: null, sponsor1: null, sponsor1tel: null,
+    sponsor2: null, sponsor2tel: null, subevent: null,
   }
 
   try {
@@ -78,22 +94,59 @@ async function fetchFestivalDetail(contentId: string): Promise<FestivalDetail> {
     const introItem = Array.isArray(intro) ? intro[0] : intro
 
     return {
-      overview:      commonItem?.overview    || null,
-      tel:           commonItem?.tel         || null,
-      homepage:      commonItem?.homepage    || null,
-      eventplace:    introItem?.eventplace   || null,
-      eventhomepage: introItem?.eventhomepage || null,
-      playtime:      introItem?.playtime     || null,
-      eventprice:    introItem?.usetimefestival || introItem?.eventprice || null,
-      program:       introItem?.program      || null,
-      bookingplace:  introItem?.bookingplace || null,
+      overview:             commonItem?.overview         || null,
+      tel:                  commonItem?.tel              || null,
+      homepage:             commonItem?.homepage         || null,
+      eventplace:           introItem?.eventplace        || null,
+      eventhomepage:        introItem?.eventhomepage     || null,
+      playtime:             introItem?.playtime          || null,
+      eventprice:           introItem?.usetimefestival   || introItem?.eventprice || null,
+      program:              introItem?.program           || null,
+      bookingplace:         introItem?.bookingplace      || null,
+      agelimit:             introItem?.agelimit          || null,
+      spendtimefestival:    introItem?.spendtimefestival || null,
+      discountinfofestival: introItem?.discountinfofestival || null,
+      festivalgrade:        introItem?.festivalgrade     || null,
+      sponsor1:             introItem?.sponsor1          || null,
+      sponsor1tel:          introItem?.sponsor1tel       || null,
+      sponsor2:             introItem?.sponsor2          || null,
+      sponsor2tel:          introItem?.sponsor2tel       || null,
+      subevent:             introItem?.subevent          || null,
     }
   } catch {
     return blank
   }
 }
 
-// ── Page ──────────────────────────────────────────────────────────────────
+async function fetchFestivalImages(contentId: string): Promise<string[]> {
+  try {
+    const p = new URLSearchParams()
+    p.set("serviceKey", process.env.PUBLIC_DATA_API_KEY ?? "")
+    p.set("MobileOS", "ETC")
+    p.set("MobileApp", "TripBite")
+    p.set("_type", "json")
+    p.set("contentId", contentId)
+    p.set("imageYN", "Y")
+    p.set("subImageYN", "Y")
+
+    const res = await fetch(`${TOUR_BASE}/detailImage2?${p.toString()}`, {
+      next: { revalidate: 3600 },
+    })
+    if (!res.ok) return []
+
+    const json = await res.json()
+    const items = json?.response?.body?.items?.item
+    if (!items) return []
+    const arr = Array.isArray(items) ? items : [items]
+    return arr
+      .map((img: Record<string, string>) => img.originimgurl || img.smallimageurl)
+      .filter(Boolean)
+  } catch {
+    return []
+  }
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
 
 function addrToAreaCode(province: string): string {
   if (province.includes("서울")) return "11"
@@ -120,6 +173,7 @@ const STATUS_CONFIG = {
   ongoing: { ko: "진행중", en: "Ongoing", className: "bg-green-100 text-green-800" },
   upcoming: { ko: "예정", en: "Upcoming", className: "bg-blue-100 text-blue-800" },
   ended: { ko: "종료", en: "Ended", className: "bg-gray-100 text-gray-500" },
+  unknown: { ko: "미정", en: "TBD", className: "bg-gray-100 text-gray-500" },
 }
 
 function formatDate(d: string, isKo: boolean): string {
@@ -127,6 +181,75 @@ function formatDate(d: string, isKo: boolean): string {
   if (isKo) return `${d.slice(0, 4)}년 ${d.slice(4, 6)}월 ${d.slice(6, 8)}일`
   return `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`
 }
+
+function parseDate(d: string): Date | null {
+  if (!d || d.length < 8) return null
+  const y = parseInt(d.slice(0, 4))
+  const m = parseInt(d.slice(4, 6)) - 1
+  const day = parseInt(d.slice(6, 8))
+  if (isNaN(y) || isNaN(m) || isNaN(day)) return null
+  return new Date(y, m, day)
+}
+
+function computeDDay(
+  startDate: string,
+  endDate: string,
+  status: "ongoing" | "upcoming" | "ended" | "unknown",
+  isKo: boolean
+): { label: string; urgent: boolean } | null {
+  if (status === "ended" || status === "unknown") return null
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  if (status === "upcoming") {
+    const start = parseDate(startDate)
+    if (!start) return null
+    const diff = Math.round((start.getTime() - today.getTime()) / 86400000)
+    if (isNaN(diff)) return null
+    if (diff === 0) return { label: isKo ? "오늘 시작!" : "Starts today!", urgent: false }
+    return { label: `D-${diff}`, urgent: false }
+  }
+
+  const end = parseDate(endDate)
+  if (!end) return null
+  const diff = Math.round((end.getTime() - today.getTime()) / 86400000)
+  if (isNaN(diff)) return null
+  if (diff <= 0) return { label: isKo ? "오늘 마지막!" : "Last day!", urgent: true }
+  if (diff === 1) return { label: isKo ? "내일 종료" : "Ends tomorrow", urgent: true }
+  if (diff <= 7) return { label: isKo ? `${diff}일 후 종료` : `${diff}d left`, urgent: true }
+  return { label: isKo ? `${diff}일 남음` : `${diff}d left`, urgent: false }
+}
+
+interface AtmosphereTag {
+  label: string
+  color: string
+}
+
+function getAtmosphereTags(title: string, overview: string | null, isKo: boolean): AtmosphereTag[] {
+  const text = `${title} ${overview ?? ""}`.toLowerCase()
+  const tags: AtmosphereTag[] = []
+
+  if (/가족|아이|어린이|키즈|체험|만들기/.test(text))
+    tags.push({ label: isKo ? "가족 추천" : "Family", color: "bg-amber-50 text-amber-700 ring-amber-200" })
+  if (/야간|야경|불빛|조명|빛축제|야시장|달빛|야외/.test(text))
+    tags.push({ label: isKo ? "야간 축제" : "Night Festival", color: "bg-indigo-50 text-indigo-700 ring-indigo-200" })
+  if (/먹거리|음식|맛집|미식|음료|맥주|막걸리|요리|식|푸드/.test(text))
+    tags.push({ label: isKo ? "먹거리 중심" : "Food Festival", color: "bg-orange-50 text-orange-700 ring-orange-200" })
+  if (/연인|커플|데이트|로맨틱|낭만/.test(text))
+    tags.push({ label: isKo ? "커플 추천" : "Couples", color: "bg-rose-50 text-rose-700 ring-rose-200" })
+  if (/꽃|벚꽃|장미|국화|수국|유채|튤립/.test(text))
+    tags.push({ label: isKo ? "꽃 축제" : "Flower Fest", color: "bg-pink-50 text-pink-700 ring-pink-200" })
+  if (/불꽃놀이|불꽃/.test(text))
+    tags.push({ label: isKo ? "불꽃 축제" : "Fireworks", color: "bg-red-50 text-red-700 ring-red-200" })
+  if (/전통|민속|한복|한옥|국악|민요/.test(text))
+    tags.push({ label: isKo ? "전통 문화" : "Traditional", color: "bg-yellow-50 text-yellow-700 ring-yellow-200" })
+  if (/음악|공연|콘서트|뮤지컬/.test(text))
+    tags.push({ label: isKo ? "공연·음악" : "Music", color: "bg-purple-50 text-purple-700 ring-purple-200" })
+
+  return tags.slice(0, 4)
+}
+
+// ── Metadata ──────────────────────────────────────────────────────────────
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
@@ -138,13 +261,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+// ── Page ──────────────────────────────────────────────────────────────────
+
 export default async function EventDetailPage({ params }: Props) {
   const { locale, id } = await params
   setRequestLocale(locale)
 
-  const [festival, detail] = await Promise.all([
+  const [festival, detail, galleryImages] = await Promise.all([
     getFestivalById(id),
     fetchFestivalDetail(id),
+    fetchFestivalImages(id),
   ])
 
   if (!festival) notFound()
@@ -178,7 +304,6 @@ export default async function EventDetailPage({ params }: Props) {
   ])
 
   const venue = detail.eventplace || festival.addr1
-  const homepage = detail.eventhomepage || detail.homepage
   const regionName = (() => {
     const parts = (festival.addr1 ?? "").split(" ").filter(Boolean)
     const sigungu = parts[1]
@@ -186,116 +311,127 @@ export default async function EventDetailPage({ params }: Props) {
     return sigungu.replace(/(특별자치시|광역시|특별시|시|군|구)$/, "")
   })()
 
+  // Gallery: prefer API images, fall back to DB image_url
+  const images = galleryImages.length > 0
+    ? galleryImages
+    : festival.imageUrl
+    ? [festival.imageUrl]
+    : []
+
+  const dday = computeDDay(festival.eventStartDate, festival.eventEndDate, status, isKo)
+  const atmosphereTags = getAtmosphereTags(festival.title, detail.overview, isKo)
+  const isEndingSoon = dday?.urgent && status === "ongoing"
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      {/* Title + status + region */}
-      <div className="mb-2 flex flex-wrap items-start gap-3">
-        <h1 className="font-headline text-3xl font-extrabold tracking-tight text-[#1B1C1A] md:text-4xl">
-          {festival.title}
-        </h1>
-        <span
-          className={`mt-1 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${statusCfg.className}`}
-        >
+
+      {/* ── Hero ───────────────────────────────────────────────────── */}
+      <div className="mb-2 flex flex-wrap items-start gap-2">
+        {/* Status badge */}
+        <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${statusCfg.className}`}>
           {isKo ? statusCfg.ko : statusCfg.en}
         </span>
+
+        {/* D-Day badge */}
+        {dday && (
+          <span
+            className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-bold ${
+              dday.urgent
+                ? "bg-red-100 text-red-700"
+                : status === "ongoing"
+                ? "bg-green-50 text-green-700"
+                : "bg-sky-50 text-sky-700"
+            }`}
+          >
+            {dday.label}
+          </span>
+        )}
+
+        {/* Region badge */}
         {region && (
-          <span className="mt-1 inline-flex items-center rounded-full bg-orange-50 px-3 py-1 text-sm font-medium text-[#D84315]">
+          <span className="inline-flex items-center rounded-full bg-orange-50 px-3 py-1 text-sm font-medium text-[#D84315]">
             {region}
           </span>
         )}
       </div>
 
-      {/* Date range */}
-      <p className="mb-6 text-lg font-medium text-[#5A413A]">
-        {formatDate(festival.eventStartDate, isKo)} ~ {formatDate(festival.eventEndDate, isKo)}
-      </p>
+      <h1 className="mb-2 font-headline text-3xl font-extrabold tracking-tight text-[#1B1C1A] md:text-4xl">
+        {festival.title}
+      </h1>
 
-      {/* Image */}
-      {festival.imageUrl && (
-        <div className="mb-6 overflow-hidden rounded-xl">
-          <div className="relative aspect-video w-full">
-            <Image
-              src={festival.imageUrl}
-              alt={festival.title}
-              fill
-              priority
-              sizes="(max-width: 896px) 100vw, 896px"
-              className="object-cover"
-            />
-          </div>
+      {/* End-soon warning */}
+      {isEndingSoon && (
+        <div className="mb-3 inline-flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
+          {isKo ? "축제 종료가 임박했습니다! 서둘러 방문하세요." : "Ending soon! Plan your visit now."}
         </div>
       )}
 
-      {/* Core info card */}
-      <div className="mb-6 space-y-3 rounded-xl bg-[#F9F7EF] p-4 soft-card-shadow">
-        {venue && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-28 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "개최장소" : "Venue"}
-            </span>
-            <span className="text-foreground">{venue}</span>
-          </div>
-        )}
-        {festival.addr1 && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-28 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "주소" : "Address"}
-            </span>
-            <span className="text-foreground">{festival.addr1}{festival.addr2 ? ` ${festival.addr2}` : ""}</span>
-          </div>
-        )}
-        {detail.tel && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-28 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "전화" : "Phone"}
-            </span>
-            <a href={`tel:${detail.tel}`} className="text-[#D84315] hover:underline">
-              {detail.tel}
-            </a>
-          </div>
-        )}
-        {detail.playtime && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-28 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "공연시간" : "Duration"}
-            </span>
-            <span className="text-foreground">{detail.playtime}</span>
-          </div>
-        )}
-        {detail.eventprice && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-28 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "이용요금" : "Admission"}
-            </span>
-            <span className="text-foreground">{detail.eventprice}</span>
-          </div>
-        )}
-        {detail.bookingplace && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-28 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "예매처" : "Booking"}
-            </span>
-            <span className="text-foreground">{detail.bookingplace}</span>
-          </div>
-        )}
-        {homepage && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-28 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "홈페이지" : "Website"}
-            </span>
-            <a
-              href={homepage.startsWith("http") ? homepage : `https://${homepage}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="break-all text-[#D84315] hover:underline"
-            >
-              {homepage}
-            </a>
-          </div>
-        )}
-      </div>
+      {/* Date range — 날짜가 있을 때만 표시 */}
+      {(festival.eventStartDate || festival.eventEndDate) && (
+        <p className="mb-3 text-base font-medium text-[#5A413A]">
+          📅{" "}
+          {festival.eventStartDate
+            ? formatDate(festival.eventStartDate, isKo)
+            : (isKo ? "미정" : "TBD")}
+          {" ~ "}
+          {festival.eventEndDate
+            ? formatDate(festival.eventEndDate, isKo)
+            : (isKo ? "미정" : "TBD")}
+        </p>
+      )}
 
-      {/* Overview / description */}
+      {/* Venue one-liner — detail.eventplace 있을 때만 (addr1 중복 방지) */}
+      {detail.eventplace && (
+        <p className="mb-4 flex items-center gap-1.5 text-sm text-[#7B5E57]">
+          <span>📍</span>
+          <span>{detail.eventplace}</span>
+        </p>
+      )}
+
+      {/* Atmosphere tags */}
+      {atmosphereTags.length > 0 && (
+        <div className="mb-4 flex flex-wrap gap-1.5">
+          {atmosphereTags.map((tag) => (
+            <span
+              key={tag.label}
+              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ${tag.color}`}
+            >
+              {tag.label}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* ── Image Gallery ──────────────────────────────────────────── */}
+      <div className="mb-2 flex justify-end">
+        <FestivalShareActions
+          title={festival.title}
+          isKo={isKo}
+          startDate={festival.eventStartDate}
+          endDate={festival.eventEndDate}
+          venue={venue}
+        />
+      </div>
+      <FestivalImageGallery images={images} title={festival.title} />
+
+      {/* ── 축제 한눈에 보기 카드 ──────────────────────────────────── */}
+      <FestivalInfoCards
+        isKo={isKo}
+        addr1={festival.addr1}
+        eventplace={detail.eventplace}
+        playtime={detail.playtime}
+        eventprice={detail.eventprice}
+        agelimit={detail.agelimit}
+        bookingplace={detail.bookingplace}
+        discountinfofestival={detail.discountinfofestival}
+        festivalgrade={detail.festivalgrade}
+        spendtimefestival={detail.spendtimefestival}
+        eventStartDate={festival.eventStartDate}
+        eventEndDate={festival.eventEndDate}
+      />
+
+      {/* ── 행사 소개 ──────────────────────────────────────────────── */}
       {detail.overview && (
         <div className="mb-6">
           <h2 className="mb-3 font-headline text-xl font-bold text-[#1B1C1A]">
@@ -308,20 +444,26 @@ export default async function EventDetailPage({ params }: Props) {
         </div>
       )}
 
-      {/* Program */}
-      {detail.program && (
-        <div className="mb-6">
-          <h2 className="mb-3 font-headline text-xl font-bold text-[#1B1C1A]">
-            {isKo ? "행사 프로그램" : "Program"}
-          </h2>
-          <div
-            className="leading-relaxed text-[#5A413A] prose prose-sm max-w-none"
-            dangerouslySetInnerHTML={{ __html: detail.program }}
-          />
-        </div>
-      )}
+      {/* ── 행사 프로그램 (enhanced) ────────────────────────────────── */}
+      <FestivalProgramSection
+        isKo={isKo}
+        program={detail.program}
+        subevent={detail.subevent}
+      />
 
-      {/* Map */}
+      {/* ── 문의 · 공식 정보 ────────────────────────────────────────── */}
+      <FestivalContactSection
+        isKo={isKo}
+        tel={detail.tel}
+        homepage={detail.homepage}
+        eventhomepage={detail.eventhomepage}
+        sponsor1={detail.sponsor1}
+        sponsor1tel={detail.sponsor1tel}
+        sponsor2={detail.sponsor2}
+        sponsor2tel={detail.sponsor2tel}
+      />
+
+      {/* ── 위치 · 지도 ─────────────────────────────────────────────── */}
       {hasMap && (
         <>
           <div className="mb-4 flex flex-wrap gap-2">
@@ -343,6 +485,7 @@ export default async function EventDetailPage({ params }: Props) {
         </>
       )}
 
+      {/* ── 교통 + 날씨 ─────────────────────────────────────────────── */}
       {(hasMap || provinceFullName) && (
         <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 items-start">
           {hasMap && <TransitSection lat={lat!} lng={lng!} locale={locale} />}
@@ -357,7 +500,7 @@ export default async function EventDetailPage({ params }: Props) {
         </div>
       )}
 
-      {/* 주변 시설 */}
+      {/* ── 주변 시설 ────────────────────────────────────────────────── */}
       <NearbyFacilities
         locale={locale}
         toilets={nearbyFacilities.toilets}
@@ -366,24 +509,32 @@ export default async function EventDetailPage({ params }: Props) {
         evStations={nearbyFacilities.evStations}
       />
 
-      {/* 주변 추천 정보 */}
+      {/* ── 함께 즐기기 (주변여행지 + 근처 가볼 곳 통합) ─────────────── */}
+      <div className="mb-2">
+        <h2 className="font-headline text-xl font-bold text-[#1B1C1A]">
+          {isKo ? "이 축제와 함께 즐기기 좋은 곳" : "Nearby Attractions"}
+        </h2>
+        <p className="mb-4 text-sm text-[#7B5E57]">
+          {isKo ? "주변 여행지, 숙소, 맛집을 함께 탐색해보세요." : "Explore travel spots, accommodation, and restaurants nearby."}
+        </p>
+      </div>
+
       <NearbyTourRecommendationsSection
         recommendations={nearbyTourRecommendations}
         tabOrder={["travel", "accommodation"]}
         locale={locale}
       />
 
-      {/* 여행 후기 */}
+      {regionName && <NearbyNaverPlaces regionName={regionName} />}
+
+      {/* ── 여행 후기 ────────────────────────────────────────────────── */}
       <TravelBlogReviewSection placeName={festival.title} regionName={regionName} />
 
-      {/* 지역 레시피 추천 */}
+      {/* ── 지역 레시피 추천 ─────────────────────────────────────────── */}
       <RecipeRecommendationSection regionName={regionName} context="festival" locale={locale} />
 
-      {/* 이 지역 특산품 */}
+      {/* ── 이 지역 특산품 ────────────────────────────────────────────── */}
       <TravelSpecialtiesSection specialties={specialties} regionName={regionName} />
-
-      {/* 이 근처에서 같이 가볼 곳 */}
-      {regionName && <NearbyNaverPlaces regionName={regionName} />}
     </div>
   )
 }

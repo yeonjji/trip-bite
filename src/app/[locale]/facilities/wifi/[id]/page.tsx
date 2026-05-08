@@ -15,6 +15,7 @@ import {
 import { setRequestLocale } from "next-intl/server";
 import { getWifiById } from "@/lib/data/free-wifi";
 import NaverMap from "@/components/maps/NaverMap";
+import ShareButton from "@/components/shared/ShareButton";
 
 export const dynamic = "force-dynamic";
 
@@ -252,6 +253,13 @@ export default async function WifiDetailPage({ params }: PageProps) {
                 {isKo ? "네이버 지도에서 길찾기" : "Get Directions on Naver Maps"}
               </a>
             )}
+            <div className="mt-3">
+              <ShareButton
+                title={wifi.place_name}
+                isKo={isKo}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium text-[#5A413A] transition hover:border-[#D84315] hover:text-[#D84315]"
+              />
+            </div>
           </div>
         </div>
       </div>

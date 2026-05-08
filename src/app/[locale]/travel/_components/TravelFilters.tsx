@@ -27,6 +27,7 @@ export default function TravelFilters({ locale }: Props) {
   const areaCode = searchParams.get("areaCode") ?? ""
   const sigunguCode = searchParams.get("sigunguCode") ?? ""
   const contentTypeId = searchParams.get("contentTypeId") ?? ""
+  const petOnly = searchParams.get("petOnly") ?? ""
 
   const [regionOpen, setRegionOpen] = useState(false)
   const [sigunguOpen, setSigunguOpen] = useState(false)
@@ -77,7 +78,7 @@ export default function TravelFilters({ locale }: Props) {
     ? (isKo ? currentSigungu.name_ko : currentSigungu.name_en)
     : isKo ? "전체 시/군/구" : "All Districts"
 
-  const hasFilters = areaCode || sigunguCode || contentTypeId
+  const hasFilters = areaCode || sigunguCode || contentTypeId || petOnly
 
   return (
     <div className="flex flex-col gap-0.5">
@@ -213,6 +214,25 @@ export default function TravelFilters({ locale }: Props) {
           )}
         </div>
       )}
+
+      <div className="border-t border-gray-100 my-3" />
+
+      {/* 반려동물 필터 */}
+      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest px-4 mb-1">
+        {isKo ? "반려동물" : "Pets"}
+      </p>
+      <button
+        onClick={() => pushParams({ petOnly: petOnly === "true" ? "" : "true", petCl: "" })}
+        className={cn(
+          "flex items-center gap-3 w-full rounded-lg px-4 py-2.5 text-sm font-medium transition-all text-left",
+          petOnly === "true"
+            ? "bg-white text-orange-700 font-bold shadow-sm"
+            : "text-slate-500 hover:bg-orange-50 hover:text-orange-700"
+        )}
+      >
+        <span className={cn("text-base shrink-0", petOnly === "true" ? "" : "opacity-60")}>🐾</span>
+        {isKo ? "동반 가능" : "Pet-friendly"}
+      </button>
 
       {/* 필터 초기화 */}
       {hasFilters && (

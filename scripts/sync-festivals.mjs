@@ -1,12 +1,10 @@
 /**
- * 한국관광공사 TourAPI - 축제/공연/행사(contentTypeId=15) 동기화 스크립트
+ * 한국관광공사 TourAPI - 축제/공연/행사 동기화 스크립트 (searchFestival2)
  *
  * 실행: node --env-file=.env.local scripts/sync-festivals.mjs
  *
- * 필요 환경변수 (.env.local):
- *   TOUR_API_KEY=...
- *   NEXT_PUBLIC_SUPABASE_URL=...
- *   SUPABASE_SERVICE_ROLE_KEY=...
+ * searchFestival2는 날짜 범위 기반 축제 전용 API로,
+ * eventstartdate / eventenddate 필드가 포함됩니다.
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -16,7 +14,7 @@ const API_KEY = process.env.PUBLIC_DATA_API_KEY;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!API_KEY) { console.error("❌ TOUR_API_KEY 환경변수가 없습니다."); process.exit(1); }
+if (!API_KEY) { console.error("❌ PUBLIC_DATA_API_KEY 환경변수가 없습니다."); process.exit(1); }
 if (!SUPABASE_URL || !SUPABASE_KEY) { console.error("❌ Supabase 환경변수가 없습니다."); process.exit(1); }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -42,8 +40,6 @@ const AREA_CODE_MAP = {
   "39": "50",   // 제주
 };
 
-const AREA_CODES = Object.keys(AREA_CODE_MAP);
-
 function commonParams() {
   const p = new URLSearchParams();
   p.set("serviceKey", API_KEY);
@@ -53,23 +49,26 @@ function commonParams() {
   return p;
 }
 
-async function fetchPage(areaCode, pageNo, numOfRows = 100) {
+// searchFestival2: 날짜 범위 + 지역코드로 축제 조회
+async function fetchFestivalPage(eventStartDate, areaCode, pageNo, numOfRows = 100) {
   const p = commonParams();
-  p.set("contentTypeId", "15");
+  p.set("eventStartDate", eventStartDate);
   p.set("areaCode", areaCode);
   p.set("pageNo", String(pageNo));
   p.set("numOfRows", String(numOfRows));
   p.set("arrange", "C"); // 수정일순
 
-  const url = `${BASE_URL}/areaBasedList2?${p.toString()}`;
+  const url = `${BASE_URL}/searchFestival2?${p.toString()}`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status} areaCode=${areaCode} page=${pageNo}`);
+  if (!res.ok) throw new Error(`HTTP ${res.status} areaCode=${areaCode}`);
+
   const json = await res.json();
   const body = json.response?.body;
   if (!body) return { items: [], totalCount: 0 };
+
   const raw = body.items === "" ? [] : (body.items?.item ?? []);
   const items = Array.isArray(raw) ? raw : [raw];
-  return { items, totalCount: body.totalCount ?? 0 };
+  return { items, totalCount: Number(body.totalCount ?? 0) };
 }
 
 async function upsert(records) {
@@ -80,36 +79,49 @@ async function upsert(records) {
 }
 
 async function main() {
-  console.log("🎉 축제/행사 데이터 동기화 시작...");
+  console.log("🎉 축제/행사 데이터 동기화 시작 (searchFestival2)...\n");
 
-  // 테이블 존재 확인
   const { error: tableErr } = await supabase.from("festivals").select("id").limit(1);
   if (tableErr) {
-    console.error("⚠️  festivals 테이블이 없습니다. Supabase 대시보드에서 022_festivals.sql을 실행하세요.");
+    console.error("⚠️  festivals 테이블이 없습니다.");
     process.exit(1);
   }
 
+  // 2년 전부터 2년 후까지 범위로 검색 (과거 + 현재 + 예정 축제 포함)
+  const today = new Date();
+  const from = new Date(today);
+  from.setFullYear(from.getFullYear() - 2);
+  const eventStartDate = from.toISOString().slice(0, 10).replace(/-/g, "");
+
   let totalSynced = 0;
   const batch = [];
+  const seen = new Set();
 
-  for (const areaCode of AREA_CODES) {
-    const { totalCount } = await fetchPage(areaCode, 1, 1);
-    if (totalCount === 0) continue;
+  for (const [tourAreaCode, legalAreaCode] of Object.entries(AREA_CODE_MAP)) {
+    const { totalCount } = await fetchFestivalPage(eventStartDate, tourAreaCode, 1, 1);
+    if (totalCount === 0) {
+      console.log(`  지역 ${tourAreaCode}: 데이터 없음`);
+      continue;
+    }
 
     const pages = Math.ceil(totalCount / 100);
-    console.log(`  지역 ${areaCode}: ${totalCount}개 (${pages}페이지)`);
+    console.log(`  지역 ${tourAreaCode}: ${totalCount}개 (${pages}페이지)`);
 
     for (let page = 1; page <= pages; page++) {
-      const { items } = await fetchPage(areaCode, page, 100);
+      const { items } = await fetchFestivalPage(eventStartDate, tourAreaCode, page, 100);
 
       for (const item of items) {
+        const contentId = String(item.contentid);
+        if (seen.has(contentId)) continue;
+        seen.add(contentId);
+
         batch.push({
-          content_id:       String(item.contentid),
+          content_id:       contentId,
           title:            item.title ?? "",
           image_url:        item.firstimage || item.firstimage2 || null,
           addr1:            item.addr1 ?? null,
           addr2:            item.addr2 || null,
-          area_code:        AREA_CODE_MAP[String(item.areacode)] ?? null,
+          area_code:        legalAreaCode,
           sigungu_code:     item.sigungucode ? String(item.sigungucode) : null,
           mapx:             item.mapx ? parseFloat(item.mapx) : null,
           mapy:             item.mapy ? parseFloat(item.mapy) : null,
@@ -132,7 +144,7 @@ async function main() {
     totalSynced += batch.length;
   }
 
-  console.log(`\n✅ 동기화 완료: 총 ${totalSynced}개 레코드`);
+  console.log(`\n✅ 동기화 완료: 총 ${totalSynced}개 레코드 (중복 제거 후 ${seen.size}개 고유 축제)`);
 }
 
 main().catch((e) => {

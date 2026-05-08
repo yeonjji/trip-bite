@@ -12,7 +12,7 @@ export interface FestivalItem {
   eventEndDate: string
 }
 
-export type FestivalStatus = "ongoing" | "upcoming" | "ended"
+export type FestivalStatus = "ongoing" | "upcoming" | "ended" | "unknown"
 
 export interface FestivalFilterParams {
   region?: string

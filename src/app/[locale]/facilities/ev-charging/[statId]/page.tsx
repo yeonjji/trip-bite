@@ -19,6 +19,7 @@ import { setRequestLocale } from "next-intl/server";
 import { cn } from "@/lib/utils";
 import { getEvStation } from "@/lib/data/ev-charging";
 import NaverMap from "@/components/maps/NaverMap";
+import ShareButton from "@/components/shared/ShareButton";
 
 export const dynamic = "force-dynamic";
 
@@ -390,6 +391,13 @@ export default async function EvChargingDetailPage({ params }: PageProps) {
                 {isKo ? "네이버 지도에서 길찾기" : "Get Directions on Naver Maps"}
               </a>
             )}
+            <div className="mt-3">
+              <ShareButton
+                title={first.statNm || (isKo ? "전기차 충전소" : "EV Charging Station")}
+                isKo={isKo}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium text-[#5A413A] transition hover:border-[#D84315] hover:text-[#D84315]"
+              />
+            </div>
           </div>
         </div>
       </div>
