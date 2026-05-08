@@ -10,6 +10,7 @@ interface SectionMeta {
   sub: string;
   tag: string;
   tagColor: string;
+  cardTip: (dest: CurationDestination) => string;
 }
 
 const SECTIONS: SectionMeta[] = [
@@ -20,6 +21,7 @@ const SECTIONS: SectionMeta[] = [
     sub: "방문객이 적어 여유롭게 즐길 수 있는 곳을 골랐어요",
     tag: "한산해요",
     tagColor: "bg-teal-50 text-teal-700",
+    cardTip: (dest) => `${dest.areaNm}에서 여유로운 하루를`,
   },
   {
     key: "localFav",
@@ -28,6 +30,7 @@ const SECTIONS: SectionMeta[] = [
     sub: "현지인이 즐겨 찾는 로컬 감성 장소예요",
     tag: "현지인 추천",
     tagColor: "bg-amber-50 text-amber-700",
+    cardTip: (dest) => `${dest.areaNm} 사람들이 아끼는 공간`,
   },
   {
     key: "trending",
@@ -36,6 +39,7 @@ const SECTIONS: SectionMeta[] = [
     sub: "요즘 주목받고 있는 여행지를 만나보세요",
     tag: "요즘 뜨는 곳",
     tagColor: "bg-rose-50 text-rose-600",
+    cardTip: (dest) => `여행자들 사이에서 입소문 중`,
   },
   {
     key: "foreignFav",
@@ -44,6 +48,25 @@ const SECTIONS: SectionMeta[] = [
     sub: "외국인 여행자도 즐겨 찾는 국제적인 여행지예요",
     tag: "외국인 인기",
     tagColor: "bg-blue-50 text-blue-600",
+    cardTip: (dest) => `세계 여행자들도 선택한 ${dest.areaNm}`,
+  },
+  {
+    key: "weekendPop",
+    label: "주말 인기",
+    title: "주말에 특히 붐비는 여행지",
+    sub: "주말 나들이 장소로 많이 찾는 인기 지역이에요",
+    tag: "주말 핫플",
+    tagColor: "bg-orange-50 text-orange-600",
+    cardTip: (dest) => `주말 나들이 코스로 딱 좋은 곳`,
+  },
+  {
+    key: "peaceful",
+    label: "조용한 여행",
+    title: "조용하게 둘러보기 좋은 장소",
+    sub: "주말에도 한적하게 즐길 수 있는 숨은 여행지예요",
+    tag: "조용해요",
+    tagColor: "bg-green-50 text-green-700",
+    cardTip: (dest) => `${dest.areaNm}의 조용한 매력 속으로`,
   },
 ];
 
@@ -52,43 +75,49 @@ function DestCard({
   locale,
   tag,
   tagColor,
+  tip,
 }: {
   dest: CurationDestination;
   locale: string;
   tag: string;
   tagColor: string;
+  tip: string;
 }) {
   return (
     <Link
       href={`/${locale}/travel/${dest.contentId}`}
-      className="group flex-shrink-0 w-[160px]"
+      className="group flex-shrink-0 w-[168px]"
     >
-      <div className="relative h-[120px] w-full overflow-hidden rounded-2xl bg-[#F4F1E9]">
+      <div className="relative h-[128px] w-full overflow-hidden rounded-2xl bg-[#F4F1E9]">
         {dest.firstImage ? (
           <Image
             src={dest.firstImage}
             alt={dest.title}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="160px"
+            sizes="168px"
             unoptimized
           />
         ) : (
           <div className="flex h-full items-center justify-center text-3xl">🗺️</div>
         )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         <span
           className={`absolute left-2 top-2 rounded-full px-2 py-0.5 text-[11px] font-medium ${tagColor} backdrop-blur-sm`}
         >
           {tag}
         </span>
       </div>
-      <div className="mt-2 px-0.5">
+      <div className="mt-2.5 px-0.5">
         <p className="flex items-center gap-0.5 text-[11px] font-medium text-[#D84315]">
           <MapPin className="h-2.5 w-2.5" />
           {dest.areaNm}
         </p>
-        <p className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug text-[#1B1C1A]">
+        <p className="mt-0.5 line-clamp-1 text-sm font-semibold leading-snug text-[#1B1C1A]">
           {dest.title}
+        </p>
+        <p className="mt-0.5 line-clamp-1 text-[11px] leading-relaxed text-[#9C8B84]">
+          {tip}
         </p>
       </div>
     </Link>
@@ -107,7 +136,7 @@ function CurationRow({
   if (items.length === 0) return null;
 
   return (
-    <div className="mb-10 last:mb-0">
+    <div className="mb-12 last:mb-0">
       <div className="mb-4 flex items-end justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-[#D84315]">
@@ -132,6 +161,7 @@ function CurationRow({
             locale={locale}
             tag={meta.tag}
             tagColor={meta.tagColor}
+            tip={meta.cardTip(dest)}
           />
         ))}
       </div>
