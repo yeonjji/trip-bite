@@ -59,6 +59,27 @@ export interface CurationData {
   peaceful: CurationDestination[];
 }
 
+// DataLab API 코드 → 법정동 코드 (destinations 테이블 기준)
+const DATALAB_TO_BJDONG: Record<string, string> = {
+  "1":  "11", // 서울
+  "2":  "28", // 인천
+  "3":  "30", // 대전
+  "4":  "27", // 대구
+  "5":  "29", // 광주
+  "6":  "26", // 부산
+  "7":  "31", // 울산
+  "8":  "36", // 세종
+  "31": "41", // 경기
+  "32": "42", // 강원
+  "33": "43", // 충북
+  "34": "44", // 충남
+  "35": "47", // 경북
+  "36": "48", // 경남
+  "37": "45", // 전북
+  "38": "46", // 전남
+  "39": "50", // 제주
+};
+
 // ─── Internal fetch logic ─────────────────────────────────────
 
 async function _fetchVisitorTips(signguCode: string): Promise<VisitorTipData | null> {
@@ -187,6 +208,9 @@ async function _fetchVisitorCuration(): Promise<CurationData> {
   const medianTotal =
     [...areas].sort((a, b) => a.total - b.total)[Math.floor(areas.length / 2)]?.total ?? 0;
 
+  const tobjCodes = (datalabCodes: string[]) =>
+    datalabCodes.map((c) => DATALAB_TO_BJDONG[c]).filter(Boolean) as string[];
+
   const quietCodes = areas
     .filter((a) => a.total < medianTotal)
     .sort((a, b) => a.total - b.total)
@@ -215,35 +239,40 @@ async function _fetchVisitorCuration(): Promise<CurationData> {
     .sort((a, b) => a.weekendRatio - b.weekendRatio)
     .slice(0, 5).map((a) => a.areaCode);
 
-  const allCodes = [
+  const allDatalabCodes = [
     ...new Set([
       ...quietCodes, ...localFavCodes, ...trendingCodes,
       ...foreignFavCodes, ...weekendPopCodes, ...peacefulCodes,
     ]),
   ];
-  if (allCodes.length === 0) return empty;
+  if (allDatalabCodes.length === 0) return empty;
+
+  const allBjdongCodes = tobjCodes(allDatalabCodes);
+  if (allBjdongCodes.length === 0) return empty;
 
   const { data: destinations } = await supabase
     .from("destinations")
     .select("content_id, title, addr1, first_image, area_code")
-    .in("area_code", allCodes)
+    .in("area_code", allBjdongCodes)
     .order("rating_avg", { ascending: false })
     .limit(80);
 
+  // 법정동 코드 기준으로 대표 목적지 1개씩 매핑
   const destMap = new Map<string, NonNullable<typeof destinations>[0]>();
   for (const d of destinations ?? []) {
     if (d && !destMap.has(d.area_code)) destMap.set(d.area_code, d);
   }
 
-  function toCuration(codes: string[]): CurationDestination[] {
-    return codes.flatMap((code) => {
-      const dest = destMap.get(code);
-      const area = areaMap.get(code);
+  function toCuration(datalabCodes: string[]): CurationDestination[] {
+    return datalabCodes.flatMap((dlCode) => {
+      const bjCode = DATALAB_TO_BJDONG[dlCode];
+      const dest = bjCode ? destMap.get(bjCode) : undefined;
+      const area = areaMap.get(dlCode);
       if (!dest || !area) return [];
       return [{
         contentId: dest.content_id, title: dest.title,
         addr1: dest.addr1, firstImage: dest.first_image,
-        areaCode: code, areaNm: area.areaNm,
+        areaCode: bjCode, areaNm: area.areaNm,
       }];
     });
   }
