@@ -28,5 +28,6 @@ create index if not exists public_toilets_area_code_idx on public.public_toilets
 create index if not exists public_toilets_location_idx  on public.public_toilets(lat, lng);
 
 alter table public.public_toilets enable row level security;
+drop policy if exists "Anyone can read public_toilets" on public.public_toilets;
 create policy "Anyone can read public_toilets"
   on public.public_toilets for select using (true);

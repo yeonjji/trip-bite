@@ -1,3 +1,5 @@
+SET search_path = public, extensions;
+
 -- 주변 편의시설 조회 함수 (PostGIS, 인라인 포인트 생성)
 -- bbox 사전 필터 → ST_DWithin 정밀 필터 → 거리 정렬
 

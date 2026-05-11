@@ -35,6 +35,7 @@ CREATE INDEX IF NOT EXISTS ev_chargers_zscode_idx  ON public.ev_chargers(zscode)
 CREATE INDEX IF NOT EXISTS ev_chargers_kind_idx    ON public.ev_chargers(kind);
 
 ALTER TABLE public.ev_chargers ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can read ev_chargers" ON public.ev_chargers;
 CREATE POLICY "Anyone can read ev_chargers"
   ON public.ev_chargers FOR SELECT USING (true);
 

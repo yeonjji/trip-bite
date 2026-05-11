@@ -24,5 +24,6 @@ create index if not exists free_wifi_sido_name_idx   on public.free_wifi(sido_na
 create index if not exists free_wifi_location_idx    on public.free_wifi(lat, lng);
 
 alter table public.free_wifi enable row level security;
+drop policy if exists "Anyone can read free_wifi" on public.free_wifi;
 create policy "Anyone can read free_wifi"
   on public.free_wifi for select using (true);

@@ -18,4 +18,5 @@ create index if not exists rise_set_info_locdate_idx   on rise_set_info (locdate
 
 -- 공개 읽기 허용
 alter table rise_set_info enable row level security;
+drop policy if exists "public read" on rise_set_info;
 create policy "public read" on rise_set_info for select using (true);

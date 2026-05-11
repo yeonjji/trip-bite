@@ -80,7 +80,7 @@ async function fetchRiseSet(locdate, longitude, latitude, hubName) {
 
   const data = await res.json();
   const header = data?.response?.header;
-  if (header?.resultCode !== "0000") {
+  if (header?.resultCode !== "0000" && header?.resultCode !== "00") {
     throw new Error(`API 오류 [${header?.resultCode}]: ${header?.resultMsg}`);
   }
 

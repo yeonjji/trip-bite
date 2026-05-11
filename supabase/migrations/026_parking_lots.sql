@@ -32,5 +32,6 @@ create index if not exists parking_lots_fee_type_idx  on public.parking_lots(fee
 create index if not exists parking_lots_location_idx  on public.parking_lots(lat, lng);
 
 alter table public.parking_lots enable row level security;
+drop policy if exists "Anyone can read parking_lots" on public.parking_lots;
 create policy "Anyone can read parking_lots"
   on public.parking_lots for select using (true);

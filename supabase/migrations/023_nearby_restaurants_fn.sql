@@ -1,3 +1,5 @@
+SET search_path = public, extensions;
+
 -- 거리 기반 근처 맛집 조회 함수 (PostGIS)
 CREATE OR REPLACE FUNCTION get_nearby_restaurants(
   lat  double precision,
