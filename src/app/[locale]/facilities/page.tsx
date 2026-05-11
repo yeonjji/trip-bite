@@ -3,7 +3,7 @@ import { setRequestLocale } from "next-intl/server";
 import { Zap, Wifi, Users, ParkingCircle } from "lucide-react";
 import { buildAlternates } from "@/lib/utils/metadata";
 import FacilityCategoryCard from "./_components/FacilityCategoryCard";
-import NearbyFacilities from "./_components/NearbyFacilities";
+import FacilityCurationSection from "./_components/FacilityCurationSection";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -16,11 +16,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   return {
-    title: locale === "en" ? "Facilities" : "편의시설",
+    title: locale === "en" ? "Travel Facilities Guide" : "여행 편의시설 가이드",
     description:
       locale === "en"
-        ? "Find essential facilities during your travels in Korea."
-        : "여행 중 필요한 편의시설을 찾아보세요.",
+        ? "Find parking, public Wi-Fi, EV charging stations, and restrooms for your travels in Korea."
+        : "주차장, 공공 와이파이, 전기차 충전소, 공중화장실 등 여행 중 필요한 편의시설을 한눈에 확인하세요.",
     alternates: buildAlternates("/facilities"),
   };
 }
@@ -80,9 +80,9 @@ export default async function FacilitiesPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* 내 주변 편의시설 */}
-      <div className="mx-auto max-w-2xl px-4 pb-10">
-        <NearbyFacilities locale={locale} />
+      {/* 편의시설 큐레이션 */}
+      <div className="mx-auto max-w-2xl px-4 pb-16">
+        <FacilityCurationSection locale={locale} />
       </div>
     </div>
   );
