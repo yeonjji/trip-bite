@@ -2,5 +2,15 @@
   "framework": "nextjs",
   "buildCommand": "pnpm build",
   "installCommand": "pnpm install",
-  "devCommand": "pnpm dev"
+  "devCommand": "pnpm dev",
+  "crons": [
+    {
+      "path": "/api/cron/visitor-stats",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/rise-set",
+      "schedule": "0 2 * * *"
+    }
+  ]
 }
