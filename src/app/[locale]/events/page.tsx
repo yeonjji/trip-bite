@@ -6,7 +6,7 @@ import { buildAlternates } from "@/lib/utils/metadata"
 import FestivalCard from "@/components/cards/FestivalCard"
 import HeroSearch from "@/components/shared/HeroSearch"
 import EventFilters from "./_components/EventFilters"
-import EventPagination from "./_components/EventPagination"
+import ListingPagination from "@/components/shared/ListingPagination"
 import type { FestivalStatus } from "@/types/festival"
 
 export const dynamic = "force-dynamic"
@@ -95,7 +95,7 @@ export default async function EventsPage({ params, searchParams }: Props) {
                 {totalCount > PAGE_SIZE && (
                   <div className="mt-8 flex justify-center">
                     <Suspense>
-                      <EventPagination
+                      <ListingPagination
                         currentPage={page}
                         totalCount={totalCount}
                         pageSize={PAGE_SIZE}

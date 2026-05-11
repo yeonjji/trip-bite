@@ -6,7 +6,7 @@ import { buildAlternates } from "@/lib/utils/metadata";
 import { getEvChargers } from "@/lib/data/ev-charging";
 import EvChargingCard from "./_components/EvChargingCard";
 import EvChargingFilters from "./_components/EvChargingFilters";
-import EvChargingPagination from "./_components/EvChargingPagination";
+import ListingPagination from "@/components/shared/ListingPagination";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -122,8 +122,7 @@ export default async function EvChargingPage({ params, searchParams }: PageProps
           {totalCount > PAGE_SIZE && (
             <div className="mt-12">
               <Suspense>
-                <EvChargingPagination
-                  locale={locale}
+                <ListingPagination
                   currentPage={page}
                   totalCount={totalCount}
                   pageSize={PAGE_SIZE}

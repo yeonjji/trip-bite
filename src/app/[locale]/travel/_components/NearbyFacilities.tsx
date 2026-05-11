@@ -7,6 +7,7 @@ import {
   MapPin, Baby, ChevronRight, BatteryCharging,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatDistanceM } from "@/lib/utils/haversine";
 import type {
   NearbyToilet,
   NearbyWifi,
@@ -20,11 +21,6 @@ interface Props {
   wifi: NearbyWifi[];
   parking: NearbyParking[];
   evStations: NearbyEvStation[];
-}
-
-function formatDist(m: number): string {
-  if (m < 1000) return `${Math.round(m)}m`;
-  return `${(m / 1000).toFixed(1)}km`;
 }
 
 function formatHhmm(hhmm: string | null): string {
@@ -142,7 +138,7 @@ export default function NearbyFacilities({
             </div>
             <div className="shrink-0 flex items-center gap-2">
               <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">
-                {formatDist(t.distance_m)}
+                {formatDistanceM(t.distance_m)}
               </span>
               <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-orange-500 transition-colors" />
             </div>
@@ -176,7 +172,7 @@ export default function NearbyFacilities({
             </div>
             <div className="shrink-0 flex items-center gap-2">
               <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">
-                {formatDist(w.distance_m)}
+                {formatDistanceM(w.distance_m)}
               </span>
               <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-orange-500 transition-colors" />
             </div>
@@ -218,7 +214,7 @@ export default function NearbyFacilities({
               </div>
               <div className="shrink-0 flex items-center gap-2">
                 <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">
-                  {formatDist(p.distance_m)}
+                  {formatDistanceM(p.distance_m)}
                 </span>
                 <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-orange-500 transition-colors" />
               </div>
@@ -262,7 +258,7 @@ export default function NearbyFacilities({
             </div>
             <div className="shrink-0 flex items-center gap-2">
               <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">
-                {formatDist(s.distance_m)}
+                {formatDistanceM(s.distance_m)}
               </span>
               <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-orange-500 transition-colors" />
             </div>

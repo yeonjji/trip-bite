@@ -7,7 +7,7 @@ import { buildAlternates } from "@/lib/utils/metadata"
 import TravelCard from "@/components/cards/TravelCard"
 import HeroSearch from "@/components/shared/HeroSearch"
 import TravelFilters from "./_components/TravelFilters"
-import TravelPagination from "./_components/TravelPagination"
+import ListingPagination from "@/components/shared/ListingPagination"
 import type { TourSpotBase } from "@/types/tour-api"
 import type { Destination } from "@/types/database"
 
@@ -125,7 +125,7 @@ export default async function TravelPage({ params, searchParams }: Props) {
                 {totalCount > PAGE_SIZE && (
                   <div className="mt-8 flex justify-center">
                     <Suspense>
-                      <TravelPagination
+                      <ListingPagination
                         currentPage={page}
                         totalCount={totalCount}
                         pageSize={PAGE_SIZE}

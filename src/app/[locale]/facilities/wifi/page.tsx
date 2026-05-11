@@ -6,7 +6,7 @@ import { buildAlternates } from "@/lib/utils/metadata";
 import { getFreeWifi } from "@/lib/data/free-wifi";
 import WifiCard from "./_components/WifiCard";
 import WifiFilters from "./_components/WifiFilters";
-import WifiPagination from "./_components/WifiPagination";
+import ListingPagination from "@/components/shared/ListingPagination";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -105,8 +105,7 @@ export default async function WifiPage({ params, searchParams }: PageProps) {
           {totalCount > PAGE_SIZE && (
             <div className="mt-12">
               <Suspense>
-                <WifiPagination
-                  locale={locale}
+                <ListingPagination
                   currentPage={page}
                   totalCount={totalCount}
                   pageSize={PAGE_SIZE}

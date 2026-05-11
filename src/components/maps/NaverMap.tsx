@@ -11,6 +11,7 @@ interface NaverMapProps {
   className?: string
   children?: React.ReactNode
   showMarker?: boolean
+  markerTitle?: string
 }
 
 export default function NaverMap({
@@ -20,6 +21,7 @@ export default function NaverMap({
   className,
   children,
   showMarker = false,
+  markerTitle,
 }: NaverMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
@@ -41,6 +43,7 @@ export default function NaverMap({
         new naver.maps.Marker({
           position: new naver.maps.LatLng(lat, lng),
           map: mapInstanceRef.current,
+          title: markerTitle,
         })
       }
       setIsLoaded(true)
@@ -63,7 +66,7 @@ export default function NaverMap({
     script.async = true
     script.onload = initMap
     document.head.appendChild(script)
-  }, [lat, lng, zoom, showMarker])
+  }, [lat, lng, zoom, showMarker, markerTitle])
 
   useEffect(() => {
     if (!isLoaded || !mapInstanceRef.current) return
@@ -77,7 +80,7 @@ export default function NaverMap({
       {!isLoaded && (
         <Skeleton className="absolute inset-0 z-10 rounded-md" />
       )}
-      <div ref={mapRef} id="naver-map" className="h-full w-full" />
+      <div ref={mapRef} className="h-full w-full" />
       {children}
     </div>
   )

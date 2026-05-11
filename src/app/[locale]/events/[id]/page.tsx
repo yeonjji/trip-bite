@@ -11,8 +11,8 @@ import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourReco
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSection"
-import { buildNaverMapUrl } from "@/lib/api/kakao-api"
-import TravelMap from "../../travel/_components/TravelMap"
+import { buildNaverMapUrl } from "@/lib/utils/map"
+import NaverMap from "@/components/maps/NaverMap"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
 import TransitSection from "@/components/transit/TransitSection"
 import WeatherWidget from "@/components/weather/WeatherWidget"
@@ -480,7 +480,7 @@ export default async function EventDetailPage({ params }: Props) {
             <h2 className="mb-2 font-headline text-xl font-bold text-[#1B1C1A]">
               {isKo ? "위치" : "Location"}
             </h2>
-            <TravelMap lat={lat!} lng={lng!} title={festival.title} />
+            <NaverMap lat={lat!} lng={lng!} markerTitle={festival.title} showMarker className="relative h-64 w-full overflow-hidden rounded-xl" />
           </div>
         </>
       )}

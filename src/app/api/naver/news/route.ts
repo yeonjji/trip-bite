@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getNaverCredentials, naverApiHeaders, stripHtml } from "../_utils"
 
 export async function GET(req: NextRequest) {
   const query = req.nextUrl.searchParams.get("query")
@@ -7,10 +8,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "query 파라미터가 필요합니다." }, { status: 400 })
   }
 
-  const clientId = process.env.NAVER_LOCAL_CLIENT_ID
-  const clientSecret = process.env.NAVER_LOCAL_CLIENT_SECRET
-
-  if (!clientId || !clientSecret) {
+  const creds = getNaverCredentials()
+  if (!creds) {
     return NextResponse.json({ error: "네이버 API 키가 설정되지 않았습니다." }, { status: 500 })
   }
 
@@ -18,10 +17,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const res = await fetch(url, {
-      headers: {
-        "X-Naver-Client-Id": clientId,
-        "X-Naver-Client-Secret": clientSecret,
-      },
+      headers: naverApiHeaders(creds.clientId, creds.clientSecret),
       next: { revalidate: 1800 },
     })
 
@@ -32,10 +28,10 @@ export async function GET(req: NextRequest) {
     const data = await res.json()
 
     const items = (data.items ?? []).map((item: any) => ({
-      title: item.title.replace(/<[^>]*>/g, ""),
+      title: stripHtml(item.title),
       originallink: item.originallink,
       link: item.link,
-      description: item.description.replace(/<[^>]*>/g, ""),
+      description: stripHtml(item.description),
       pubDate: item.pubDate,
     }))
 

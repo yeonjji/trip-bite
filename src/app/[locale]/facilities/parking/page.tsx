@@ -6,7 +6,7 @@ import { buildAlternates } from "@/lib/utils/metadata";
 import { getParking } from "@/lib/data/parking";
 import ParkingCard from "./_components/ParkingCard";
 import ParkingFilters from "./_components/ParkingFilters";
-import ParkingPagination from "./_components/ParkingPagination";
+import ListingPagination from "@/components/shared/ListingPagination";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -115,8 +115,7 @@ export default async function ParkingPage({ params, searchParams }: PageProps) {
           {totalCount > PAGE_SIZE && (
             <div className="mt-12">
               <Suspense>
-                <ParkingPagination
-                  locale={locale}
+                <ListingPagination
                   currentPage={page}
                   totalCount={totalCount}
                   pageSize={PAGE_SIZE}

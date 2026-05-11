@@ -3,13 +3,13 @@
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import Pagination from "@/components/shared/Pagination"
 
-interface EventPaginationProps {
+interface ListingPaginationProps {
   currentPage: number
   totalCount: number
   pageSize: number
 }
 
-export default function EventPagination({ currentPage, totalCount, pageSize }: EventPaginationProps) {
+export default function ListingPagination({ currentPage, totalCount, pageSize }: ListingPaginationProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()

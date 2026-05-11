@@ -1,14 +1,10 @@
 import { searchNearbyTransit } from "@/lib/api/kakao-api"
+import { formatDistanceM } from "@/lib/utils/haversine"
 
 interface Props {
   lat: number
   lng: number
   locale: string
-}
-
-function formatDist(m: number): string {
-  if (m < 1000) return `${Math.round(m)}m`
-  return `${(m / 1000).toFixed(1)}km`
 }
 
 export default async function TransitSection({ lat, lng, locale }: Props) {
@@ -40,7 +36,7 @@ export default async function TransitSection({ lat, lng, locale }: Props) {
                 🚇 {station.place_name}
               </span>
               <span className="ml-3 shrink-0 rounded-full bg-orange-50 px-2 py-0.5 text-xs font-bold text-orange-600">
-                {formatDist(Number(station.distance))}
+                {formatDistanceM(Number(station.distance))}
               </span>
             </a>
           ))}

@@ -8,7 +8,7 @@ import HeroSearch from "@/components/shared/HeroSearch"
 import { getRecipes } from "@/lib/data/recipes"
 
 import RecipeFilters from "./_components/RecipeFilters"
-import RecipePagination from "./_components/RecipePagination"
+import ListingPagination from "@/components/shared/ListingPagination"
 
 interface PageProps {
   params: Promise<{ locale: string }>
@@ -80,8 +80,7 @@ export default async function RecipesPage({ params, searchParams }: PageProps) {
       {totalCount > PAGE_SIZE && (
         <div className="mt-8">
           <Suspense>
-            <RecipePagination
-              locale={locale}
+            <ListingPagination
               currentPage={page}
               totalCount={totalCount}
               pageSize={PAGE_SIZE}

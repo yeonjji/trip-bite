@@ -12,11 +12,11 @@ import { getCampingSiteDetail } from "@/lib/data/camping"
 import { getSpecialtiesByRegionName } from "@/lib/data/specialties"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
 import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations"
-import { buildNaverMapUrl } from "@/lib/api/kakao-api"
+import { buildNaverMapUrl } from "@/lib/utils/map"
 import WeatherWidget from "@/components/weather/WeatherWidget"
 import ReviewSection from "@/components/reviews/ReviewSection"
 
-import CampingMap from "./_components/CampingMap"
+import NaverMap from "@/components/maps/NaverMap"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations"
@@ -554,7 +554,7 @@ export default async function CampingDetailPage({ params }: PageProps) {
                 {isKo ? "네이버 지도 보기" : "Naver Map"}
               </a>
             </div>
-            <CampingMap lat={Number(lat)} lng={Number(lng)} title={name} />
+            <NaverMap lat={Number(lat)} lng={Number(lng)} markerTitle={name} showMarker className="relative h-64 w-full overflow-hidden rounded-xl" />
             <p className="mt-2 text-xs text-muted-foreground">{addr}</p>
           </section>
         </>

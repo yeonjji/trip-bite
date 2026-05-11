@@ -8,7 +8,7 @@ import HeroSearch from "@/components/shared/HeroSearch"
 import type { CampingSite } from "@/types/database"
 
 import CampingFilters from "./_components/CampingFilters"
-import CampingPagination from "./_components/CampingPagination"
+import ListingPagination from "@/components/shared/ListingPagination"
 
 interface PageProps {
   params: Promise<{ locale: string }>
@@ -116,8 +116,7 @@ export default async function CampingPage({ params, searchParams }: PageProps) {
             {totalCount > PAGE_SIZE && (
               <div className="mt-8 flex justify-center">
                 <Suspense>
-                  <CampingPagination
-                    locale={locale}
+                  <ListingPagination
                     currentPage={page}
                     totalCount={totalCount}
                     pageSize={PAGE_SIZE}

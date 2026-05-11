@@ -17,9 +17,9 @@ import ShareButton from "@/components/shared/ShareButton"
 import ReviewSection from "@/components/reviews/ReviewSection"
 import AccessibilityBadge from "@/components/shared/AccessibilityBadge"
 import WeatherWidget from "@/components/weather/WeatherWidget"
-import TravelMap from "../_components/TravelMap"
+import NaverMap from "@/components/maps/NaverMap"
 import NearbyFacilities from "../_components/NearbyFacilities"
-import { buildNaverMapUrl } from "@/lib/api/kakao-api"
+import { buildNaverMapUrl } from "@/lib/utils/map"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
@@ -446,7 +446,7 @@ export default async function TravelDetailPage({ params }: Props) {
           <h2 className="mb-2 font-headline text-xl font-bold text-[#1B1C1A]">
             {isKo ? "위치" : "Location"}
           </h2>
-          <TravelMap lat={lat} lng={lng} title={title} />
+          <NaverMap lat={lat} lng={lng} markerTitle={title} showMarker className="relative h-64 w-full overflow-hidden rounded-xl" />
         </div>
       )}
 

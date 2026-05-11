@@ -6,7 +6,7 @@ import { buildAlternates } from "@/lib/utils/metadata";
 import { getPublicToilets } from "@/lib/data/public-toilets";
 import ToiletCard from "./_components/ToiletCard";
 import ToiletFilters from "./_components/ToiletFilters";
-import ToiletPagination from "./_components/ToiletPagination";
+import ListingPagination from "@/components/shared/ListingPagination";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -110,8 +110,7 @@ export default async function RestroomsPage({ params, searchParams }: PageProps)
           {totalCount > PAGE_SIZE && (
             <div className="mt-12">
               <Suspense>
-                <ToiletPagination
-                  locale={locale}
+                <ListingPagination
                   currentPage={page}
                   totalCount={totalCount}
                   pageSize={PAGE_SIZE}
