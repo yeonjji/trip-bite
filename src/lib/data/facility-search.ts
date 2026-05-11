@@ -14,14 +14,29 @@ export interface FacilitySearchResult {
   tip: string;
 }
 
+const FACILITY_KEYWORDS = [
+  "주차장", "주차", "공영주차",
+  "와이파이", "wifi", "wi-fi", "무선인터넷",
+  "화장실", "공중화장실", "toilet", "restroom",
+  "충전소", "충전", "전기차충전", "ev충전", "전기차",
+];
+
 function detectFacilityTypes(q: string): FacilityType[] | null {
-  const lower = q.toLowerCase();
+  const lower = q.toLowerCase().replace(/\s/g, "");
   const types: FacilityType[] = [];
   if (/주차/.test(lower)) types.push("parking");
   if (/와이파이|wifi|wi-fi|무선/.test(lower)) types.push("wifi");
   if (/화장실|toilet|restroom/.test(lower)) types.push("toilet");
-  if (/충전|ev충전|전기차|전기 차/.test(lower)) types.push("ev");
+  if (/충전|ev|전기차/.test(lower)) types.push("ev");
   return types.length > 0 ? types : null;
+}
+
+function extractAreaQuery(q: string): string {
+  let area = q;
+  for (const kw of FACILITY_KEYWORDS) {
+    area = area.replace(new RegExp(kw, "gi"), "");
+  }
+  return area.replace(/\s+/g, " ").trim();
 }
 
 function makeTip(type: FacilityType, item: Record<string, unknown>): string {
@@ -45,9 +60,12 @@ export async function searchFacilities(query: string): Promise<FacilitySearchRes
   if (!query.trim()) return [];
 
   const supabase = await createClient();
-  const pattern = `%${query}%`;
   const detectedTypes = detectFacilityTypes(query);
   const targetTypes: FacilityType[] = detectedTypes ?? ["parking", "wifi", "toilet", "ev"];
+
+  const areaQuery = extractAreaQuery(query);
+  const namePattern = `%${query}%`;
+  const areaPattern = areaQuery ? `%${areaQuery}%` : `%${query}%`;
 
   const results: FacilitySearchResult[] = [];
 
@@ -56,7 +74,11 @@ export async function searchFacilities(query: string): Promise<FacilitySearchRes
       ? supabase
           .from("parking_lots")
           .select("id, name, address_road, address_jibun, sido_name, sigungu_name, area_code, fee_type")
-          .or(`name.ilike.${pattern},address_road.ilike.${pattern},sido_name.ilike.${pattern},sigungu_name.ilike.${pattern}`)
+          .or(
+            areaQuery
+              ? `sido_name.ilike.${areaPattern},sigungu_name.ilike.${areaPattern},address_road.ilike.${areaPattern},name.ilike.${namePattern}`
+              : `name.ilike.${namePattern},address_road.ilike.${namePattern}`
+          )
           .limit(LIMIT_PER_TYPE)
           .then(({ data }) => {
             for (const row of data ?? []) {
@@ -79,7 +101,11 @@ export async function searchFacilities(query: string): Promise<FacilitySearchRes
       ? supabase
           .from("free_wifi")
           .select("id, place_name, address_road, address_jibun, sido_name, sigungu_name, area_code, facility_type")
-          .or(`place_name.ilike.${pattern},address_road.ilike.${pattern},sido_name.ilike.${pattern},sigungu_name.ilike.${pattern}`)
+          .or(
+            areaQuery
+              ? `sido_name.ilike.${areaPattern},sigungu_name.ilike.${areaPattern},address_road.ilike.${areaPattern},place_name.ilike.${namePattern}`
+              : `place_name.ilike.${namePattern},address_road.ilike.${namePattern}`
+          )
           .limit(LIMIT_PER_TYPE)
           .then(({ data }) => {
             for (const row of data ?? []) {
@@ -102,7 +128,11 @@ export async function searchFacilities(query: string): Promise<FacilitySearchRes
       ? supabase
           .from("public_toilets")
           .select("id, name, address_road, address_jibun, area_code, open_time")
-          .or(`name.ilike.${pattern},address_road.ilike.${pattern},address_jibun.ilike.${pattern}`)
+          .or(
+            areaQuery
+              ? `address_road.ilike.${areaPattern},address_jibun.ilike.${areaPattern},name.ilike.${namePattern}`
+              : `name.ilike.${namePattern},address_road.ilike.${namePattern}`
+          )
           .limit(LIMIT_PER_TYPE)
           .then(({ data }) => {
             for (const row of data ?? []) {
@@ -125,7 +155,11 @@ export async function searchFacilities(query: string): Promise<FacilitySearchRes
       ? supabase
           .from("ev_stations")
           .select("stat_id, stat_nm, addr, zcode, has_fast")
-          .or(`stat_nm.ilike.${pattern},addr.ilike.${pattern}`)
+          .or(
+            areaQuery
+              ? `addr.ilike.${areaPattern},stat_nm.ilike.${namePattern}`
+              : `stat_nm.ilike.${namePattern},addr.ilike.${namePattern}`
+          )
           .limit(LIMIT_PER_TYPE)
           .then(({ data }) => {
             for (const row of data ?? []) {
