@@ -3,17 +3,20 @@ import type { Metadata } from "next"
 
 import { createClient } from "@/lib/supabase/server"
 import { buildAlternates } from "@/lib/utils/metadata"
+import { searchFacilities } from "@/lib/data/facility-search"
 import SearchBar from "@/components/search/SearchBar"
 import TravelCard from "@/components/cards/TravelCard"
 import CampingCard from "@/components/cards/CampingCard"
 import RestaurantCard from "@/components/cards/RestaurantCard"
 import FestivalCard from "@/components/cards/FestivalCard"
 import RecipeCard from "@/components/cards/RecipeCard"
+import FacilitySearchCard from "@/components/cards/FacilitySearchCard"
 import EmptyState from "@/components/shared/EmptyState"
 import type { Destination, CampingSite, RecipeRow } from "@/types/database"
 import type { TourSpotBase, RestaurantDetail } from "@/types/tour-api"
 import type { CampingSiteBase } from "@/types/camping"
 import type { FestivalItem } from "@/types/festival"
+import type { FacilitySearchResult } from "@/lib/data/facility-search"
 
 type Props = {
   params: Promise<{ locale: string }>
@@ -107,12 +110,13 @@ export default async function SearchPage({ params, searchParams }: Props) {
   let campingSites: CampingSite[] = []
   let festivals: FestivalItem[] = []
   let recipes: RecipeRow[] = []
+  let facilities: FacilitySearchResult[] = []
 
   if (query) {
     const supabase = await createClient()
     const pattern = `%${query}%`
 
-    const [destResult, restaurantResult, campResult, festivalResult, recipeResult] =
+    const [destResult, restaurantResult, campResult, festivalResult, recipeResult, facilityResult] =
       await Promise.allSettled([
         supabase
           .from("destinations")
@@ -141,6 +145,7 @@ export default async function SearchPage({ params, searchParams }: Props) {
           .select("*")
           .or(`name.ilike.${pattern},ingredients.ilike.${pattern}`)
           .limit(LIMIT),
+        searchFacilities(query),
       ])
 
     if (destResult.status === "fulfilled") destinations = (destResult.value.data ?? []) as Destination[]
@@ -149,9 +154,10 @@ export default async function SearchPage({ params, searchParams }: Props) {
     if (festivalResult.status === "fulfilled")
       festivals = (festivalResult.value.data ?? []).map((r) => rowToFestivalItem(r as Record<string, unknown>))
     if (recipeResult.status === "fulfilled") recipes = (recipeResult.value.data ?? []) as RecipeRow[]
+    if (facilityResult.status === "fulfilled") facilities = facilityResult.value
   }
 
-  const totalCount = destinations.length + restaurants.length + campingSites.length + festivals.length + recipes.length
+  const totalCount = destinations.length + restaurants.length + campingSites.length + festivals.length + recipes.length + facilities.length
   const hasResults = totalCount > 0
 
   const SECTIONS = [
@@ -160,6 +166,7 @@ export default async function SearchPage({ params, searchParams }: Props) {
     { key: "camping",      count: campingSites.length,  label: locale === "ko" ? "캠핑장" : "Campsites" },
     { key: "festivals",    count: festivals.length,     label: locale === "ko" ? "행사·축제" : "Events" },
     { key: "recipes",      count: recipes.length,       label: locale === "ko" ? "레시피" : "Recipes" },
+    { key: "facilities",   count: facilities.length,    label: locale === "ko" ? "편의시설" : "Facilities" },
   ]
 
   return (
@@ -267,6 +274,20 @@ export default async function SearchPage({ params, searchParams }: Props) {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {recipes.map((r) => (
                   <RecipeCard key={r.id} item={r} locale={locale} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {facilities.length > 0 && (
+            <section>
+              <h2 className="mb-4 font-headline text-lg font-bold text-[#1B1C1A]">
+                {locale === "ko" ? "여행 중 편의시설" : "Facilities"}
+                <span className="ml-2 text-sm font-normal text-muted-foreground">({facilities.length})</span>
+              </h2>
+              <div className="flex flex-col gap-3">
+                {facilities.map((f) => (
+                  <FacilitySearchCard key={`${f.type}-${f.id}`} item={f} locale={locale} />
                 ))}
               </div>
             </section>
