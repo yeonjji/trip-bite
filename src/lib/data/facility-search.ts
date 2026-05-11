@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/server";
 
 export type FacilityType = "parking" | "wifi" | "toilet" | "ev";
 
@@ -44,8 +44,7 @@ const LIMIT_PER_TYPE = 4;
 export async function searchFacilities(query: string): Promise<FacilitySearchResult[]> {
   if (!query.trim()) return [];
 
-  const { createClient: createServerClient } = await import("@/lib/supabase/server");
-  const supabase = await createServerClient();
+  const supabase = await createClient();
   const pattern = `%${query}%`;
   const detectedTypes = detectFacilityTypes(query);
   const targetTypes: FacilityType[] = detectedTypes ?? ["parking", "wifi", "toilet", "ev"];
