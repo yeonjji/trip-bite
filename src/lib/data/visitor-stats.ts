@@ -230,7 +230,7 @@ async function _fetchVisitorCuration(): Promise<CurationData> {
     .order("rating_avg", { ascending: false })
     .limit(80);
 
-  const destMap = new Map<string, (typeof destinations)[0]>();
+  const destMap = new Map<string, NonNullable<typeof destinations>[0]>();
   for (const d of destinations ?? []) {
     if (d && !destMap.has(d.area_code)) destMap.set(d.area_code, d);
   }
