@@ -16,12 +16,16 @@ const LABELS: Record<NearbyTourType, string> = {
   travel: "여행지",
   festival: "축제",
   accommodation: "숙소",
+  restaurant: "맛집",
+  cafe: "카페",
 };
 
 const EMPTY_TEXT: Record<NearbyTourType, string> = {
   travel: "근처 여행지 정보가 아직 없습니다.",
   festival: "근처 축제 정보가 아직 없습니다.",
   accommodation: "근처 숙소 정보가 아직 없습니다.",
+  restaurant: "근처 맛집 정보가 아직 없습니다.",
+  cafe: "근처 카페 정보가 아직 없습니다.",
 };
 
 function buildNaverSearchUrl(item: NearbyTourItem) {

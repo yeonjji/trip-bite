@@ -89,7 +89,7 @@ export default async function RestaurantDetailPage({ params }: Props) {
         ])
       : [
           { toilets: [], wifi: [], parking: [], evStations: [] },
-          { travel: [], festival: [], accommodation: [] },
+          { travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] },
         ]
 
   const galleryImages = images.map((img) => ({

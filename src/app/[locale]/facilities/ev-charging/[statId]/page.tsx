@@ -18,10 +18,10 @@ import {
 import { setRequestLocale } from "next-intl/server";
 import { cn } from "@/lib/utils";
 import { getEvStation } from "@/lib/data/ev-charging";
-import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations";
+import { getNearbyTourRecommendations, getNearbyFoodItems } from "@/lib/data/nearby-tour-recommendations";
 import NaverMap from "@/components/maps/NaverMap";
 import ShareButton from "@/components/shared/ShareButton";
-import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations";
+import FacilityNearbySections from "@/components/nearby/FacilityNearbySection";
 
 export const dynamic = "force-dynamic";
 
@@ -126,10 +126,14 @@ export default async function EvChargingDetailPage({ params }: PageProps) {
   const lng = parseFloat(first.lng);
   const hasLocation = !isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0;
 
-  const nearbyTypes = ["accommodation", "travel", "festival"] as const;
-  const nearbyRecommendations = hasLocation
-    ? await getNearbyTourRecommendations({ lat, lng, types: [...nearbyTypes], limitPerType: 6 })
-    : { travel: [], festival: [], accommodation: [] };
+  const tourTabOrder = ["accommodation", "travel", "festival"] as const;
+  const [restaurantItems, cafeItems, tourRecs] = hasLocation
+    ? await Promise.all([
+        getNearbyFoodItems({ lat, lng, type: "restaurant", limit: 8 }),
+        getNearbyFoodItems({ lat, lng, type: "cafe", limit: 8 }),
+        getNearbyTourRecommendations({ lat, lng, types: [...tourTabOrder], limitPerType: 6 }),
+      ])
+    : [[], [], { travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }];
 
   // output kW 기준으로 급속/완속 판단 (22kW 초과 = 급속)
   const hasFast = chargers.some((c) => parseFloat(c.output) > 22);
@@ -409,13 +413,13 @@ export default async function EvChargingDetailPage({ params }: PageProps) {
         </div>
 
         {hasLocation && (
-          <div className="mt-10">
-            <NearbyTourRecommendationsSection
-              recommendations={nearbyRecommendations}
-              tabOrder={[...nearbyTypes]}
-              locale={locale}
-            />
-          </div>
+          <FacilityNearbySections
+            restaurants={restaurantItems}
+            cafes={cafeItems}
+            tourRecs={tourRecs}
+            tourTabOrder={[...tourTabOrder]}
+            locale={locale}
+          />
         )}
       </div>
     </div>

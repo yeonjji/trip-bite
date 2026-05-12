@@ -1,7 +1,7 @@
 import { tourApi } from "@/lib/api/tour-api";
 import type { TourSpotBase } from "@/types/tour-api";
 
-export type NearbyTourType = "travel" | "festival" | "accommodation";
+export type NearbyTourType = "travel" | "festival" | "accommodation" | "restaurant" | "cafe";
 
 export interface NearbyTourItem {
   id: string;
@@ -21,6 +21,13 @@ const CONTENT_TYPE_BY_NEARBY_TYPE: Record<NearbyTourType, string> = {
   travel: "12",
   festival: "15",
   accommodation: "32",
+  restaurant: "39",
+  cafe: "39",
+};
+
+// 카페/전통찻집 cat3 코드 (TourAPI v4)
+const CAT3_BY_NEARBY_TYPE: Partial<Record<NearbyTourType, string>> = {
+  cafe: "A05020900",
 };
 
 export const NEARBY_TOUR_PLACEHOLDER_IMAGE = "/file.svg";
@@ -103,6 +110,7 @@ export async function getNearbyTourItems({
       mapY: lat,
       radius: radiusMeters,
       contentTypeId: CONTENT_TYPE_BY_NEARBY_TYPE[type],
+      cat3: CAT3_BY_NEARBY_TYPE[type],
       arrange: "E",
       pageNo: 1,
       numOfRows: FETCH_POOL_SIZE,
@@ -149,5 +157,23 @@ export async function getNearbyTourRecommendations({
     travel: entries.find(([type]) => type === "travel")?.[1] ?? [],
     festival: entries.find(([type]) => type === "festival")?.[1] ?? [],
     accommodation: entries.find(([type]) => type === "accommodation")?.[1] ?? [],
+    restaurant: entries.find(([type]) => type === "restaurant")?.[1] ?? [],
+    cafe: entries.find(([type]) => type === "cafe")?.[1] ?? [],
   };
+}
+
+export async function getNearbyFoodItems({
+  lat,
+  lng,
+  type,
+  limit = 8,
+  radiusMeters = DEFAULT_RADIUS_METERS,
+}: {
+  lat: number;
+  lng: number;
+  type: "restaurant" | "cafe";
+  limit?: number;
+  radiusMeters?: number;
+}): Promise<NearbyTourItem[]> {
+  return getNearbyTourItems({ lat, lng, type, limit, radiusMeters });
 }

@@ -297,7 +297,7 @@ export default async function EventDetailPage({ params }: Props) {
           excludeContentId: id,
           types: ["travel", "accommodation"],
         })
-      : Promise.resolve({ travel: [], festival: [], accommodation: [] }),
+      : Promise.resolve({ travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }),
     provinceFullName
       ? getSpecialtiesByRegionName(provinceFullName, 5)
       : Promise.resolve([]),

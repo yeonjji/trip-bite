@@ -149,7 +149,7 @@ export default async function CampingDetailPage({ params }: PageProps) {
           excludeContentId: id,
           types: ["travel", "festival", "accommodation"],
         })
-      : Promise.resolve({ travel: [], festival: [], accommodation: [] }),
+      : Promise.resolve({ travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }),
     doNm ? getSpecialtiesByRegionName(doNm, 5) : Promise.resolve([]),
   ])
 

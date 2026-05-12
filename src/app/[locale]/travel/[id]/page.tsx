@@ -107,7 +107,7 @@ export default async function TravelDetailPage({ params }: Props) {
           excludeContentId: id,
           types: ["festival", "accommodation", "travel"],
         })
-      : Promise.resolve({ travel: [], festival: [], accommodation: [] }),
+      : Promise.resolve({ travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }),
   ])
 
   const galleryImages = images.map((img) => ({
