@@ -7,6 +7,7 @@ import { buildAlternates } from "@/lib/utils/metadata"
 import TravelCard from "@/components/cards/TravelCard"
 import HeroSearch from "@/components/shared/HeroSearch"
 import TravelFilters from "./_components/TravelFilters"
+import TravelMobileFilters from "./_components/TravelMobileFilters"
 import ListingPagination from "@/components/shared/ListingPagination"
 import type { TourSpotBase } from "@/types/tour-api"
 import type { Destination } from "@/types/database"
@@ -82,6 +83,10 @@ export default async function TravelPage({ params, searchParams }: Props) {
   return (
     <>
       <HeroSearch variant="compact" locale={locale} categoryPath="travel" defaultValue={q} />
+      {/* 모바일 필터 칩 바 */}
+      <Suspense>
+        <TravelMobileFilters locale={locale} />
+      </Suspense>
       <div className="bg-[#F9F7F0] min-h-screen">
         <div className="max-w-7xl mx-auto flex">
 
@@ -97,13 +102,6 @@ export default async function TravelPage({ params, searchParams }: Props) {
             <h1 className="mb-6 text-2xl font-bold text-foreground">
               {locale === "ko" ? "여행지" : "Travel Destinations"}
             </h1>
-
-            {/* 모바일 필터 */}
-            <div className="lg:hidden mb-6 bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
-              <Suspense>
-                <TravelFilters locale={locale} />
-              </Suspense>
-            </div>
 
             {items.length === 0 ? (
               <div className="py-16 text-center text-muted-foreground">

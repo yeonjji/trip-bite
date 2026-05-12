@@ -55,7 +55,7 @@ export default async function EvChargingPage({ params, searchParams }: PageProps
         </aside>
 
         {/* 메인 */}
-        <main className="flex-1 min-w-0 px-8 py-8">
+        <main className="flex-1 min-w-0 px-4 md:px-8 py-6 md:py-8">
           {/* 뒤로가기 */}
           <Link
             href={`/${locale}/facilities`}
@@ -108,7 +108,7 @@ export default async function EvChargingPage({ params, searchParams }: PageProps
               )}
             </div>
           ) : (
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               {items.map((station) => (
                 <EvChargingCard
                   key={station.statId}

@@ -6,6 +6,7 @@ import { buildAlternates } from "@/lib/utils/metadata"
 import FestivalCard from "@/components/cards/FestivalCard"
 import HeroSearch from "@/components/shared/HeroSearch"
 import EventFilters from "./_components/EventFilters"
+import EventMobileFilters from "./_components/EventMobileFilters"
 import ListingPagination from "@/components/shared/ListingPagination"
 import type { FestivalStatus } from "@/types/festival"
 
@@ -57,6 +58,8 @@ export default async function EventsPage({ params, searchParams }: Props) {
   return (
     <>
       <HeroSearch variant="compact" locale={locale} categoryPath="events" defaultValue={q} />
+      {/* 모바일 필터 칩 바 */}
+      <EventMobileFilters regions={regions} locale={locale} />
       <div className="bg-[#F9F7F0] min-h-screen">
         <div className="max-w-7xl mx-auto flex">
 
@@ -70,11 +73,6 @@ export default async function EventsPage({ params, searchParams }: Props) {
             <h1 className="mb-6 text-2xl font-bold text-foreground">
               {isKo ? "행사/축제" : "Festivals & Events"}
             </h1>
-
-            {/* 모바일 필터 */}
-            <div className="lg:hidden mb-6 bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
-              <EventFilters regions={regions} locale={locale} />
-            </div>
 
             {items.length === 0 ? (
               <div className="py-16 text-center text-muted-foreground">

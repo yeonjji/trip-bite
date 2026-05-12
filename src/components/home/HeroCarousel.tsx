@@ -36,7 +36,7 @@ export default function HeroCarousel() {
             src={slide.src}
             alt={slide.alt}
             fill
-            className="object-cover"
+            className="object-cover object-top md:object-center"
             priority={i === 0}
             sizes="100vw"
           />

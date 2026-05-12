@@ -14,8 +14,10 @@ import {
 } from "lucide-react";
 import { setRequestLocale } from "next-intl/server";
 import { getWifiById } from "@/lib/data/free-wifi";
+import { getNearbyTourRecommendations, getNearbyFoodItems } from "@/lib/data/nearby-tour-recommendations";
 import NaverMap from "@/components/maps/NaverMap";
 import ShareButton from "@/components/shared/ShareButton";
+import FacilityNearbySections from "@/components/nearby/FacilityNearbySection";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +65,15 @@ export default async function WifiDetailPage({ params }: PageProps) {
   const lat = wifi.lat ?? null;
   const lng = wifi.lng ?? null;
   const hasLocation = lat !== null && lng !== null && lat !== 0 && lng !== 0;
+
+  const tourTabOrder = ["travel", "festival", "accommodation"] as const;
+  const [restaurantItems, cafeItems, tourRecs] = hasLocation
+    ? await Promise.all([
+        getNearbyFoodItems({ lat: lat!, lng: lng!, type: "restaurant", limit: 8 }),
+        getNearbyFoodItems({ lat: lat!, lng: lng!, type: "cafe", limit: 8 }),
+        getNearbyTourRecommendations({ lat: lat!, lng: lng!, types: [...tourTabOrder], limitPerType: 6 }),
+      ])
+    : [[], [], { travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }];
   const address = wifi.address_road || wifi.address_jibun || "";
   const region = [wifi.sigungu_name, wifi.sido_name].filter(Boolean).join(" ");
 
@@ -80,12 +91,12 @@ export default async function WifiDetailPage({ params }: PageProps) {
         </Link>
 
         {/* 히어로 배너 */}
-        <div className="relative h-[280px] rounded-2xl overflow-hidden mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700">
-          <div className="absolute right-8 inset-y-0 flex items-center">
-            <Wifi className="w-48 h-48 text-white/5" strokeWidth={1} />
+        <div className="relative h-[180px] md:h-[280px] rounded-2xl overflow-hidden mb-4 md:mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700">
+          <div className="absolute right-6 md:right-8 inset-y-0 flex items-center">
+            <Wifi className="w-20 h-20 md:w-48 md:h-48 text-white/[0.03] md:text-white/5" strokeWidth={1} />
           </div>
-          <div className="absolute bottom-0 left-0 right-0 p-8">
-            <div className="flex flex-wrap gap-2 mb-3">
+          <div className="absolute inset-0 flex flex-col justify-center md:justify-end p-4 md:p-8">
+            <div className="flex flex-wrap gap-1.5 md:gap-2 mb-1.5 md:mb-3">
               {wifi.facility_type && (
                 <span className="inline-flex items-center text-xs font-semibold px-3 py-1 rounded-full bg-blue-500/80 text-white">
                   {wifi.facility_type}
@@ -97,15 +108,15 @@ export default async function WifiDetailPage({ params }: PageProps) {
                 </span>
               )}
             </div>
-            <h1 className="text-2xl font-bold text-white leading-snug">{wifi.place_name}</h1>
+            <h1 className="text-lg md:text-2xl font-bold text-white leading-snug">{wifi.place_name}</h1>
             {address && (
-              <p className="text-sm text-slate-300 mt-1">{address}</p>
+              <p className="text-xs md:text-sm text-slate-300 mt-0.5 md:mt-1 line-clamp-1">{address}</p>
             )}
           </div>
         </div>
 
         {/* Stats Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
           {[
             {
               icon: <Signal className="w-5 h-5" />,
@@ -262,6 +273,16 @@ export default async function WifiDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+
+        {hasLocation && (
+          <FacilityNearbySections
+            restaurants={restaurantItems}
+            cafes={cafeItems}
+            tourRecs={tourRecs}
+            tourTabOrder={[...tourTabOrder]}
+            locale={locale}
+          />
+        )}
       </div>
     </div>
   );

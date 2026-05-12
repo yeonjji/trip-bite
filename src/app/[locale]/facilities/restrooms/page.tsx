@@ -55,7 +55,7 @@ export default async function RestroomsPage({ params, searchParams }: PageProps)
         </aside>
 
         {/* 메인 */}
-        <main className="flex-1 min-w-0 px-8 py-8">
+        <main className="flex-1 min-w-0 px-4 md:px-8 py-6 md:py-8">
           <Link
             href={`/${locale}/facilities`}
             className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-orange-700 transition-colors mb-6"
@@ -100,7 +100,7 @@ export default async function RestroomsPage({ params, searchParams }: PageProps)
               </p>
             </div>
           ) : (
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               {items.map((toilet) => (
                 <ToiletCard key={toilet.id} toilet={toilet} locale={locale} />
               ))}

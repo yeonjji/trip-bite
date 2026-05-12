@@ -17,7 +17,9 @@ export default function HeroSearch({ locale, variant, categoryPath, defaultValue
     : "Search destinations, food, camping..."
 
   const keywords = (
-    <div className={`flex flex-wrap justify-center gap-2 ${variant === "overlay" ? "mt-6" : "mt-3"}`}>
+    <div
+      className={`${variant === "overlay" ? "mt-3 md:mt-6" : "mt-3"} flex flex-nowrap overflow-x-auto gap-1.5 md:flex-wrap md:justify-center md:gap-2 pb-0.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]`}
+    >
       {POPULAR_KEYWORDS.map((keyword) => (
         <Link
           key={keyword}
@@ -26,7 +28,7 @@ export default function HeroSearch({ locale, variant, categoryPath, defaultValue
               ? `/${locale}/${categoryPath}?q=${encodeURIComponent(keyword)}`
               : `/${locale}/search?q=${encodeURIComponent(keyword)}`
           }
-          className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
+          className={`flex-shrink-0 whitespace-nowrap rounded-full px-3 py-1 text-xs md:px-4 md:py-1.5 md:text-sm transition-colors ${
             variant === "overlay"
               ? "bg-gray-100 text-gray-600 hover:bg-gray-200"
               : "bg-stone-100 text-stone-600 hover:bg-stone-200"
@@ -42,7 +44,7 @@ export default function HeroSearch({ locale, variant, categoryPath, defaultValue
     return (
       <>
         <div className="mx-auto max-w-lg">
-          <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-3 warm-shadow">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-2 md:p-3 warm-shadow">
             <SearchBar placeholder={placeholder} categoryPath={categoryPath} defaultValue={defaultValue} />
           </div>
         </div>

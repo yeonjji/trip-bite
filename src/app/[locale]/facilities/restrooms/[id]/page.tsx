@@ -21,7 +21,9 @@ import { setRequestLocale } from "next-intl/server";
 import ShareButton from "@/components/shared/ShareButton";
 import { cn } from "@/lib/utils";
 import { getToiletById } from "@/lib/data/public-toilets";
+import { getNearbyTourRecommendations, getNearbyFoodItems } from "@/lib/data/nearby-tour-recommendations";
 import NaverMap from "@/components/maps/NaverMap";
+import FacilityNearbySections from "@/components/nearby/FacilityNearbySection";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +71,15 @@ export default async function RestroomDetailPage({ params }: PageProps) {
   const lat = toilet.lat ?? null;
   const lng = toilet.lng ?? null;
   const hasLocation = lat !== null && lng !== null && lat !== 0 && lng !== 0;
+
+  const tourTabOrder = ["travel", "festival", "accommodation"] as const;
+  const [restaurantItems, cafeItems, tourRecs] = hasLocation
+    ? await Promise.all([
+        getNearbyFoodItems({ lat: lat!, lng: lng!, type: "restaurant", limit: 8 }),
+        getNearbyFoodItems({ lat: lat!, lng: lng!, type: "cafe", limit: 8 }),
+        getNearbyTourRecommendations({ lat: lat!, lng: lng!, types: [...tourTabOrder], limitPerType: 6 }),
+      ])
+    : [[], [], { travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }];
   const address = toilet.address_road || toilet.address_jibun || "";
   const disabledTotal = (toilet.disabled_male ?? 0) + (toilet.disabled_female ?? 0);
 
@@ -134,12 +145,12 @@ export default async function RestroomDetailPage({ params }: PageProps) {
         </Link>
 
         {/* 히어로 배너 */}
-        <div className="relative h-[280px] rounded-2xl overflow-hidden mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700">
-          <div className="absolute right-8 inset-y-0 flex items-center">
-            <Users className="w-48 h-48 text-white/5" strokeWidth={1} />
+        <div className="relative h-[180px] md:h-[280px] rounded-2xl overflow-hidden mb-4 md:mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700">
+          <div className="absolute right-6 md:right-8 inset-y-0 flex items-center">
+            <Users className="w-20 h-20 md:w-48 md:h-48 text-white/[0.03] md:text-white/5" strokeWidth={1} />
           </div>
-          <div className="absolute bottom-0 left-0 right-0 p-8">
-            <div className="flex flex-wrap gap-2 mb-3">
+          <div className="absolute inset-0 flex flex-col justify-center md:justify-end p-4 md:p-8">
+            <div className="flex flex-wrap gap-1.5 md:gap-2 mb-1.5 md:mb-3">
               {toilet.baby_care && (
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-pink-500/80 text-white">
                   <Baby className="w-3 h-3" />
@@ -159,15 +170,15 @@ export default async function RestroomDetailPage({ params }: PageProps) {
                 </span>
               )}
             </div>
-            <h1 className="text-2xl font-bold text-white leading-snug">{toilet.name}</h1>
+            <h1 className="text-lg md:text-2xl font-bold text-white leading-snug">{toilet.name}</h1>
             {address && (
-              <p className="text-sm text-slate-300 mt-1">{address}</p>
+              <p className="text-xs md:text-sm text-slate-300 mt-0.5 md:mt-1 line-clamp-1">{address}</p>
             )}
           </div>
         </div>
 
         {/* Stats Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
           {[
             {
               icon: <Users className="w-5 h-5" />,
@@ -342,6 +353,16 @@ export default async function RestroomDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+
+        {hasLocation && (
+          <FacilityNearbySections
+            restaurants={restaurantItems}
+            cafes={cafeItems}
+            tourRecs={tourRecs}
+            tourTabOrder={[...tourTabOrder]}
+            locale={locale}
+          />
+        )}
       </div>
     </div>
   );

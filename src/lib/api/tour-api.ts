@@ -81,6 +81,7 @@ export const tourApi = {
     if (params.mapX !== undefined) searchParams.set("mapX", String(params.mapX));
     if (params.mapY !== undefined) searchParams.set("mapY", String(params.mapY));
     if (params.radius !== undefined) searchParams.set("radius", String(params.radius));
+    if (params.cat3) searchParams.set("cat3", params.cat3);
 
     return fetchTourApi<TourSpotBase>("locationBasedList2", searchParams);
   },

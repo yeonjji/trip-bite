@@ -18,8 +18,10 @@ import {
 import { setRequestLocale } from "next-intl/server";
 import { cn } from "@/lib/utils";
 import { getEvStation } from "@/lib/data/ev-charging";
+import { getNearbyTourRecommendations, getNearbyFoodItems } from "@/lib/data/nearby-tour-recommendations";
 import NaverMap from "@/components/maps/NaverMap";
 import ShareButton from "@/components/shared/ShareButton";
+import FacilityNearbySections from "@/components/nearby/FacilityNearbySection";
 
 export const dynamic = "force-dynamic";
 
@@ -124,6 +126,15 @@ export default async function EvChargingDetailPage({ params }: PageProps) {
   const lng = parseFloat(first.lng);
   const hasLocation = !isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0;
 
+  const tourTabOrder = ["accommodation", "travel", "festival"] as const;
+  const [restaurantItems, cafeItems, tourRecs] = hasLocation
+    ? await Promise.all([
+        getNearbyFoodItems({ lat, lng, type: "restaurant", limit: 8 }),
+        getNearbyFoodItems({ lat, lng, type: "cafe", limit: 8 }),
+        getNearbyTourRecommendations({ lat, lng, types: [...tourTabOrder], limitPerType: 6 }),
+      ])
+    : [[], [], { travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }];
+
   // output kW 기준으로 급속/완속 판단 (22kW 초과 = 급속)
   const hasFast = chargers.some((c) => parseFloat(c.output) > 22);
   const hasSlow = chargers.some((c) => {
@@ -148,14 +159,14 @@ export default async function EvChargingDetailPage({ params }: PageProps) {
         </Link>
 
         {/* 히어로 배너 */}
-        <div className="relative h-[280px] rounded-2xl overflow-hidden mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700">
+        <div className="relative h-[180px] md:h-[280px] rounded-2xl overflow-hidden mb-4 md:mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700">
           {/* 배경 Zap 아이콘 */}
-          <div className="absolute right-8 inset-y-0 flex items-center">
-            <Zap className="w-48 h-48 text-white/5" strokeWidth={1} />
+          <div className="absolute right-6 md:right-8 inset-y-0 flex items-center">
+            <Zap className="w-20 h-20 md:w-48 md:h-48 text-white/[0.03] md:text-white/5" strokeWidth={1} />
           </div>
           {/* 왼쪽 하단 콘텐츠 */}
-          <div className="absolute bottom-0 left-0 right-0 p-8">
-            <div className="flex flex-wrap gap-2 mb-3">
+          <div className="absolute inset-0 flex flex-col justify-center md:justify-end p-4 md:p-8">
+            <div className="flex flex-wrap gap-1.5 md:gap-2 mb-1.5 md:mb-3">
               <span className={cn(
                 "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full",
                 availableCount > 0 ? "bg-green-500/90 text-white" : "bg-slate-600/80 text-slate-300"
@@ -183,15 +194,15 @@ export default async function EvChargingDetailPage({ params }: PageProps) {
                 </span>
               )}
             </div>
-            <h1 className="text-2xl font-bold text-white leading-snug">{first.statNm}</h1>
+            <h1 className="text-lg md:text-2xl font-bold text-white leading-snug">{first.statNm}</h1>
             {first.addr && (
-              <p className="text-sm text-slate-300 mt-1">{first.addr}</p>
+              <p className="text-xs md:text-sm text-slate-300 mt-0.5 md:mt-1 line-clamp-1">{first.addr}</p>
             )}
           </div>
         </div>
 
         {/* Stats Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
           {[
             {
               icon: <Zap className="w-5 h-5" />,
@@ -400,6 +411,16 @@ export default async function EvChargingDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+
+        {hasLocation && (
+          <FacilityNearbySections
+            restaurants={restaurantItems}
+            cafes={cafeItems}
+            tourRecs={tourRecs}
+            tourTabOrder={[...tourTabOrder]}
+            locale={locale}
+          />
+        )}
       </div>
     </div>
   );

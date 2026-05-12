@@ -31,6 +31,7 @@ export interface TourApiListParams {
   mapX?: number;
   mapY?: number;
   radius?: number;
+  cat3?: string;
   keyword?: string;
 }
 

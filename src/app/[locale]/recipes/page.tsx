@@ -8,6 +8,7 @@ import HeroSearch from "@/components/shared/HeroSearch"
 import { getRecipes } from "@/lib/data/recipes"
 
 import RecipeFilters from "./_components/RecipeFilters"
+import RecipeMobileFilters from "./_components/RecipeMobileFilters"
 import ListingPagination from "@/components/shared/ListingPagination"
 
 interface PageProps {
@@ -50,12 +51,19 @@ export default async function RecipesPage({ params, searchParams }: PageProps) {
   return (
     <>
       <HeroSearch variant="compact" locale={locale} categoryPath="recipes" defaultValue={q || keyword} />
+      {/* 모바일 필터 칩 바 */}
+      <Suspense>
+        <RecipeMobileFilters locale={locale} />
+      </Suspense>
       <div className="mx-auto max-w-7xl px-4 pt-4 pb-8">
       <h1 className="mb-6 text-2xl font-bold text-foreground">레시피</h1>
 
-      <Suspense>
-        <RecipeFilters locale={locale} />
-      </Suspense>
+      {/* 데스크탑 필터 */}
+      <div className="hidden lg:block">
+        <Suspense>
+          <RecipeFilters locale={locale} />
+        </Suspense>
+      </div>
 
       <div className="mt-6">
         {items.length === 0 ? (
