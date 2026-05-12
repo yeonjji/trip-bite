@@ -188,6 +188,7 @@ export default async function RestaurantDetailPage({ params }: Props) {
               lat={parseFloat(mapy)}
               lng={parseFloat(mapx)}
               className="h-full w-full"
+              showMarker
             />
           </div>
         </div>
