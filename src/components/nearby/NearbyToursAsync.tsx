@@ -1,4 +1,4 @@
-import { getNearbyTourRecommendations, type NearbyTourType } from "@/lib/data/nearby-tour-recommendations"
+import { getNearbyTourRecommendationsCached, type NearbyTourType } from "@/lib/data/nearby-tour-recommendations"
 import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations"
 
 type Props = {
@@ -18,12 +18,12 @@ export default async function NearbyToursAsync({
   tabOrder,
   locale,
 }: Props) {
-  const recommendations = await getNearbyTourRecommendations({
+  const recommendations = await getNearbyTourRecommendationsCached(
     lat,
     lng,
-    excludeContentId,
+    excludeContentId ?? null,
     types,
-  })
+  )
   return (
     <NearbyTourRecommendationsSection
       recommendations={recommendations}

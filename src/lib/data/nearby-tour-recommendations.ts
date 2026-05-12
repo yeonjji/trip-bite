@@ -1,4 +1,5 @@
 import { tourApi } from "@/lib/api/tour-api";
+import { unstable_cache } from "next/cache";
 import type { TourSpotBase } from "@/types/tour-api";
 
 export type NearbyTourType = "travel" | "festival" | "accommodation" | "restaurant" | "cafe";
@@ -161,6 +162,26 @@ export async function getNearbyTourRecommendations({
     cafe: entries.find(([type]) => type === "cafe")?.[1] ?? [],
   };
 }
+
+export const getNearbyTourRecommendationsCached = unstable_cache(
+  async (
+    lat: number,
+    lng: number,
+    excludeContentId: string | null,
+    types: NearbyTourType[],
+    limitPerType = 6,
+  ): Promise<NearbyTourRecommendations> => {
+    return getNearbyTourRecommendations({
+      lat,
+      lng,
+      excludeContentId,
+      types,
+      limitPerType,
+    });
+  },
+  ["nearby-tour-recommendations"],
+  { revalidate: 3600, tags: ["nearby-tour-recommendations"] },
+);
 
 export async function getNearbyFoodItems({
   lat,

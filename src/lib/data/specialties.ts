@@ -1,7 +1,17 @@
 // P2-08: 특산품 데이터 레이어 (Supabase specialties + regions join)
 
 import { createClient } from "@/lib/supabase/server"
+import { createClient as createAnonClient } from "@supabase/supabase-js"
+import { unstable_cache } from "next/cache"
 import type { SpecialtyRow } from "@/types/database"
+
+// 쿠키 없는 공개 클라이언트 — unstable_cache 내부 전용
+function getAnonClient() {
+  return createAnonClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  )
+}
 
 type SpecialtyWithRegion = SpecialtyRow & {
   regions: { area_code: string; name_ko: string; name_en: string }
@@ -89,6 +99,25 @@ export async function getSpecialtiesByRegionName(
   if (error) return []
   return ((data ?? []).filter((r) => r.regions !== null)) as SpecialtyWithRegion[]
 }
+
+// 캐시된 버전 — 행사/여행지 상세 페이지의 Suspense 내부 전용
+export const getSpecialtiesByRegionNameCached = unstable_cache(
+  async (regionFullName: string, limit = 4): Promise<SpecialtyWithRegion[]> => {
+    const supabase = getAnonClient()
+    const dbName = SIDO_SHORT[regionFullName] ?? regionFullName
+
+    const { data, error } = await supabase
+      .from("specialties")
+      .select("*, regions(area_code, name_ko, name_en)")
+      .eq("regions.name_ko", dbName)
+      .limit(limit)
+
+    if (error) return []
+    return ((data ?? []).filter((r) => r.regions !== null)) as SpecialtyWithRegion[]
+  },
+  ["specialties-by-region"],
+  { revalidate: 86400, tags: ["specialties"] },
+)
 
 export async function getSpecialtyDetail(id: string): Promise<{
   specialty: SpecialtyWithRegion | null

@@ -1,4 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createAnonClient } from "@supabase/supabase-js";
+import { unstable_cache } from "next/cache";
+
+function getAnonClient() {
+  return createAnonClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+}
 
 export interface NearbyToilet {
   id: string;
@@ -117,3 +126,46 @@ export async function getNearbyFacilities(
       : [],
   };
 }
+
+export const getNearbyFacilitiesCached = unstable_cache(
+  async (
+    lat: number,
+    lng: number,
+    radiusMeters = 10000,
+    limit = 5,
+  ): Promise<NearbyFacilitiesResult> => {
+    const supabase = getAnonClient();
+
+    const [toiletsResult, wifiResult, parkingResult, evResult] = await Promise.allSettled([
+      supabase.rpc("get_nearby_public_toilets", {
+        p_lat: lat, p_lng: lng, radius_meters: radiusMeters, result_limit: limit,
+      }),
+      supabase.rpc("get_nearby_free_wifi", {
+        p_lat: lat, p_lng: lng, radius_meters: radiusMeters, result_limit: limit,
+      }),
+      supabase.rpc("get_nearby_parking", {
+        p_lat: lat, p_lng: lng, radius_meters: radiusMeters, result_limit: limit,
+      }),
+      supabase.rpc("get_nearby_ev_stations", {
+        p_lat: lat, p_lng: lng, radius_meters: radiusMeters, result_limit: limit,
+      }),
+    ]);
+
+    return {
+      toilets: toiletsResult.status === "fulfilled" && !toiletsResult.value.error
+        ? (toiletsResult.value.data as NearbyToilet[]) ?? []
+        : [],
+      wifi: wifiResult.status === "fulfilled" && !wifiResult.value.error
+        ? (wifiResult.value.data as NearbyWifi[]) ?? []
+        : [],
+      parking: parkingResult.status === "fulfilled" && !parkingResult.value.error
+        ? (parkingResult.value.data as NearbyParking[]) ?? []
+        : [],
+      evStations: evResult.status === "fulfilled" && !evResult.value.error
+        ? (evResult.value.data as NearbyEvStation[]) ?? []
+        : [],
+    };
+  },
+  ["nearby-facilities"],
+  { revalidate: 3600, tags: ["nearby-facilities"] },
+);

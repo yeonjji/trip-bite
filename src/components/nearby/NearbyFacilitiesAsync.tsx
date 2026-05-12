@@ -1,4 +1,4 @@
-import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
+import { getNearbyFacilitiesCached } from "@/lib/data/nearby-facilities"
 import NearbyFacilities from "@/app/[locale]/travel/_components/NearbyFacilities"
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 }
 
 export default async function NearbyFacilitiesAsync({ lat, lng, locale }: Props) {
-  const data = await getNearbyFacilities(lat, lng)
+  const data = await getNearbyFacilitiesCached(lat, lng)
   return (
     <NearbyFacilities
       locale={locale}

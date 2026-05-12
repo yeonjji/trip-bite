@@ -1,4 +1,4 @@
-import { getSpecialtiesByRegionName } from "@/lib/data/specialties"
+import { getSpecialtiesByRegionNameCached } from "@/lib/data/specialties"
 import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSection"
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 }
 
 export default async function SpecialtiesAsync({ regionFullName, regionName, limit = 5 }: Props) {
-  const specialties = await getSpecialtiesByRegionName(regionFullName, limit)
+  const specialties = await getSpecialtiesByRegionNameCached(regionFullName, limit)
   return <TravelSpecialtiesSection specialties={specialties} regionName={regionName} />
 }
 
