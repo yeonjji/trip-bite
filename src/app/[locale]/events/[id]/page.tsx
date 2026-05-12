@@ -1,19 +1,14 @@
 import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
+import { Suspense } from "react"
 import { getFestivalById, computeStatus, getRegionName } from "@/lib/data/festivals"
-import { getSpecialtiesByRegionName } from "@/lib/data/specialties"
-import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
-import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations"
 import { buildAlternates } from "@/lib/utils/metadata"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
-import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
-import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSection"
 import { buildNaverMapUrl } from "@/lib/utils/map"
 import NaverMap from "@/components/maps/NaverMap"
-import NearbyFacilities from "../../travel/_components/NearbyFacilities"
 import TransitSection from "@/components/transit/TransitSection"
 import WeatherWidget from "@/components/weather/WeatherWidget"
 import FestivalImageGallery from "../_components/FestivalImageGallery"
@@ -21,6 +16,9 @@ import FestivalInfoCards from "../_components/FestivalInfoCards"
 import FestivalProgramSection from "../_components/FestivalProgramSection"
 import FestivalContactSection from "../_components/FestivalContactSection"
 import FestivalShareActions from "../_components/FestivalShareActions"
+import NearbyFacilitiesAsync, { NearbyFacilitiesSkeleton } from "@/components/nearby/NearbyFacilitiesAsync"
+import NearbyToursAsync, { NearbyToursSkeleton } from "@/components/nearby/NearbyToursAsync"
+import SpecialtiesAsync, { SpecialtiesSkeleton } from "@/components/travel/SpecialtiesAsync"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -267,13 +265,13 @@ export default async function EventDetailPage({ params }: Props) {
   const { locale, id } = await params
   setRequestLocale(locale)
 
-  const [festival, detail, galleryImages] = await Promise.all([
-    getFestivalById(id),
+  const festival = await getFestivalById(id)
+  if (!festival) notFound()
+
+  const [detail, galleryImages] = await Promise.all([
     fetchFestivalDetail(id),
     fetchFestivalImages(id),
   ])
-
-  if (!festival) notFound()
 
   const isKo = locale === "ko"
   const status = computeStatus(festival)
@@ -285,23 +283,6 @@ export default async function EventDetailPage({ params }: Props) {
   const hasMap = lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
 
   const provinceFullName = (festival.addr1 ?? "").split(" ")[0]
-
-  const [nearbyFacilities, nearbyTourRecommendations, specialties] = await Promise.all([
-    hasMap
-      ? getNearbyFacilities(lat!, lng!)
-      : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
-    hasMap
-      ? getNearbyTourRecommendations({
-          lat: lat!,
-          lng: lng!,
-          excludeContentId: id,
-          types: ["travel", "accommodation"],
-        })
-      : Promise.resolve({ travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }),
-    provinceFullName
-      ? getSpecialtiesByRegionName(provinceFullName, 5)
-      : Promise.resolve([]),
-  ])
 
   const venue = detail.eventplace || festival.addr1
   const regionName = (() => {
@@ -501,13 +482,11 @@ export default async function EventDetailPage({ params }: Props) {
       )}
 
       {/* ── 주변 시설 ────────────────────────────────────────────────── */}
-      <NearbyFacilities
-        locale={locale}
-        toilets={nearbyFacilities.toilets}
-        wifi={nearbyFacilities.wifi}
-        parking={nearbyFacilities.parking}
-        evStations={nearbyFacilities.evStations}
-      />
+      {hasMap && (
+        <Suspense fallback={<NearbyFacilitiesSkeleton />}>
+          <NearbyFacilitiesAsync lat={lat!} lng={lng!} locale={locale} />
+        </Suspense>
+      )}
 
       {/* ── 함께 즐기기 (주변여행지 + 근처 가볼 곳 통합) ─────────────── */}
       <div className="mb-2">
@@ -519,11 +498,18 @@ export default async function EventDetailPage({ params }: Props) {
         </p>
       </div>
 
-      <NearbyTourRecommendationsSection
-        recommendations={nearbyTourRecommendations}
-        tabOrder={["travel", "accommodation"]}
-        locale={locale}
-      />
+      {hasMap && (
+        <Suspense fallback={<NearbyToursSkeleton />}>
+          <NearbyToursAsync
+            lat={lat!}
+            lng={lng!}
+            excludeContentId={id}
+            types={["travel", "accommodation"]}
+            tabOrder={["travel", "accommodation"]}
+            locale={locale}
+          />
+        </Suspense>
+      )}
 
       {regionName && <NearbyNaverPlaces regionName={regionName} />}
 
@@ -534,7 +520,11 @@ export default async function EventDetailPage({ params }: Props) {
       <RecipeRecommendationSection regionName={regionName} context="festival" locale={locale} />
 
       {/* ── 이 지역 특산품 ────────────────────────────────────────────── */}
-      <TravelSpecialtiesSection specialties={specialties} regionName={regionName} />
+      {provinceFullName && (
+        <Suspense fallback={<SpecialtiesSkeleton />}>
+          <SpecialtiesAsync regionFullName={provinceFullName} regionName={regionName} />
+        </Suspense>
+      )}
     </div>
   )
 }
