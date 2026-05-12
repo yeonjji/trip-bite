@@ -165,7 +165,7 @@ export default async function EvChargingDetailPage({ params }: PageProps) {
             <Zap className="w-20 h-20 md:w-48 md:h-48 text-white/[0.03] md:text-white/5" strokeWidth={1} />
           </div>
           {/* 왼쪽 하단 콘텐츠 */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">
+          <div className="absolute inset-0 flex flex-col justify-center md:justify-end p-4 md:p-8">
             <div className="flex flex-wrap gap-1.5 md:gap-2 mb-1.5 md:mb-3">
               <span className={cn(
                 "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full",

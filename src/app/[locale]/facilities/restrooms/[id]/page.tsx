@@ -149,7 +149,7 @@ export default async function RestroomDetailPage({ params }: PageProps) {
           <div className="absolute right-6 md:right-8 inset-y-0 flex items-center">
             <Users className="w-20 h-20 md:w-48 md:h-48 text-white/[0.03] md:text-white/5" strokeWidth={1} />
           </div>
-          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">
+          <div className="absolute inset-0 flex flex-col justify-center md:justify-end p-4 md:p-8">
             <div className="flex flex-wrap gap-1.5 md:gap-2 mb-1.5 md:mb-3">
               {toilet.baby_care && (
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-pink-500/80 text-white">
