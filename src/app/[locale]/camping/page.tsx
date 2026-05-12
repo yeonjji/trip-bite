@@ -8,6 +8,7 @@ import HeroSearch from "@/components/shared/HeroSearch"
 import type { CampingSite } from "@/types/database"
 
 import CampingFilters from "./_components/CampingFilters"
+import CampingMobileFilters from "./_components/CampingMobileFilters"
 import ListingPagination from "@/components/shared/ListingPagination"
 
 interface PageProps {
@@ -73,6 +74,10 @@ export default async function CampingPage({ params, searchParams }: PageProps) {
   return (
     <>
       <HeroSearch variant="compact" locale={locale} categoryPath="camping" defaultValue={q} />
+      {/* 모바일 필터 칩 바 */}
+      <Suspense>
+        <CampingMobileFilters locale={locale} />
+      </Suspense>
       <div className="bg-[#F9F7F0] min-h-screen">
         <div className="max-w-7xl mx-auto flex">
 
@@ -88,13 +93,6 @@ export default async function CampingPage({ params, searchParams }: PageProps) {
             <h1 className="mb-6 text-2xl font-bold text-foreground">
               {locale === "ko" ? "캠핑장" : "Camping Sites"}
             </h1>
-
-            {/* 모바일 필터 */}
-            <div className="lg:hidden mb-6 bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
-              <Suspense>
-                <CampingFilters locale={locale} />
-              </Suspense>
-            </div>
 
             {items.length === 0 ? (
               <div className="py-16 text-center text-muted-foreground">

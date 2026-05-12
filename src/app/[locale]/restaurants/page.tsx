@@ -12,6 +12,7 @@ import type { Destination } from "@/types/database"
 
 import PaginationClient from "./_components/PaginationClient"
 import RestaurantFilters from "./_components/RestaurantFilters"
+import RestaurantMobileFilters from "./_components/RestaurantMobileFilters"
 
 export const dynamic = "force-dynamic"
 
@@ -74,6 +75,10 @@ export default async function RestaurantsPage({ params, searchParams }: Props) {
   return (
     <>
       <HeroSearch variant="compact" locale={locale} categoryPath="restaurants" defaultValue={q} />
+      {/* 모바일 필터 칩 바 */}
+      <Suspense fallback={null}>
+        <RestaurantMobileFilters locale={locale} />
+      </Suspense>
       <div className="bg-[#F9F7F0] min-h-screen">
         <div className="max-w-7xl mx-auto flex">
 
@@ -89,13 +94,6 @@ export default async function RestaurantsPage({ params, searchParams }: Props) {
             <h1 className="mb-6 text-2xl font-bold text-foreground">
               {locale === "ko" ? "맛집" : "Restaurants"}
             </h1>
-
-            {/* 모바일 필터 */}
-            <div className="lg:hidden mb-6 bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
-              <Suspense fallback={null}>
-                <RestaurantFilters locale={locale} />
-              </Suspense>
-            </div>
 
             {items.length === 0 ? (
               <EmptyState
