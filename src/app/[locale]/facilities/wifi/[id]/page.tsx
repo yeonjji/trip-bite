@@ -14,8 +14,10 @@ import {
 } from "lucide-react";
 import { setRequestLocale } from "next-intl/server";
 import { getWifiById } from "@/lib/data/free-wifi";
+import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations";
 import NaverMap from "@/components/maps/NaverMap";
 import ShareButton from "@/components/shared/ShareButton";
+import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +65,11 @@ export default async function WifiDetailPage({ params }: PageProps) {
   const lat = wifi.lat ?? null;
   const lng = wifi.lng ?? null;
   const hasLocation = lat !== null && lng !== null && lat !== 0 && lng !== 0;
+
+  const nearbyTypes = ["travel", "festival", "accommodation"] as const;
+  const nearbyRecommendations = hasLocation
+    ? await getNearbyTourRecommendations({ lat: lat!, lng: lng!, types: [...nearbyTypes], limitPerType: 6 })
+    : { travel: [], festival: [], accommodation: [] };
   const address = wifi.address_road || wifi.address_jibun || "";
   const region = [wifi.sigungu_name, wifi.sido_name].filter(Boolean).join(" ");
 
@@ -262,6 +269,16 @@ export default async function WifiDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+
+        {hasLocation && (
+          <div className="mt-10">
+            <NearbyTourRecommendationsSection
+              recommendations={nearbyRecommendations}
+              tabOrder={[...nearbyTypes]}
+              locale={locale}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -21,7 +21,9 @@ import { setRequestLocale } from "next-intl/server";
 import ShareButton from "@/components/shared/ShareButton";
 import { cn } from "@/lib/utils";
 import { getToiletById } from "@/lib/data/public-toilets";
+import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations";
 import NaverMap from "@/components/maps/NaverMap";
+import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +71,11 @@ export default async function RestroomDetailPage({ params }: PageProps) {
   const lat = toilet.lat ?? null;
   const lng = toilet.lng ?? null;
   const hasLocation = lat !== null && lng !== null && lat !== 0 && lng !== 0;
+
+  const nearbyTypes = ["travel", "festival", "accommodation"] as const;
+  const nearbyRecommendations = hasLocation
+    ? await getNearbyTourRecommendations({ lat: lat!, lng: lng!, types: [...nearbyTypes], limitPerType: 6 })
+    : { travel: [], festival: [], accommodation: [] };
   const address = toilet.address_road || toilet.address_jibun || "";
   const disabledTotal = (toilet.disabled_male ?? 0) + (toilet.disabled_female ?? 0);
 
@@ -342,6 +349,16 @@ export default async function RestroomDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+
+        {hasLocation && (
+          <div className="mt-10">
+            <NearbyTourRecommendationsSection
+              recommendations={nearbyRecommendations}
+              tabOrder={[...nearbyTypes]}
+              locale={locale}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
