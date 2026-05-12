@@ -39,13 +39,13 @@ export default async function HomePage({ params }: Props) {
   return (
     <div className="flex flex-col">
       {/* 1. Hero */}
-      <section className="relative min-h-[460px] bg-white flex items-center justify-center px-4 py-24 text-center overflow-hidden">
+      <section className="relative min-h-[300px] md:min-h-[460px] bg-white flex items-center justify-center px-4 py-10 md:py-24 text-center overflow-hidden">
         <HeroCarousel />
         <div className="relative z-20 mx-auto max-w-2xl">
-          <h1 className="mb-4 font-headline text-4xl font-extrabold tracking-tight md:text-6xl" style={{ color: "#b05a42" }}>
+          <h1 className="mb-2 md:mb-4 font-headline text-2xl md:text-4xl font-extrabold tracking-tight lg:text-6xl" style={{ color: "#b05a42" }}>
             {locale === "en" ? "Delicious Travel, Korea" : "맛있는 여행, Korea"}
           </h1>
-          <p className="mb-8 text-lg text-stone-600">
+          <p className="mb-3 md:mb-8 text-sm md:text-lg text-stone-600">
             {locale === "en"
               ? "Travel destinations, local food and camping across Korea"
               : "전국의 여행지, 맛집, 캠핑장을 한번에"}
