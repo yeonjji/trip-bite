@@ -39,9 +39,9 @@ export default async function HomePage({ params }: Props) {
   return (
     <div className="flex flex-col">
       {/* 1. Hero */}
-      <section className="relative min-h-[300px] md:min-h-[460px] bg-white flex items-center justify-center px-4 py-10 md:py-24 text-center overflow-hidden">
+      <section className="relative min-h-[300px] md:min-h-[460px] bg-white flex items-center justify-center py-10 md:py-24 text-center">
         <HeroCarousel />
-        <div className="relative z-20 mx-auto max-w-2xl">
+        <div className="relative z-20 w-full mx-auto max-w-2xl px-4">
           <h1 className="mb-2 md:mb-4 font-headline text-2xl md:text-4xl font-extrabold tracking-tight lg:text-6xl" style={{ color: "#b05a42" }}>
             {locale === "en" ? "Delicious Travel, Korea" : "맛있는 여행, Korea"}
           </h1>
