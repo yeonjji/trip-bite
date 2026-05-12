@@ -108,6 +108,11 @@ export default function TravelMobileFilters({ locale }: Props) {
               () => pushParams({ contentTypeId: type.id })
             )
           )}
+          {chip(
+            isKo ? "🐾 반려동물" : "🐾 Pet-friendly",
+            petOnly === "true",
+            () => pushParams({ petOnly: petOnly === "true" ? "" : "true", petCl: "" })
+          )}
           {regionName && (
             <button
               onClick={() => pushParams({ areaCode: "", sigunguCode: "" })}
@@ -115,15 +120,6 @@ export default function TravelMobileFilters({ locale }: Props) {
             >
               <MapPin className="w-3 h-3" />
               {sigunguName ? (isKo ? sigunguName.name_ko : sigunguName.name_en) : regionName}
-              <X className="w-3 h-3" />
-            </button>
-          )}
-          {petOnly === "true" && (
-            <button
-              onClick={() => pushParams({ petOnly: "" })}
-              className="shrink-0 flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap bg-[#b05a42] text-white"
-            >
-              🐾
               <X className="w-3 h-3" />
             </button>
           )}
