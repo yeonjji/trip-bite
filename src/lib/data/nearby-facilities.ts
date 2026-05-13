@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import { createClient as createAnonClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 
@@ -86,7 +85,7 @@ export async function getNearbyFacilities(
   radiusMeters = 10000,
   limit = 5
 ): Promise<NearbyFacilitiesResult> {
-  const supabase = await createClient();
+  const supabase = getAnonClient();
 
   const [toiletsResult, wifiResult, parkingResult, evResult] = await Promise.allSettled([
     supabase.rpc("get_nearby_public_toilets", {
@@ -110,6 +109,15 @@ export async function getNearbyFacilities(
       result_limit: limit,
     }),
   ]);
+
+  if (toiletsResult.status === "rejected") console.error("[NearbyFacilities] toilets:", toiletsResult.reason);
+  else if (toiletsResult.value.error) console.error("[NearbyFacilities] toilets:", toiletsResult.value.error);
+  if (wifiResult.status === "rejected") console.error("[NearbyFacilities] wifi:", wifiResult.reason);
+  else if (wifiResult.value.error) console.error("[NearbyFacilities] wifi:", wifiResult.value.error);
+  if (parkingResult.status === "rejected") console.error("[NearbyFacilities] parking:", parkingResult.reason);
+  else if (parkingResult.value.error) console.error("[NearbyFacilities] parking:", parkingResult.value.error);
+  if (evResult.status === "rejected") console.error("[NearbyFacilities] ev:", evResult.reason);
+  else if (evResult.value.error) console.error("[NearbyFacilities] ev:", evResult.value.error);
 
   return {
     toilets: toiletsResult.status === "fulfilled" && !toiletsResult.value.error
