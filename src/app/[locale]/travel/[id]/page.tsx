@@ -29,6 +29,8 @@ import TransitSection from "@/components/transit/TransitSection"
 import TravelTipSection from "@/components/travel/TravelTipSection"
 import PetInfoSection from "@/components/travel/PetInfoSection"
 
+export const dynamic = "force-dynamic"
+
 type Props = {
   params: Promise<{ locale: string; id: string }>
 }

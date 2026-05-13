@@ -4,6 +4,8 @@ import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 
+export const dynamic = "force-dynamic"
+
 import ImageGallery from "@/components/shared/ImageGallery"
 import ShareButton from "@/components/shared/ShareButton"
 import { buildAlternates } from "@/lib/utils/metadata"
