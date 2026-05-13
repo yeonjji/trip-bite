@@ -17,6 +17,8 @@ import FestivalProgramSection from "../_components/FestivalProgramSection"
 import FestivalContactSection from "../_components/FestivalContactSection"
 import FestivalShareActions from "../_components/FestivalShareActions"
 import NearbyFacilitiesAsync, { NearbyFacilitiesSkeleton } from "@/components/nearby/NearbyFacilitiesAsync"
+import { getNearbyShops } from "@/lib/data/nearby-shops"
+import NearbyShopsSection from "@/components/nearby/NearbyShopsSection"
 import NearbyToursAsync, { NearbyToursSkeleton } from "@/components/nearby/NearbyToursAsync"
 import SpecialtiesAsync, { SpecialtiesSkeleton } from "@/components/travel/SpecialtiesAsync"
 
@@ -273,6 +275,11 @@ export default async function EventDetailPage({ params }: Props) {
     fetchFestivalImages(id),
   ])
 
+  const festLat = festival.mapy
+  const festLng = festival.mapx
+  const festHasCoords = festLat !== null && festLng !== null && !isNaN(festLat) && !isNaN(festLng)
+  const nearbyShops = festHasCoords ? await getNearbyShops(festLat!, festLng!) : null
+
   const isKo = locale === "ko"
   const status = computeStatus(festival)
   const statusCfg = STATUS_CONFIG[status]
@@ -489,15 +496,6 @@ export default async function EventDetailPage({ params }: Props) {
       )}
 
       {/* ── 함께 즐기기 (주변여행지 + 근처 가볼 곳 통합) ─────────────── */}
-      <div className="mb-2">
-        <h2 className="font-headline text-xl font-bold text-[#1B1C1A]">
-          {isKo ? "이 축제와 함께 즐기기 좋은 곳" : "Nearby Attractions"}
-        </h2>
-        <p className="mb-4 text-sm text-[#7B5E57]">
-          {isKo ? "주변 여행지, 숙소, 맛집을 함께 탐색해보세요." : "Explore travel spots, accommodation, and restaurants nearby."}
-        </p>
-      </div>
-
       {hasMap && (
         <Suspense fallback={<NearbyToursSkeleton />}>
           <NearbyToursAsync
@@ -512,6 +510,11 @@ export default async function EventDetailPage({ params }: Props) {
       )}
 
       {regionName && <NearbyNaverPlaces regionName={regionName} />}
+
+      {/* ── 주변 생활 편의 ───────────────────────────────────────────── */}
+      {nearbyShops && (
+        <NearbyShopsSection shops={nearbyShops} pageType="festival" isKo={isKo} />
+      )}
 
       {/* ── 여행 후기 ────────────────────────────────────────────────── */}
       <TravelBlogReviewSection placeName={festival.title} regionName={regionName} />

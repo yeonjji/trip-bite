@@ -76,20 +76,13 @@ export async function getCampingSiteDetail(contentId: string): Promise<{
 
   const site = error ? null : (data as CampingSite);
 
-  let detail: CampingSiteDetail | null = null;
-  let images: { contentId: string; imageUrl: string }[] = [];
+  const [detailRes, imagesRes] = await Promise.allSettled([
+    campingApi.detailList(contentId),
+    campingApi.imageList(contentId),
+  ]);
 
-  try {
-    detail = await campingApi.detailList(contentId);
-  } catch {
-    // API 호출 실패 시 null 유지
-  }
-
-  try {
-    images = await campingApi.imageList(contentId);
-  } catch {
-    // 이미지 없을 경우 빈 배열 유지
-  }
+  const detail: CampingSiteDetail | null = detailRes.status === "fulfilled" ? detailRes.value : null;
+  const images: { contentId: string; imageUrl: string }[] = imagesRes.status === "fulfilled" ? imagesRes.value : [];
 
   return { site, detail, images };
 }

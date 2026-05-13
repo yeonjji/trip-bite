@@ -14,6 +14,9 @@ export interface MarketItem {
   trtmntPrdlst: string | null
   estblYear: string | null
   mrktCycle: string | null
+  itgMktYn: string | null
+  scsflTpNm: string | null
+  areaCd: string | null
 }
 
 export interface NearbyMarket {

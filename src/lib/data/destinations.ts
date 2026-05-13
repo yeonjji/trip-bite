@@ -1,5 +1,6 @@
 // P1-32: Supabase 여행지 데이터 fetch 유틸 함수
 
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { tourApi } from "@/lib/api/tour-api";
 import { getCachedOrFetch } from "@/lib/utils/cache";
@@ -129,7 +130,7 @@ export async function getDestinations(params: {
   return { items, totalCount: count ?? 0, petInfoMap };
 }
 
-export async function getDestinationDetail(contentId: string): Promise<{
+export const getDestinationDetail = cache(async function getDestinationDetail(contentId: string): Promise<{
   destination: Destination | null;
   detail: TourDetailCommon | null;
   intro: TourSpotDetail | null;
@@ -207,30 +208,21 @@ export async function getDestinationDetail(contentId: string): Promise<{
       tel: destination.tel,
       addr1: destination.addr1,
       addr2: destination.addr2,
-      mapx: destination.mapx !== undefined ? String(destination.mapx) : undefined,
-      mapy: destination.mapy !== undefined ? String(destination.mapy) : undefined,
+      mapx: destination.mapx != null ? String(destination.mapx) : undefined,
+      mapy: destination.mapy != null ? String(destination.mapy) : undefined,
       firstimage: destination.first_image,
       firstimage2: destination.first_image2,
     };
-
-    // 캐시 유효 시에도 intro는 항상 최신 fetch
-    try {
-      const introRes = await tourApi.detailIntro(contentId, "12");
-      const introItems = introRes.response.body.items;
-      intro = introItems !== "" && introItems.item.length > 0
-        ? (introItems.item[0] as TourSpotDetail)
-        : null;
-    } catch {
-      intro = null;
-    }
   }
 
-  // title 확정 후 Wiki + Kakao 병렬 호출
+  // title 확정 후 Wiki + Kakao + intro(캐시 유효 경로) 병렬 호출
   const resolvedTitle = detail?.title ?? destination?.title ?? ""
   const resolvedLat = detail?.mapy ? parseFloat(detail.mapy) : (destination?.mapy ?? undefined)
   const resolvedLng = detail?.mapx ? parseFloat(detail.mapx) : (destination?.mapx ?? undefined)
+  // freshDetail 경로에서는 이미 intro를 받아뒀으므로 null 전달, 캐시 유효 경로에서만 여기서 fetch
+  const needsIntro = intro === null && destination !== null && freshDetail === null
 
-  const [wikiRes, kakaoRes, petRes, barrierFreeRes, petTourRes] = await Promise.allSettled([
+  const [wikiRes, kakaoRes, petRes, barrierFreeRes, petTourRes, introRes2] = await Promise.allSettled([
     resolvedTitle ? getWikiSummary(resolvedTitle) : Promise.resolve(null),
     resolvedTitle
       ? searchKakaoPlace(
@@ -242,7 +234,19 @@ export async function getDestinationDetail(contentId: string): Promise<{
     supabase.from("pet_friendly_places").select("*").eq("content_id", contentId).maybeSingle(),
     supabase.from("barrier_free_places").select("*").eq("content_id", contentId).maybeSingle(),
     tourApi.detailPetTour(contentId),
+    needsIntro ? tourApi.detailIntro(contentId, "12") : Promise.resolve(null),
   ])
+
+  if (needsIntro && introRes2.status === "fulfilled" && introRes2.value !== null) {
+    try {
+      const introItems = (introRes2.value as Awaited<ReturnType<typeof tourApi.detailIntro>>).response.body.items
+      intro = introItems !== "" && introItems.item.length > 0
+        ? (introItems.item[0] as TourSpotDetail)
+        : null
+    } catch {
+      intro = null
+    }
+  }
 
   const wiki = wikiRes.status === "fulfilled" ? wikiRes.value : null
   const kakaoPlace = kakaoRes.status === "fulfilled" ? kakaoRes.value : null
@@ -260,4 +264,4 @@ export async function getDestinationDetail(contentId: string): Promise<{
   }
 
   return { destination, detail, intro, images, wiki, kakaoPlace, petPlace, petTourInfo, barrierFreePlace };
-}
+});

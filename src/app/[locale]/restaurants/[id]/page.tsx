@@ -4,6 +4,8 @@ import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 
+export const dynamic = "force-dynamic"
+
 import ImageGallery from "@/components/shared/ImageGallery"
 import ShareButton from "@/components/shared/ShareButton"
 import { buildAlternates } from "@/lib/utils/metadata"
@@ -11,6 +13,7 @@ import Rating from "@/components/shared/Rating"
 import NaverMap from "@/components/maps/NaverMap"
 import { getRestaurantDetail } from "@/lib/data/restaurants"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
+import { getNearbyShops } from "@/lib/data/nearby-shops"
 import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations"
 import NearbyFacilities from "../../travel/_components/NearbyFacilities"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
@@ -19,6 +22,7 @@ import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 import TransitSection from "@/components/transit/TransitSection"
 import WeatherWidget from "@/components/weather/WeatherWidget"
+import NearbyShopsSection from "@/components/nearby/NearbyShopsSection"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -76,21 +80,23 @@ export default async function RestaurantDetailPage({ params }: Props) {
 
   const lat = mapy ? parseFloat(mapy) : null
   const lng = mapx ? parseFloat(mapx) : null
-  const [nearbyFacilities, nearbyTourRecommendations] =
-    lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
-      ? await Promise.all([
-          getNearbyFacilities(lat, lng),
-          getNearbyTourRecommendations({
-            lat,
-            lng,
-            excludeContentId: id,
-            types: ["travel", "festival", "accommodation"],
-          }),
-        ])
-      : [
-          { toilets: [], wifi: [], parking: [], evStations: [] },
-          { travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] },
-        ]
+  const hasValidCoords = lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
+  const [nearbyFacilities, nearbyShops, nearbyTourRecommendations] = hasValidCoords
+    ? await Promise.all([
+        getNearbyFacilities(lat!, lng!),
+        getNearbyShops(lat!, lng!),
+        getNearbyTourRecommendations({
+          lat: lat!,
+          lng: lng!,
+          excludeContentId: id,
+          types: ["travel", "festival", "accommodation"],
+        }),
+      ])
+    : [
+        { toilets: [], wifi: [], parking: [], evStations: [] },
+        null,
+        { travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] },
+      ]
 
   const galleryImages = images.map((img) => ({
     url: img.originimgurl,
@@ -225,6 +231,11 @@ export default async function RestaurantDetailPage({ params }: Props) {
         tabOrder={["travel", "festival", "accommodation"]}
         locale={locale}
       />
+
+      {/* 주변 생활 편의 */}
+      {nearbyShops && (
+        <NearbyShopsSection shops={nearbyShops} pageType="restaurant" isKo={locale === "ko"} />
+      )}
 
       {/* 여행 후기 */}
       <TravelBlogReviewSection placeName={title} regionName={regionName} />
