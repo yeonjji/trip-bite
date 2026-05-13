@@ -18,6 +18,9 @@ function mapRow(row: Record<string, unknown>): MarketItem {
     trtmntPrdlst: (row.trtmnt_prdlst as string) || null,
     estblYear:    (row.estbl_year as string)    || null,
     mrktCycle:    (row.mrkt_cycle as string)    || null,
+    itgMktYn:     (row.itg_mkt_yn as string)    || null,
+    scsflTpNm:    (row.scsfl_tp_nm as string)   || null,
+    areaCd:       (row.area_cd as string)       || null,
   }
 }
 

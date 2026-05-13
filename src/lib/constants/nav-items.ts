@@ -8,6 +8,7 @@ import {
   Landmark,
   Zap,
   Wifi,
+  Store,
   type LucideIcon,
 } from "lucide-react"
 
@@ -56,6 +57,14 @@ export const NAV_ITEMS: NavItem[] = [
         descEn: "Find camping sites in nature",
         href: "/camping",
         icon: Tent,
+      },
+      {
+        labelKo: "전통시장",
+        labelEn: "Traditional Markets",
+        descKo: "전국 전통시장을 둘러보세요",
+        descEn: "Explore traditional markets",
+        href: "/markets",
+        icon: Store,
       },
     ],
   },
