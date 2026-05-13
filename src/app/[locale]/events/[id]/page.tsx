@@ -489,15 +489,6 @@ export default async function EventDetailPage({ params }: Props) {
       )}
 
       {/* ── 함께 즐기기 (주변여행지 + 근처 가볼 곳 통합) ─────────────── */}
-      <div className="mb-2">
-        <h2 className="font-headline text-xl font-bold text-[#1B1C1A]">
-          {isKo ? "이 축제와 함께 즐기기 좋은 곳" : "Nearby Attractions"}
-        </h2>
-        <p className="mb-4 text-sm text-[#7B5E57]">
-          {isKo ? "주변 여행지, 숙소, 맛집을 함께 탐색해보세요." : "Explore travel spots, accommodation, and restaurants nearby."}
-        </p>
-      </div>
-
       {hasMap && (
         <Suspense fallback={<NearbyToursSkeleton />}>
           <NearbyToursAsync
