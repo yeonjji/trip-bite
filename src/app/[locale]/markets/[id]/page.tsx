@@ -13,7 +13,7 @@ import ShareButton from "@/components/shared/ShareButton"
 import NaverMap from "@/components/maps/NaverMap"
 import WeatherWidget from "@/components/weather/WeatherWidget"
 import TransitSection from "@/components/transit/TransitSection"
-import NearbyFacilities from "@/app/[locale]/travel/_components/NearbyFacilities"
+import NearbyFacilities from "@/components/nearby/NearbyFacilitiesClient"
 import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
@@ -49,6 +49,18 @@ export default async function MarketDetailPage({ params }: Props) {
   const isKo = locale === "ko"
 
   const addr = rdnAdr ?? lnmAdr ?? [sidoNm, sggNm].filter(Boolean).join(" ")
+
+  // sidoNm → 법정동 area code (날씨 위젯용)
+  const SIDO_TO_AREA: Record<string, string> = {
+    "서울특별시": "11", "부산광역시": "26", "대구광역시": "27",
+    "인천광역시": "28", "광주광역시": "29", "대전광역시": "30",
+    "울산광역시": "31", "세종특별자치시": "36110", "경기도": "41",
+    "강원도": "51", "강원특별자치도": "51", "충청북도": "43",
+    "충청남도": "44", "전라북도": "52", "전북특별자치도": "52",
+    "전라남도": "46", "경상북도": "47", "경상남도": "48",
+    "제주특별자치도": "50",
+  }
+  const weatherAreaCode = areaCd ?? (sidoNm ? SIDO_TO_AREA[sidoNm] ?? null : null)
 
   // 시군구명에서 짧은 지역명 추출 (날씨/블로그 검색용)
   const regionName = sggNm
@@ -216,12 +228,12 @@ export default async function MarketDetailPage({ params }: Props) {
       {hasCoords && (
         <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 items-start">
           <TransitSection lat={lat!} lng={lng!} locale={locale} />
-          {areaCd && (
+          {weatherAreaCode && (
             <div>
               <h2 className="mb-2 font-headline text-xl font-bold text-[#1B1C1A]">
                 {isKo ? "현재 날씨" : "Current Weather"}
               </h2>
-              <WeatherWidget areaCode={areaCd} />
+              <WeatherWidget areaCode={weatherAreaCode} />
             </div>
           )}
         </div>

@@ -4,7 +4,7 @@ import { setRequestLocale } from "next-intl/server"
 
 import MarketCard from "@/components/cards/MarketCard"
 import { buildAlternates } from "@/lib/utils/metadata"
-import { getMarkets, getMarketRegions } from "@/lib/data/markets"
+import { getMarkets, getMarketRegions, getMarketTypes } from "@/lib/data/markets"
 import HeroSearch from "@/components/shared/HeroSearch"
 import ListingPagination from "@/components/shared/ListingPagination"
 
@@ -37,9 +37,10 @@ export default async function MarketsPage({ params, searchParams }: Props) {
   const page = Number(pageStr ?? "1") || 1
   const isKo = locale === "ko"
 
-  const [{ items, totalCount }, regions] = await Promise.all([
+  const [{ items, totalCount }, regions, marketTypes] = await Promise.all([
     getMarkets({ region, mktType, search: q || undefined, page }),
     getMarketRegions(),
+    getMarketTypes(),
   ])
 
   return (
@@ -51,7 +52,7 @@ export default async function MarketsPage({ params, searchParams }: Props) {
           {/* 사이드바 (데스크탑) */}
           <aside className="hidden lg:flex w-64 shrink-0 border-r border-gray-200 bg-[#F9F7F0] flex-col gap-2 px-6 py-8 sticky top-[64px] h-[calc(100vh-64px)] overflow-y-auto">
             <Suspense>
-              <MarketFilters locale={locale} regions={regions} />
+              <MarketFilters locale={locale} regions={regions} marketTypes={marketTypes} />
             </Suspense>
           </aside>
 

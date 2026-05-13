@@ -5,14 +5,13 @@ import { useCallback, useState, useRef, useEffect } from "react"
 import { MapPin, ChevronDown, Store, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-const MARKET_TYPES = ["상설시장", "정기시장", "인정시장", "등록시장", "무등록시장"]
-
 interface Props {
   locale: string
   regions: string[]
+  marketTypes: string[]
 }
 
-export default function MarketFilters({ locale, regions }: Props) {
+export default function MarketFilters({ locale, regions, marketTypes }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const isKo = locale === "ko"
@@ -70,7 +69,7 @@ export default function MarketFilters({ locale, regions }: Props) {
         <Store className={cn("w-4 h-4 shrink-0", !mktType ? "text-amber-700" : "text-slate-400")} />
         {isKo ? "전체" : "All"}
       </button>
-      {MARKET_TYPES.map((type) => {
+      {marketTypes.map((type) => {
         const isActive = mktType === type
         return (
           <button
