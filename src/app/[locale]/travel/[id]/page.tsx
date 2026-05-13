@@ -94,6 +94,8 @@ export default async function TravelDetailPage({ params }: Props) {
 
   const hasCoords = lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
 
+  console.log("[TravelDetail] coords", { id, mapx, mapy, lat, lng, hasCoords })
+
   const provinceFullName = addr1.split(" ")[0] ?? ""
 
   const [nearbyRestaurants, nearbyFacilities, specialties, nearbyTourRecommendations] = await Promise.all([
