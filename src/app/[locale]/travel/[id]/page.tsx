@@ -6,6 +6,7 @@ import { getDestinationDetail } from "@/lib/data/destinations"
 import { getNearbyRestaurants } from "@/lib/data/restaurants"
 import { getSpecialtiesByRegionName } from "@/lib/data/specialties"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
+import { getNearbyShops } from "@/lib/data/nearby-shops"
 import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations"
 import { buildAlternates } from "@/lib/utils/metadata"
 import HorizontalScrollSection from "@/components/shared/HorizontalScrollSection"
@@ -28,6 +29,7 @@ import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSecti
 import TransitSection from "@/components/transit/TransitSection"
 import TravelTipSection from "@/components/travel/TravelTipSection"
 import PetInfoSection from "@/components/travel/PetInfoSection"
+import NearbyShopsSection from "@/components/nearby/NearbyShopsSection"
 
 export const dynamic = "force-dynamic"
 
@@ -98,9 +100,10 @@ export default async function TravelDetailPage({ params }: Props) {
 
   const provinceFullName = addr1.split(" ")[0] ?? ""
 
-  const [nearbyRestaurants, nearbyFacilities, specialties, nearbyTourRecommendations] = await Promise.all([
+  const [nearbyRestaurants, nearbyFacilities, nearbyShops, specialties, nearbyTourRecommendations] = await Promise.all([
     hasCoords ? getNearbyRestaurants(lat!, lng!, id) : Promise.resolve([]),
     hasCoords ? getNearbyFacilities(lat!, lng!) : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
+    hasCoords ? getNearbyShops(lat!, lng!) : Promise.resolve(null),
     provinceFullName ? getSpecialtiesByRegionName(provinceFullName, 5) : Promise.resolve([]),
     hasCoords
       ? getNearbyTourRecommendations({
@@ -484,6 +487,11 @@ export default async function TravelDetailPage({ params }: Props) {
         tabOrder={["festival", "accommodation", "travel"]}
         locale={locale}
       />
+
+      {/* 주변 생활 편의 */}
+      {nearbyShops && (
+        <NearbyShopsSection shops={nearbyShops} pageType="travel" isKo={isKo} />
+      )}
 
       {/* 여행 후기 */}
       <TravelBlogReviewSection placeName={title} regionName={regionName} />

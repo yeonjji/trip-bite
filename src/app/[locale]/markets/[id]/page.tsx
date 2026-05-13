@@ -5,6 +5,7 @@ import { Phone, MapPin, Store, Car, Award } from "lucide-react"
 
 import { getMarketById } from "@/lib/data/markets"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
+import { getNearbyShops } from "@/lib/data/nearby-shops"
 import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations"
 import { buildAlternates } from "@/lib/utils/metadata"
 import { buildNaverMapUrl } from "@/lib/utils/map"
@@ -17,6 +18,7 @@ import NearbyFacilities from "@/app/[locale]/travel/_components/NearbyFacilities
 import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
+import NearbyShopsSection from "@/components/nearby/NearbyShopsSection"
 
 export const dynamic = "force-dynamic"
 
@@ -67,10 +69,11 @@ export default async function MarketDetailPage({ params }: Props) {
     ? sggNm.replace(/(특별자치시|광역시|특별시|시|군|구)$/, "")
     : sidoNm ?? null
 
-  const [nearbyFacilities, nearbyTourRecommendations] = await Promise.all([
+  const [nearbyFacilities, nearbyShops, nearbyTourRecommendations] = await Promise.all([
     hasCoords
       ? getNearbyFacilities(lat!, lng!)
       : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
+    hasCoords ? getNearbyShops(lat!, lng!) : Promise.resolve(null),
     hasCoords
       ? getNearbyTourRecommendations({
           lat: lat!,
@@ -256,6 +259,11 @@ export default async function MarketDetailPage({ params }: Props) {
       />
 
       {/* 여행 후기 */}
+      {/* 주변 생활 편의 */}
+      {nearbyShops && (
+        <NearbyShopsSection shops={nearbyShops} pageType="market" isKo={isKo} />
+      )}
+
       <TravelBlogReviewSection placeName={mktNm} regionName={regionName} />
 
       {/* 이 근처에서 같이 가볼 곳 */}

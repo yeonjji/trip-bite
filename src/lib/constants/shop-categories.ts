@@ -1,17 +1,23 @@
 export type ShopCategoryGroup =
-  | "mart"
-  | "pharmacy"
-  | "cafe"
-  | "restaurant"
-  | "convenience";
+  | "mart"              // G20404 슈퍼마켓
+  | "convenience_store" // G20405 편의점
+  | "pharmacy"          // G21501 약국
+  | "cafe"              // I212 카페·음료
+  | "restaurant"        // I2 음식점
+  | "medical"           // Q1 보건업 (병원·치과·한의원)
+  | "accommodation"     // I1 숙박업 (모텔·호텔·게스트하우스)
+  | "entertainment"     // N1/N2 예술·스포츠·여가 (노래방·PC방·헬스장)
+  | "convenience";      // S2 기타 생활서비스
 
-// 실제 소상공인 API 코드 체계 (B553077)
-// indsLclsCd: I2=음식, G2=소매, Q1=보건의료, S2=수리·개인
-// indsMclsCd: I212=비알코올, G204=종합소매, G215=의약·화장품
-// indsSclsCd: G20404=슈퍼마켓, G20405=편의점, G21501=약국, I21201=카페
-const MART_SCD = new Set(["G20404", "G20405"]); // 슈퍼마켓, 편의점
-const PHARMACY_SCD = new Set(["G21501"]);         // 약국
-const CAFE_MCD = new Set(["I212"]);               // 비알코올(카페·제과 포함)
+// 소상공인 API 코드 체계 (B553077)
+// indsLclsCd: I1=숙박, I2=음식, Q1=보건, N1/N2=여가·스포츠, G2=소매, S2=생활서비스
+// indsMclsCd: I212=비알코올음료, G204=종합소매, G215=의약·화장품
+// indsSclsCd: G20404=슈퍼마켓, G20405=편의점, G21501=약국
+
+const MART_SCD = new Set(["G20404"]);              // 슈퍼마켓
+const CONVENIENCE_STORE_SCD = new Set(["G20405"]); // 편의점
+const PHARMACY_SCD = new Set(["G21501"]);           // 약국
+const CAFE_MCD = new Set(["I212"]);                // 비알코올음료(카페·제과)
 
 export function resolveCategoryGroup(
   indsLclsCd: string,
@@ -19,21 +25,18 @@ export function resolveCategoryGroup(
   indsSclsCd: string,
 ): ShopCategoryGroup | null {
   if (MART_SCD.has(indsSclsCd)) return "mart";
+  if (CONVENIENCE_STORE_SCD.has(indsSclsCd)) return "convenience_store";
   if (PHARMACY_SCD.has(indsSclsCd)) return "pharmacy";
   if (CAFE_MCD.has(indsMclsCd)) return "cafe";
+  if (indsLclsCd === "I1") return "accommodation";
   if (indsLclsCd === "I2") return "restaurant";
+  if (indsLclsCd === "Q1") return "medical";
+  if (indsLclsCd === "N1" || indsLclsCd === "N2") return "entertainment";
   if (indsLclsCd === "S2") return "convenience";
   return null;
 }
 
-export const SHOP_CATEGORY_LABELS: Record<ShopCategoryGroup, { ko: string; en: string }> = {
-  mart:        { ko: "마트·편의점", en: "Mart" },
-  pharmacy:    { ko: "약국",        en: "Pharmacy" },
-  cafe:        { ko: "카페",        en: "Cafe" },
-  restaurant:  { ko: "음식점",      en: "Restaurant" },
-  convenience: { ko: "생활편의",    en: "Services" },
-};
-
-export const SHOP_CATEGORY_GROUPS: ShopCategoryGroup[] = [
-  "mart", "pharmacy", "cafe", "restaurant", "convenience",
+export const ALL_SHOP_CATEGORIES: ShopCategoryGroup[] = [
+  "mart", "convenience_store", "pharmacy", "cafe", "restaurant",
+  "medical", "accommodation", "entertainment", "convenience",
 ];

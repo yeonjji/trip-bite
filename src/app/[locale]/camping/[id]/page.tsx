@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator"
 import { getCampingSiteDetail } from "@/lib/data/camping"
 import { getSpecialtiesByRegionName } from "@/lib/data/specialties"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
+import { getNearbyShops } from "@/lib/data/nearby-shops"
 import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations"
 import { buildNaverMapUrl } from "@/lib/utils/map"
 import WeatherWidget from "@/components/weather/WeatherWidget"
@@ -26,6 +27,7 @@ import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSection"
 import TransitSection from "@/components/transit/TransitSection"
+import NearbyShopsSection from "@/components/nearby/NearbyShopsSection"
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>
@@ -140,11 +142,14 @@ export default async function CampingDetailPage({ params }: PageProps) {
   const lng = detail?.mapX ? Number(detail.mapX) : site?.mapx ?? null
   const hasMap = lat !== null && lng !== null
 
-  const [nearbyFacilities, nearbyTourRecommendations, specialties] = await Promise.all([
-    hasMap && !isNaN(lat!) && !isNaN(lng!)
+  const hasValidCoords = hasMap && !isNaN(lat!) && !isNaN(lng!)
+
+  const [nearbyFacilities, nearbyShops, nearbyTourRecommendations, specialties] = await Promise.all([
+    hasValidCoords
       ? getNearbyFacilities(lat!, lng!)
       : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
-    hasMap && !isNaN(lat!) && !isNaN(lng!)
+    hasValidCoords ? getNearbyShops(lat!, lng!) : Promise.resolve(null),
+    hasValidCoords
       ? getNearbyTourRecommendations({
           lat: lat!,
           lng: lng!,
@@ -598,6 +603,14 @@ export default async function CampingDetailPage({ params }: PageProps) {
         tabOrder={["travel", "festival", "accommodation"]}
         locale={locale}
       />
+
+      {/* 주변 생활 편의 */}
+      {nearbyShops && (
+        <>
+          <Separator className="my-6" />
+          <NearbyShopsSection shops={nearbyShops} pageType="camping" isKo={isKo} />
+        </>
+      )}
 
       {/* 여행 후기 */}
       <Separator className="my-6" />

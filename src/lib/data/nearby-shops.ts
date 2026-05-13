@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { fetchShopsInRadius } from "@/lib/api/sdsc2-api";
 import {
   resolveCategoryGroup,
+  ALL_SHOP_CATEGORIES,
   type ShopCategoryGroup,
 } from "@/lib/constants/shop-categories";
 
@@ -20,19 +21,17 @@ export interface NearbyShop {
   distanceM: number;
 }
 
-export interface NearbyShopsResult {
-  mart: NearbyShop[];
-  pharmacy: NearbyShop[];
-  cafe: NearbyShop[];
-  restaurant: NearbyShop[];
-  convenience: NearbyShop[];
-}
+export type NearbyShopsResult = Record<ShopCategoryGroup, NearbyShop[]>;
 
 const CACHE_TTL_DAYS = 30;
 
-const EMPTY_RESULT: NearbyShopsResult = {
-  mart: [], pharmacy: [], cafe: [], restaurant: [], convenience: [],
-};
+function emptyResult(): NearbyShopsResult {
+  const result = {} as NearbyShopsResult;
+  for (const cat of ALL_SHOP_CATEGORIES) {
+    result[cat] = [];
+  }
+  return result;
+}
 
 function deduplicateBrands(shops: NearbyShop[]): NearbyShop[] {
   const countMap = new Map<string, number>();
@@ -143,16 +142,12 @@ export async function getNearbyShops(
       await fetchAndCache(supabase, lat, lng);
     } catch (err) {
       console.error("[NearbyShops] API fetch 실패:", err);
-      return { ...EMPTY_RESULT };
+      return emptyResult();
     }
   }
 
-  const categories: ShopCategoryGroup[] = [
-    "mart", "pharmacy", "cafe", "restaurant", "convenience",
-  ];
-
   const rpcResults = await Promise.allSettled(
-    categories.map((cat) =>
+    ALL_SHOP_CATEGORIES.map((cat) =>
       supabase.rpc("get_nearby_shops", {
         p_lat:         lat,
         p_lng:         lng,
@@ -163,10 +158,10 @@ export async function getNearbyShops(
     ),
   );
 
-  const result: NearbyShopsResult = { ...EMPTY_RESULT };
+  const result = emptyResult();
 
-  for (let i = 0; i < categories.length; i++) {
-    const cat = categories[i];
+  for (let i = 0; i < ALL_SHOP_CATEGORIES.length; i++) {
+    const cat = ALL_SHOP_CATEGORIES[i];
     const rpc = rpcResults[i];
     if (rpc.status !== "fulfilled" || rpc.value.error) continue;
 
