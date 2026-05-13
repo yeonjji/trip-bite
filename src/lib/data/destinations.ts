@@ -208,8 +208,8 @@ export const getDestinationDetail = cache(async function getDestinationDetail(co
       tel: destination.tel,
       addr1: destination.addr1,
       addr2: destination.addr2,
-      mapx: destination.mapx !== undefined ? String(destination.mapx) : undefined,
-      mapy: destination.mapy !== undefined ? String(destination.mapy) : undefined,
+      mapx: destination.mapx != null ? String(destination.mapx) : undefined,
+      mapy: destination.mapy != null ? String(destination.mapy) : undefined,
       firstimage: destination.first_image,
       firstimage2: destination.first_image2,
     };

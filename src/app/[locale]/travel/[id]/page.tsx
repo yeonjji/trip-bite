@@ -86,15 +86,13 @@ export default async function TravelDetailPage({ params }: Props) {
   const addr2 = detail?.addr2 ?? destination?.addr2 ?? fallback?.addr2
   const tel = detail?.tel ?? destination?.tel ?? fallback?.tel
   const overview = detail?.overview ?? destination?.overview ?? fallback?.overview
-  const mapx = detail?.mapx ?? (destination?.mapx !== undefined ? String(destination.mapx) : undefined) ?? (fallback?.mapx !== undefined ? String(fallback.mapx) : undefined)
-  const mapy = detail?.mapy ?? (destination?.mapy !== undefined ? String(destination.mapy) : undefined) ?? (fallback?.mapy !== undefined ? String(fallback.mapy) : undefined)
+  const mapx = detail?.mapx ?? (destination?.mapx != null ? String(destination.mapx) : undefined) ?? (fallback?.mapx != null ? String(fallback.mapx) : undefined)
+  const mapy = detail?.mapy ?? (destination?.mapy != null ? String(destination.mapy) : undefined) ?? (fallback?.mapy != null ? String(fallback.mapy) : undefined)
 
   const lat = mapy ? parseFloat(mapy) : null
   const lng = mapx ? parseFloat(mapx) : null
 
   const hasCoords = lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
-
-  console.log("[TravelDetail] coords", { id, mapx, mapy, lat, lng, hasCoords })
 
   const provinceFullName = addr1.split(" ")[0] ?? ""
 
