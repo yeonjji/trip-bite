@@ -72,7 +72,7 @@ export default async function MarketDetailPage({ params }: Props) {
   const [nearbyFacilities, nearbyShops, nearbyTourRecommendations] = await Promise.all([
     hasCoords
       ? getNearbyFacilities(lat!, lng!)
-      : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
+      : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [], errors: undefined }),
     hasCoords ? getNearbyShops(lat!, lng!) : Promise.resolve(null),
     hasCoords
       ? getNearbyTourRecommendations({
@@ -249,6 +249,9 @@ export default async function MarketDetailPage({ params }: Props) {
         wifi={nearbyFacilities.wifi}
         parking={nearbyFacilities.parking}
         evStations={nearbyFacilities.evStations}
+        lat={lat}
+        lng={lng}
+        errors={nearbyFacilities.errors}
       />
 
       {/* 주변 추천 정보 */}

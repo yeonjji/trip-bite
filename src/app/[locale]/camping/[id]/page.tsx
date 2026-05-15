@@ -147,7 +147,7 @@ export default async function CampingDetailPage({ params }: PageProps) {
   const [nearbyFacilities, nearbyShops, nearbyTourRecommendations, specialties] = await Promise.all([
     hasValidCoords
       ? getNearbyFacilities(lat!, lng!)
-      : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
+      : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [], errors: undefined }),
     hasValidCoords ? getNearbyShops(lat!, lng!) : Promise.resolve(null),
     hasValidCoords
       ? getNearbyTourRecommendations({
@@ -594,6 +594,9 @@ export default async function CampingDetailPage({ params }: PageProps) {
         wifi={nearbyFacilities.wifi}
         parking={nearbyFacilities.parking}
         evStations={nearbyFacilities.evStations}
+        lat={lat}
+        lng={lng}
+        errors={nearbyFacilities.errors}
       />
 
       {/* 주변 추천 정보 */}

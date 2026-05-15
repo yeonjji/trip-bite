@@ -93,7 +93,7 @@ export default async function RestaurantDetailPage({ params }: Props) {
         }),
       ])
     : [
-        { toilets: [], wifi: [], parking: [], evStations: [] },
+        { toilets: [], wifi: [], parking: [], evStations: [], errors: undefined },
         null,
         { travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] },
       ]
@@ -223,6 +223,9 @@ export default async function RestaurantDetailPage({ params }: Props) {
         wifi={nearbyFacilities.wifi}
         parking={nearbyFacilities.parking}
         evStations={nearbyFacilities.evStations}
+        lat={lat}
+        lng={lng}
+        errors={nearbyFacilities.errors}
       />
 
       {/* 주변 추천 정보 */}

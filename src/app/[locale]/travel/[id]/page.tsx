@@ -2,10 +2,13 @@ import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 
+export const dynamic = "force-dynamic"
+
 import { getDestinationDetail } from "@/lib/data/destinations"
 import { getNearbyRestaurants } from "@/lib/data/restaurants"
 import { getSpecialtiesByRegionName } from "@/lib/data/specialties"
 import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
+import { getNearbyShops } from "@/lib/data/nearby-shops"
 import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations"
 import { buildAlternates } from "@/lib/utils/metadata"
 import HorizontalScrollSection from "@/components/shared/HorizontalScrollSection"
@@ -28,6 +31,7 @@ import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSecti
 import TransitSection from "@/components/transit/TransitSection"
 import TravelTipSection from "@/components/travel/TravelTipSection"
 import PetInfoSection from "@/components/travel/PetInfoSection"
+import NearbyShopsTravelSection from "@/components/nearby/NearbyShopsTravelSection"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -96,9 +100,9 @@ export default async function TravelDetailPage({ params }: Props) {
 
   const provinceFullName = addr1.split(" ")[0] ?? ""
 
-  const [nearbyRestaurants, nearbyFacilities, specialties, nearbyTourRecommendations] = await Promise.all([
+  const [nearbyRestaurants, nearbyFacilities, specialties, nearbyTourRecommendations, nearbyShops] = await Promise.all([
     hasCoords ? getNearbyRestaurants(lat!, lng!, id) : Promise.resolve([]),
-    hasCoords ? getNearbyFacilities(lat!, lng!) : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
+    hasCoords ? getNearbyFacilities(lat!, lng!) : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [], errors: undefined }),
     provinceFullName ? getSpecialtiesByRegionName(provinceFullName, 5) : Promise.resolve([]),
     hasCoords
       ? getNearbyTourRecommendations({
@@ -108,6 +112,7 @@ export default async function TravelDetailPage({ params }: Props) {
           types: ["festival", "accommodation", "travel"],
         })
       : Promise.resolve({ travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }),
+    hasCoords ? getNearbyShops(lat!, lng!) : Promise.resolve(null),
   ])
 
   const galleryImages = images.map((img) => ({
@@ -474,7 +479,15 @@ export default async function TravelDetailPage({ params }: Props) {
         wifi={nearbyFacilities.wifi}
         parking={nearbyFacilities.parking}
         evStations={nearbyFacilities.evStations}
+        lat={lat}
+        lng={lng}
+        errors={nearbyFacilities.errors}
       />
+
+      {/* 주변 생활 편의 */}
+      {nearbyShops && (
+        <NearbyShopsTravelSection shops={nearbyShops} isKo={isKo} />
+      )}
 
       {/* 주변 추천 정보 */}
       <NearbyTourRecommendationsSection

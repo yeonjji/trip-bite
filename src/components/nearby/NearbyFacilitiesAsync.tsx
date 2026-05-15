@@ -16,6 +16,9 @@ export default async function NearbyFacilitiesAsync({ lat, lng, locale }: Props)
       wifi={data.wifi}
       parking={data.parking}
       evStations={data.evStations}
+      lat={lat}
+      lng={lng}
+      errors={data.errors}
     />
   )
 }

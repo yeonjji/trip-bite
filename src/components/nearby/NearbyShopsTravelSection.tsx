@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import {
   ShoppingCart, Pill, Cross, Building2, Fuel,
   MapPin, Navigation, ChevronDown, ChevronUp,
@@ -203,6 +203,21 @@ export default function NearbyShopsTravelSection({ shops, isKo }: Props) {
   });
 
   const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (totalCount === 0) {
+      console.log("[주변 편의시설] 정보가 없습니다 (마트/편의점:0 / 약국:0 / 병원:0 / 은행:0 / 주유소:0)");
+    } else {
+      const mart = (shops.mart?.length ?? 0) + (shops.convenience_store?.length ?? 0);
+      const pharmacy = shops.pharmacy?.length ?? 0;
+      const medical = shops.medical?.length ?? 0;
+      const bank = shops.bank?.length ?? 0;
+      const gas = shops.gas_station?.length ?? 0;
+      console.log(
+        `[주변 편의시설] 정보가 있습니다 — 마트/편의점:${mart} / 약국:${pharmacy} / 병원:${medical} / 은행:${bank} / 주유소:${gas}`
+      );
+    }
+  }, [totalCount, shops]);
 
   if (totalCount === 0) return null;
 
