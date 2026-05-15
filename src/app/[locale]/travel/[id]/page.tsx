@@ -29,7 +29,7 @@ import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSecti
 import TransitSection from "@/components/transit/TransitSection"
 import TravelTipSection from "@/components/travel/TravelTipSection"
 import PetInfoSection from "@/components/travel/PetInfoSection"
-import NearbyShopsSection from "@/components/nearby/NearbyShopsSection"
+import NearbyShopsTravelSection from "@/components/nearby/NearbyShopsTravelSection"
 
 export const dynamic = "force-dynamic"
 
@@ -490,7 +490,7 @@ export default async function TravelDetailPage({ params }: Props) {
 
       {/* 주변 생활 편의 */}
       {nearbyShops && (
-        <NearbyShopsSection shops={nearbyShops} pageType="travel" isKo={isKo} />
+        <NearbyShopsTravelSection shops={nearbyShops} isKo={isKo} />
       )}
 
       {/* 여행 후기 */}
