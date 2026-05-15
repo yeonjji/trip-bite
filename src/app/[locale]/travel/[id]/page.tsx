@@ -2,6 +2,8 @@ import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 
+export const dynamic = "force-dynamic"
+
 import { getDestinationDetail } from "@/lib/data/destinations"
 import { getNearbyRestaurants } from "@/lib/data/restaurants"
 import { getSpecialtiesByRegionName } from "@/lib/data/specialties"
