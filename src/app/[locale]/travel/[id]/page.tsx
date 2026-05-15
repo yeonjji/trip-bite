@@ -4,15 +4,9 @@ import type { Metadata } from "next"
 
 export const revalidate = 3600
 
+import { Suspense } from "react"
 import { getDestinationDetail } from "@/lib/data/destinations"
-import { getNearbyRestaurantsCached } from "@/lib/data/restaurants"
-import { getSpecialtiesByRegionNameCached } from "@/lib/data/specialties"
-import { getNearbyFacilitiesCached } from "@/lib/data/nearby-facilities"
-import { getNearbyShopsCached } from "@/lib/data/nearby-shops"
-import { getNearbyTourRecommendationsCached } from "@/lib/data/nearby-tour-recommendations"
 import { buildAlternates } from "@/lib/utils/metadata"
-import HorizontalScrollSection from "@/components/shared/HorizontalScrollSection"
-import { getAreaName } from "@/lib/constants/area-codes"
 import { getAccessibilityInfo } from "@/lib/data/accessibility"
 import Rating from "@/components/shared/Rating"
 import ImageGallery from "@/components/shared/ImageGallery"
@@ -21,17 +15,23 @@ import ReviewSection from "@/components/reviews/ReviewSection"
 import AccessibilityBadge from "@/components/shared/AccessibilityBadge"
 import WeatherWidget from "@/components/weather/WeatherWidget"
 import NaverMap from "@/components/maps/NaverMap"
-import NearbyFacilities from "../_components/NearbyFacilities"
 import { buildNaverMapUrl } from "@/lib/utils/map"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
-import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
-import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSection"
 import TransitSection from "@/components/transit/TransitSection"
 import TravelTipSection from "@/components/travel/TravelTipSection"
 import PetInfoSection from "@/components/travel/PetInfoSection"
-import NearbyShopsTravelSection from "@/components/nearby/NearbyShopsTravelSection"
+import NearbyFacilitiesSection from "@/components/nearby/NearbyFacilitiesSection"
+import NearbyFacilitiesSkeleton from "@/components/nearby/NearbyFacilitiesSkeleton"
+import NearbyShopsSection from "@/components/nearby/NearbyShopsSection"
+import NearbyShopsSkeleton from "@/components/nearby/NearbyShopsSkeleton"
+import NearbyTourSection from "@/components/nearby/NearbyTourSection"
+import NearbyTourSkeleton from "@/components/nearby/NearbyTourSkeleton"
+import NearbyRestaurantsSection from "@/components/nearby/NearbyRestaurantsSection"
+import NearbyRestaurantsSkeleton from "@/components/nearby/NearbyRestaurantsSkeleton"
+import SpecialtiesSection from "@/components/travel/SpecialtiesSection"
+import SpecialtiesSkeleton from "@/components/travel/SpecialtiesSkeleton"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -99,16 +99,6 @@ export default async function TravelDetailPage({ params }: Props) {
   const hasCoords = lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
 
   const provinceFullName = addr1.split(" ")[0] ?? ""
-
-  const [nearbyRestaurants, nearbyFacilities, specialties, nearbyTourRecommendations, nearbyShops] = await Promise.all([
-    hasCoords ? getNearbyRestaurantsCached(lat!, lng!, id) : Promise.resolve([]),
-    hasCoords ? getNearbyFacilitiesCached(lat!, lng!) : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
-    provinceFullName ? getSpecialtiesByRegionNameCached(provinceFullName, 5) : Promise.resolve([]),
-    hasCoords
-      ? getNearbyTourRecommendationsCached(lat!, lng!, id, ["festival", "accommodation", "travel"])
-      : Promise.resolve({ travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }),
-    hasCoords ? getNearbyShopsCached(lat!, lng!) : Promise.resolve(null),
-  ])
 
   const galleryImages = images.map((img) => ({
     url: img.originimgurl,
@@ -468,52 +458,62 @@ export default async function TravelDetailPage({ params }: Props) {
       <TravelTipSection signguCode={destination?.sigungu_code} />
 
       {/* 주변 편의시설 */}
-      <NearbyFacilities
-        locale={locale}
-        toilets={nearbyFacilities.toilets}
-        wifi={nearbyFacilities.wifi}
-        parking={nearbyFacilities.parking}
-        evStations={nearbyFacilities.evStations}
-        lat={lat}
-        lng={lng}
-      />
+      {hasCoords && (
+        <Suspense fallback={<NearbyFacilitiesSkeleton />}>
+          <NearbyFacilitiesSection lat={lat!} lng={lng!} locale={locale} />
+        </Suspense>
+      )}
 
       {/* 주변 생활 편의 */}
-      {nearbyShops && (
-        <NearbyShopsTravelSection shops={nearbyShops} isKo={isKo} />
+      {hasCoords && (
+        <Suspense fallback={<NearbyShopsSkeleton />}>
+          <NearbyShopsSection lat={lat!} lng={lng!} isKo={isKo} />
+        </Suspense>
       )}
 
       {/* 주변 추천 정보 */}
-      <NearbyTourRecommendationsSection
-        recommendations={nearbyTourRecommendations}
-        tabOrder={["festival", "accommodation", "travel"]}
-        locale={locale}
-      />
+      {hasCoords && (
+        <Suspense fallback={<NearbyTourSkeleton />}>
+          <NearbyTourSection
+            lat={lat!}
+            lng={lng!}
+            excludeContentId={id}
+            tabOrder={["festival", "accommodation", "travel"]}
+            locale={locale}
+          />
+        </Suspense>
+      )}
 
       {/* 여행 후기 */}
       <TravelBlogReviewSection placeName={title} regionName={regionName} />
 
       {/* 지역 레시피 추천 */}
-      <RecipeRecommendationSection regionName={regionName} context="travel" locale={locale} />
+      <Suspense fallback={null}>
+        <RecipeRecommendationSection regionName={regionName} context="travel" locale={locale} />
+      </Suspense>
 
       {/* 이 지역 특산품 */}
-      <TravelSpecialtiesSection specialties={specialties} regionName={regionName} />
+      {provinceFullName && (
+        <Suspense fallback={<SpecialtiesSkeleton />}>
+          <SpecialtiesSection
+            regionFullName={provinceFullName}
+            regionName={regionName}
+            limit={5}
+          />
+        </Suspense>
+      )}
 
       {/* 근처 맛집 */}
-      {nearbyRestaurants.length > 0 && (
-        <HorizontalScrollSection
-          title={isKo ? "근처 맛집" : "Nearby Restaurants"}
-          moreHref={`/${locale}/restaurants`}
-          moreLabel={isKo ? "맛집 전체" : "All Restaurants"}
-          items={nearbyRestaurants.map((r) => ({
-            href: `/${locale}/restaurants/${r.content_id}`,
-            imageUrl: r.first_image,
-            imagePlaceholder: "🍽",
-            tag: getAreaName(r.area_code ?? ""),
-            title: r.title,
-            sub: r.addr1,
-          }))}
-        />
+      {hasCoords && (
+        <Suspense fallback={<NearbyRestaurantsSkeleton />}>
+          <NearbyRestaurantsSection
+            lat={lat!}
+            lng={lng!}
+            excludeContentId={id}
+            locale={locale}
+            isKo={isKo}
+          />
+        </Suspense>
       )}
 
       {/* 이 근처에서 같이 가볼 곳 */}
