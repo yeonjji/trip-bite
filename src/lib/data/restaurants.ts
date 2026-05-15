@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createAnonClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
-import { tourApi } from "@/lib/api/tour-api";
+import { getDestinationIntro, getDestinationImagesFromDb } from "./destinations";
 import type { Destination } from "@/types/database";
 import type { TourDetailCommon, RestaurantDetail, TourImage } from "@/types/tour-api";
 import { roundCoord } from "@/lib/utils/cache-key";
@@ -85,8 +85,8 @@ export async function getRestaurantDetail(contentId: string): Promise<{
     throw new Error(`맛집 상세 조회 실패: ${error.message}`);
   }
 
-  // destinations 행(content_type_id='39')이 source of truth. detailCommon 호출 불필요.
-  // detailIntro/detailImage는 DB 컬럼이 아직 없어 외부 호출 유지 (TODO: Step 2 plan).
+  // destinations 행(content_type_id='39')이 source of truth. detail은 row에서 직접 구성,
+  // intro/image는 destinations.intro_data / image_data jsonb 컬럼 (DB-first, Step 2 plan).
   const dest = (destination as Destination) ?? null;
   const detail: TourDetailCommon | null = dest
     ? {
@@ -107,28 +107,25 @@ export async function getRestaurantDetail(contentId: string): Promise<{
       }
     : null;
 
-  const [introRes, imagesRes] = await Promise.allSettled([
-    tourApi.detailIntro(contentId, "39"),
-    tourApi.detailImage(contentId),
+  // DB-first 패턴 (Step 2 plan): intro/images 모두 destinations 테이블 jsonb 컬럼에서 읽음.
+  // 백필 안 된 row는 함수 내부에서 외부 호출 + upsert.
+  const [introData, imageData] = await Promise.all([
+    getDestinationIntro(contentId, "39"),
+    getDestinationImagesFromDb(contentId),
   ]);
 
+  // RestaurantDetail은 TourSpotDetail과 다른 음식점 전용 스키마. jsonb는 광범위
+  // 타입이라 캐스팅으로 좁힌다. 빈 객체는 데이터 없음으로 처리.
   const intro =
-    introRes.status === "fulfilled"
-      ? (introRes.value.response.body.items !== ""
-          ? (introRes.value.response.body.items.item[0] as RestaurantDetail)
-          : null) ?? null
+    introData && Object.keys(introData).length > 0
+      ? (introData as unknown as RestaurantDetail)
       : null;
-
-  const images =
-    imagesRes.status === "fulfilled" && imagesRes.value.response.body.items !== ""
-      ? imagesRes.value.response.body.items.item
-      : [];
 
   return {
     destination: dest,
     detail,
     intro,
-    images,
+    images: imageData,
   };
 }
 
