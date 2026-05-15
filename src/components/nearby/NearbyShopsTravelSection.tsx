@@ -87,7 +87,7 @@ const TRAVEL_CATEGORIES: TravelCategory[] = [
   },
 ];
 
-const DEFAULT_VISIBLE = 6;
+const DEFAULT_VISIBLE = 3;
 
 // ─── 유틸 ────────────────────────────────────────────────────────────────────
 
