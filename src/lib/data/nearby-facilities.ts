@@ -83,7 +83,7 @@ export interface NearbyFacilitiesResult {
 export async function getNearbyFacilities(
   lat: number,
   lng: number,
-  radiusMeters = 10000,
+  radiusMeters = 2000,
   limit = 5
 ): Promise<NearbyFacilitiesResult> {
   const supabase = getAnonClient();
@@ -146,7 +146,7 @@ export const getNearbyFacilitiesCached = unstable_cache(
   async (
     lat: number,
     lng: number,
-    radiusMeters = 10000,
+    radiusMeters = 2000,
     limit = 5,
   ): Promise<NearbyFacilitiesResult> => {
     const supabase = getAnonClient();

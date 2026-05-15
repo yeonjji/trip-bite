@@ -71,7 +71,7 @@ export default function NearbyFacilities({
 
   useEffect(() => {
     const coordInfo = (lat != null && lng != null)
-      ? `좌표: lat=${lat}, lng=${lng} (10km 반경 조회)`
+      ? `좌표: lat=${lat}, lng=${lng} (2km 반경 조회)`
       : "좌표 없음 → DB 조회 자체를 하지 않음";
 
     if (errors && Object.keys(errors).length > 0) {
@@ -96,7 +96,7 @@ export default function NearbyFacilities({
           {isKo ? "주변 시설" : "Nearby Facilities"}
         </h2>
         <span className="text-xs text-muted-foreground">
-          {isKo ? "10km 이내" : "within 10km"}
+          {isKo ? "2km 이내" : "within 2km"}
         </span>
       </div>
 
