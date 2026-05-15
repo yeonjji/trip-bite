@@ -77,6 +77,7 @@ export interface NearbyFacilitiesResult {
   wifi: NearbyWifi[];
   parking: NearbyParking[];
   evStations: NearbyEvStation[];
+  errors?: { toilets?: string; wifi?: string; parking?: string; ev?: string };
 }
 
 export async function getNearbyFacilities(
@@ -110,14 +111,19 @@ export async function getNearbyFacilities(
     }),
   ]);
 
-  if (toiletsResult.status === "rejected") console.error("[NearbyFacilities] toilets:", toiletsResult.reason);
-  else if (toiletsResult.value.error) console.error("[NearbyFacilities] toilets:", toiletsResult.value.error);
-  if (wifiResult.status === "rejected") console.error("[NearbyFacilities] wifi:", wifiResult.reason);
-  else if (wifiResult.value.error) console.error("[NearbyFacilities] wifi:", wifiResult.value.error);
-  if (parkingResult.status === "rejected") console.error("[NearbyFacilities] parking:", parkingResult.reason);
-  else if (parkingResult.value.error) console.error("[NearbyFacilities] parking:", parkingResult.value.error);
-  if (evResult.status === "rejected") console.error("[NearbyFacilities] ev:", evResult.reason);
-  else if (evResult.value.error) console.error("[NearbyFacilities] ev:", evResult.value.error);
+  const errors: NearbyFacilitiesResult["errors"] = {};
+
+  if (toiletsResult.status === "rejected") errors.toilets = String(toiletsResult.reason);
+  else if (toiletsResult.value.error) errors.toilets = toiletsResult.value.error.message;
+
+  if (wifiResult.status === "rejected") errors.wifi = String(wifiResult.reason);
+  else if (wifiResult.value.error) errors.wifi = wifiResult.value.error.message;
+
+  if (parkingResult.status === "rejected") errors.parking = String(parkingResult.reason);
+  else if (parkingResult.value.error) errors.parking = parkingResult.value.error.message;
+
+  if (evResult.status === "rejected") errors.ev = String(evResult.reason);
+  else if (evResult.value.error) errors.ev = evResult.value.error.message;
 
   return {
     toilets: toiletsResult.status === "fulfilled" && !toiletsResult.value.error
@@ -132,6 +138,7 @@ export async function getNearbyFacilities(
     evStations: evResult.status === "fulfilled" && !evResult.value.error
       ? (evResult.value.data as NearbyEvStation[]) ?? []
       : [],
+    errors: Object.keys(errors).length > 0 ? errors : undefined,
   };
 }
 

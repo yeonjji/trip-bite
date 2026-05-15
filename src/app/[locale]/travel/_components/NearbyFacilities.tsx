@@ -23,6 +23,7 @@ interface Props {
   evStations: NearbyEvStation[];
   lat?: number | null;
   lng?: number | null;
+  errors?: { toilets?: string; wifi?: string; parking?: string; ev?: string };
 }
 
 function formatHhmm(hhmm: string | null): string {
@@ -31,7 +32,7 @@ function formatHhmm(hhmm: string | null): string {
 }
 
 export default function NearbyFacilities({
-  locale, toilets, wifi, parking, evStations, lat, lng,
+  locale, toilets, wifi, parking, evStations, lat, lng, errors,
 }: Props) {
   const isKo = locale === "ko";
 
@@ -73,6 +74,10 @@ export default function NearbyFacilities({
       ? `좌표: lat=${lat}, lng=${lng} (10km 반경 조회)`
       : "좌표 없음 → DB 조회 자체를 하지 않음";
 
+    if (errors && Object.keys(errors).length > 0) {
+      console.error(`[주변 시설] RPC 오류 발생 | ${coordInfo}`, errors);
+    }
+
     if (totalCount === 0) {
       console.log(`[주변 시설] 정보가 없습니다 (화장실:0 / 와이파이:0 / 주차장:0 / 전기차충전:0) | ${coordInfo}`);
     } else {
@@ -80,7 +85,7 @@ export default function NearbyFacilities({
         `[주변 시설] 정보가 있습니다 — 화장실:${toilets.length} / 와이파이:${wifi.length} / 주차장:${parking.length} / 전기차충전:${evStations.length} | ${coordInfo}`
       );
     }
-  }, [totalCount, toilets.length, wifi.length, parking.length, evStations.length, lat, lng]);
+  }, [totalCount, toilets.length, wifi.length, parking.length, evStations.length, lat, lng, errors]);
 
   if (totalCount === 0) return null;
 

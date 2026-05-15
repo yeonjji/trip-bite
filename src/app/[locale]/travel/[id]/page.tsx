@@ -479,6 +479,7 @@ export default async function TravelDetailPage({ params }: Props) {
         evStations={nearbyFacilities.evStations}
         lat={lat}
         lng={lng}
+        errors={nearbyFacilities.errors}
       />
 
       {/* 주변 생활 편의 */}

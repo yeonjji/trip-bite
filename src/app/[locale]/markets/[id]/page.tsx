@@ -251,6 +251,7 @@ export default async function MarketDetailPage({ params }: Props) {
         evStations={nearbyFacilities.evStations}
         lat={lat}
         lng={lng}
+        errors={nearbyFacilities.errors}
       />
 
       {/* 주변 추천 정보 */}
