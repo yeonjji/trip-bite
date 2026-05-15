@@ -7,7 +7,7 @@ import {
   ALL_SHOP_CATEGORIES,
   type ShopCategoryGroup,
 } from "@/lib/constants/shop-categories";
-import { roundCoord, coordKey } from "@/lib/utils/cache-key";
+import { roundCoord } from "@/lib/utils/cache-key";
 
 export interface NearbyShop {
   id: number;
@@ -187,6 +187,46 @@ export async function getNearbyShops(
   return result;
 }
 
+// 내부 캐시 함수: 라운딩된 좌표를 받아 unstable_cache의 인자 기반 키에 의존.
+const _nearbyShopsCachedInner = unstable_cache(
+  async (
+    rLat: number,
+    rLng: number,
+    radiusMeters: number,
+    limitPerCategory: number,
+  ): Promise<NearbyShopsResult> => {
+    const supabase = getAnonClient();
+    const rpcResults = await Promise.allSettled(
+      ALL_SHOP_CATEGORIES.map((cat) =>
+        supabase.rpc("get_nearby_shops", {
+          p_lat:         rLat,
+          p_lng:         rLng,
+          radius_meters: radiusMeters,
+          result_limit:  limitPerCategory * 3,
+          p_category:    cat,
+        }),
+      ),
+    );
+
+    const result = emptyResult();
+    for (let i = 0; i < ALL_SHOP_CATEGORIES.length; i++) {
+      const cat = ALL_SHOP_CATEGORIES[i];
+      const rpc = rpcResults[i];
+      if (rpc.status !== "fulfilled" || rpc.value.error) {
+        if (rpc.status === "fulfilled" && rpc.value.error) {
+          console.error(`[getNearbyShopsCached] RPC error for ${cat}:`, rpc.value.error.message);
+        }
+        continue;
+      }
+      const rows = (rpc.value.data ?? []) as Record<string, unknown>[];
+      result[cat] = deduplicateBrands(rows.map(mapRpcRow)).slice(0, limitPerCategory);
+    }
+    return result;
+  },
+  ["nearby-shops"],
+  { revalidate: 3600, tags: ["nearby-shops"] },
+);
+
 // 캐시된 버전 — 상세 페이지 Suspense 내부 전용.
 // upsert 경로를 의도적으로 생략하고 RPC만 호출. cold cache에서는 빈 결과 가능.
 // 일반 getNearbyShops가 운영 중에 DB를 채우면 1시간 단위로 자연스럽게 정상화됨.
@@ -195,35 +235,11 @@ export function getNearbyShopsCached(
   lng: number,
   radiusMeters = 1000,
   limitPerCategory = 5,
-) {
-  const rLat = roundCoord(lat);
-  const rLng = roundCoord(lng);
-  return unstable_cache(
-    async (): Promise<NearbyShopsResult> => {
-      const supabase = getAnonClient();
-      const rpcResults = await Promise.allSettled(
-        ALL_SHOP_CATEGORIES.map((cat) =>
-          supabase.rpc("get_nearby_shops", {
-            p_lat:         rLat,
-            p_lng:         rLng,
-            radius_meters: radiusMeters,
-            result_limit:  limitPerCategory * 3,
-            p_category:    cat,
-          }),
-        ),
-      );
-
-      const result = emptyResult();
-      for (let i = 0; i < ALL_SHOP_CATEGORIES.length; i++) {
-        const cat = ALL_SHOP_CATEGORIES[i];
-        const rpc = rpcResults[i];
-        if (rpc.status !== "fulfilled" || rpc.value.error) continue;
-        const rows = (rpc.value.data ?? []) as Record<string, unknown>[];
-        result[cat] = deduplicateBrands(rows.map(mapRpcRow)).slice(0, limitPerCategory);
-      }
-      return result;
-    },
-    ["nearby-shops", coordKey(rLat, rLng), String(radiusMeters), String(limitPerCategory)],
-    { revalidate: 3600, tags: ["nearby-shops"] },
-  )();
+): Promise<NearbyShopsResult> {
+  return _nearbyShopsCachedInner(
+    roundCoord(lat),
+    roundCoord(lng),
+    radiusMeters,
+    limitPerCategory,
+  );
 }
