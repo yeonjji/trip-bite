@@ -195,8 +195,8 @@ export async function getDestinationIntro(
     .eq("content_id", contentId)
     .maybeSingle();
 
-  // DB hit: 빈 객체({})는 "외부에서도 못 가져왔던 row"라는 마커
-  if (row?.intro_data && Object.keys(row.intro_data).length > 0) {
+  // DB hit: 빈 객체({})는 "백필됐지만 외부도 데이터 없었음" 마커 — 재호출 안 함.
+  if (row?.intro_data != null) {
     return row.intro_data as unknown as TourSpotDetail;
   }
 
@@ -219,9 +219,9 @@ export async function getDestinationIntro(
 }
 
 /**
- * 음식점/여행지 상세 이미지 갤러리 데이터.
+ * 상세 이미지 갤러리 데이터 (destinations 테이블 image_data 컬럼).
  *
- * DB-first 패턴: destinations.image_data 조회 → miss 시 외부 호출 + upsert.
+ * DB-first 패턴: 조회 → miss 시 외부 호출 + upsert.
  */
 export async function getDestinationImagesFromDb(
   contentId: string,
