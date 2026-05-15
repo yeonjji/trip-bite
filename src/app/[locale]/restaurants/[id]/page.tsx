@@ -22,7 +22,7 @@ import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 import TransitSection from "@/components/transit/TransitSection"
 import WeatherWidget from "@/components/weather/WeatherWidget"
-import NearbyShopsSection from "@/components/nearby/NearbyShopsSection"
+import NearbyShopsTravelSection from "@/components/nearby/NearbyShopsTravelSection"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -234,7 +234,7 @@ export default async function RestaurantDetailPage({ params }: Props) {
 
       {/* 주변 생활 편의 */}
       {nearbyShops && (
-        <NearbyShopsSection shops={nearbyShops} pageType="restaurant" isKo={locale === "ko"} />
+        <NearbyShopsTravelSection shops={nearbyShops} isKo={locale === "ko"} />
       )}
 
       {/* 여행 후기 */}

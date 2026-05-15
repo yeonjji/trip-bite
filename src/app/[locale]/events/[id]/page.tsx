@@ -18,7 +18,7 @@ import FestivalContactSection from "../_components/FestivalContactSection"
 import FestivalShareActions from "../_components/FestivalShareActions"
 import NearbyFacilitiesAsync, { NearbyFacilitiesSkeleton } from "@/components/nearby/NearbyFacilitiesAsync"
 import { getNearbyShops } from "@/lib/data/nearby-shops"
-import NearbyShopsSection from "@/components/nearby/NearbyShopsSection"
+import NearbyShopsTravelSection from "@/components/nearby/NearbyShopsTravelSection"
 import NearbyToursAsync, { NearbyToursSkeleton } from "@/components/nearby/NearbyToursAsync"
 import SpecialtiesAsync, { SpecialtiesSkeleton } from "@/components/travel/SpecialtiesAsync"
 
@@ -513,7 +513,7 @@ export default async function EventDetailPage({ params }: Props) {
 
       {/* ── 주변 생활 편의 ───────────────────────────────────────────── */}
       {nearbyShops && (
-        <NearbyShopsSection shops={nearbyShops} pageType="festival" isKo={isKo} />
+        <NearbyShopsTravelSection shops={nearbyShops} isKo={isKo} />
       )}
 
       {/* ── 여행 후기 ────────────────────────────────────────────────── */}

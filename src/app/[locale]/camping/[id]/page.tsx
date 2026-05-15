@@ -27,7 +27,7 @@ import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
 import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSection"
 import TransitSection from "@/components/transit/TransitSection"
-import NearbyShopsSection from "@/components/nearby/NearbyShopsSection"
+import NearbyShopsTravelSection from "@/components/nearby/NearbyShopsTravelSection"
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>
@@ -608,7 +608,7 @@ export default async function CampingDetailPage({ params }: PageProps) {
       {nearbyShops && (
         <>
           <Separator className="my-6" />
-          <NearbyShopsSection shops={nearbyShops} pageType="camping" isKo={isKo} />
+          <NearbyShopsTravelSection shops={nearbyShops} isKo={isKo} />
         </>
       )}
 
