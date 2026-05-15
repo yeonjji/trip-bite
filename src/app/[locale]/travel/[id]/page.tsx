@@ -24,8 +24,6 @@ import TravelTipSection from "@/components/travel/TravelTipSection"
 import PetInfoSection from "@/components/travel/PetInfoSection"
 import IntroSection from "@/components/travel/IntroSection"
 import IntroSkeleton from "@/components/travel/IntroSkeleton"
-import WikiSection from "@/components/travel/WikiSection"
-import WikiSkeleton from "@/components/travel/WikiSkeleton"
 import KakaoLinkSection from "@/components/travel/KakaoLinkSection"
 import NearbyFacilitiesSection from "@/components/nearby/NearbyFacilitiesSection"
 import NearbyFacilitiesSkeleton from "@/components/nearby/NearbyFacilitiesSkeleton"
@@ -253,11 +251,6 @@ export default async function TravelDetailPage({ params }: Props) {
           />
         </div>
       )}
-
-      {/* 위키백과 보충 설명 */}
-      <Suspense fallback={<WikiSkeleton />}>
-        <WikiSection title={title} isKo={isKo} />
-      </Suspense>
 
       {/* 지도 바로가기 버튼 */}
       {hasCoords && (
