@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Users, Wifi, ParkingCircle, Zap,
@@ -65,6 +65,17 @@ export default function NearbyFacilities({
   const [active, setActive] = useState(firstWithData);
 
   const totalCount = toilets.length + wifi.length + parking.length + evStations.length;
+
+  useEffect(() => {
+    if (totalCount === 0) {
+      console.log("[주변 시설] 정보가 없습니다 (화장실:0 / 와이파이:0 / 주차장:0 / 전기차충전:0)");
+    } else {
+      console.log(
+        `[주변 시설] 정보가 있습니다 — 화장실:${toilets.length} / 와이파이:${wifi.length} / 주차장:${parking.length} / 전기차충전:${evStations.length}`
+      );
+    }
+  }, [totalCount, toilets.length, wifi.length, parking.length, evStations.length]);
+
   if (totalCount === 0) return null;
 
   return (
