@@ -497,7 +497,7 @@ export default async function TravelDetailPage({ params }: Props) {
       <TravelBlogReviewSection placeName={title} regionName={regionName} />
 
       {/* 지역 레시피 추천 */}
-      <RecipeRecommendationSection regionName={regionName} context="travel" locale={locale} />
+      <RecipeRecommendationSection regionName={regionName} areaCode={areaCode} context="travel" locale={locale} />
 
       {/* 이 지역 특산품 */}
       <TravelSpecialtiesSection specialties={specialties} regionName={regionName} />

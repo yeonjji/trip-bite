@@ -3,6 +3,7 @@ import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 import { Suspense } from "react"
 import { getFestivalById, computeStatus, getRegionName } from "@/lib/data/festivals"
+import { provinceToAreaCode } from "@/lib/constants/area-codes"
 import { buildAlternates } from "@/lib/utils/metadata"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
@@ -174,6 +175,21 @@ const STATUS_CONFIG = {
   upcoming: { ko: "예정", en: "Upcoming", className: "bg-blue-100 text-blue-800" },
   ended: { ko: "종료", en: "Ended", className: "bg-gray-100 text-gray-500" },
   unknown: { ko: "미정", en: "TBD", className: "bg-gray-100 text-gray-500" },
+}
+
+const FESTIVAL_STOP_WORDS = new Set([
+  "축제", "행사", "페스티벌", "festival", "fair", "대회", "박람회", "문화제",
+  "마라톤", "공연", "콘서트", "전시", "국제", "전국", "제", "회",
+  "서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종",
+  "경기", "강원", "충북", "충남", "전남", "전북", "경북", "경남", "제주",
+])
+
+function extractFestivalKeywords(title: string): string[] {
+  return title
+    .replace(/\d+/g, "")
+    .split(/[\s·,&]+/)
+    .map((w) => w.trim())
+    .filter((w) => w.length >= 2 && !FESTIVAL_STOP_WORDS.has(w))
 }
 
 function formatDate(d: string, isKo: boolean): string {
@@ -520,7 +536,13 @@ export default async function EventDetailPage({ params }: Props) {
       <TravelBlogReviewSection placeName={festival.title} regionName={regionName} />
 
       {/* ── 지역 레시피 추천 ─────────────────────────────────────────── */}
-      <RecipeRecommendationSection regionName={regionName} context="festival" locale={locale} />
+      <RecipeRecommendationSection
+        regionName={regionName}
+        areaCode={provinceToAreaCode(provinceFullName)}
+        menuKeywords={extractFestivalKeywords(festival.title)}
+        context="festival"
+        locale={locale}
+      />
 
       {/* ── 이 지역 특산품 ────────────────────────────────────────────── */}
       {provinceFullName && (

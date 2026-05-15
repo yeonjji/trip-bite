@@ -107,7 +107,8 @@ function scoreRecipe(
   recipe: RecipeRow,
   context: "camping" | "festival" | "restaurant" | "travel" | "general",
   regionName?: string | null,
-  menuKeyword?: string | null,
+  menuKeywords?: string[],
+  specialtyIds?: string[],
 ): { score: number; reason: string } {
   let score = 0
   let reason = ""
@@ -115,15 +116,37 @@ function scoreRecipe(
   const name = recipe.name ?? ""
   const category = recipe.category ?? ""
   const method = recipe.cooking_method ?? ""
+  const ingredients = recipe.ingredients ?? ""
   const tags: string[] = Array.isArray(recipe.hash_tags) ? recipe.hash_tags : []
 
+  // 지역 특산품 연결 레시피 (최우선)
+  if (specialtyIds && specialtyIds.length > 0 && recipe.specialty_id && specialtyIds.includes(recipe.specialty_id)) {
+    score += 5
+    reason = "이 지역 특산 재료로 만든 레시피"
+  }
+
+  // 지역명 매칭
   if (regionName) {
     if (tags.includes(regionName)) {
       score += 3
-      reason = `${regionName}의 향토 음식`
+      if (!reason) reason = `${regionName}의 향토 음식`
     } else if (name.includes(regionName)) {
       score += 2
-      reason = `${regionName} 대표 음식`
+      if (!reason) reason = `${regionName} 대표 음식`
+    }
+  }
+
+  // 다중 키워드 매칭
+  for (const kw of menuKeywords ?? []) {
+    if (name.includes(kw)) {
+      score += 3
+      if (!reason) reason = `${kw} 레시피`
+    } else if (tags.some((t) => t.includes(kw))) {
+      score += 2
+      if (!reason) reason = `${kw} 관련 레시피`
+    } else if (ingredients.includes(kw)) {
+      score += 1
+      if (!reason) reason = `${kw}을(를) 활용한 레시피`
     }
   }
 
@@ -152,13 +175,6 @@ function scoreRecipe(
     }
   }
 
-  if (context === "restaurant" && menuKeyword) {
-    if (name.includes(menuKeyword) || category.includes(menuKeyword)) {
-      score += 3
-      if (!reason) reason = `${menuKeyword} 레시피`
-    }
-  }
-
   if (!reason) {
     if (category) reason = `${category} 추천 레시피`
     else reason = "함께 즐기기 좋은 레시피"
@@ -169,54 +185,98 @@ function scoreRecipe(
 
 export async function getRelatedRecipes({
   regionName,
+  areaCode,
   context = "general",
-  menuKeyword,
+  menuKeywords,
   limit = 3,
 }: {
   regionName?: string | null
+  areaCode?: string | null
   context?: "camping" | "festival" | "restaurant" | "travel" | "general"
-  menuKeyword?: string | null
+  menuKeywords?: string[]
   limit?: number
 }): Promise<ScoredRecipe[]> {
   const supabase = await createClient()
   const POOL = 20
 
+  // 지역 특산품 연결 레시피 ID 목록 사전 조회 (specialty 체인)
+  let linkedSpecialtyIds: string[] = []
+  if (areaCode) {
+    const { data: region } = await supabase
+      .from("regions")
+      .select("id")
+      .eq("area_code", areaCode)
+      .maybeSingle()
+    if (region?.id) {
+      const { data: specs } = await supabase
+        .from("specialties")
+        .select("id")
+        .eq("region_id", region.id)
+      linkedSpecialtyIds = (specs ?? []).map((s: { id: string }) => s.id)
+    }
+  }
+
   const queries: Promise<{ data: unknown[] | null }>[] = []
 
+  // Pool 1: 지역 특산품과 직접 연결된 레시피 (가장 강한 신호)
+  if (linkedSpecialtyIds.length > 0) {
+    queries.push(
+      supabase
+        .from("recipes")
+        .select("*")
+        .in("specialty_id", linkedSpecialtyIds)
+        .limit(POOL) as unknown as Promise<{ data: unknown[] | null }>,
+    )
+  }
+
+  // Pool 2: 지역명 hash_tags / 이름 매칭
   if (regionName) {
     queries.push(
       supabase
         .from("recipes")
         .select("*")
         .contains("hash_tags", [regionName])
-        .not("main_image_url", "is", null)
         .limit(POOL) as unknown as Promise<{ data: unknown[] | null }>,
       supabase
         .from("recipes")
         .select("*")
         .ilike("name", `%${regionName}%`)
-        .not("main_image_url", "is", null)
         .limit(POOL) as unknown as Promise<{ data: unknown[] | null }>,
     )
   }
 
+  // Pool 3: 키워드 매칭 (이름, 재료)
+  for (const kw of menuKeywords ?? []) {
+    queries.push(
+      supabase
+        .from("recipes")
+        .select("*")
+        .or(`name.ilike.%${kw}%,ingredients.ilike.%${kw}%`)
+        .limit(POOL) as unknown as Promise<{ data: unknown[] | null }>,
+      supabase
+        .from("recipes")
+        .select("*")
+        .contains("hash_tags", [kw])
+        .limit(POOL) as unknown as Promise<{ data: unknown[] | null }>,
+    )
+  }
+
+  // Pool 4: 캠핑 컨텍스트 카테고리
   if (context === "camping") {
     queries.push(
       supabase
         .from("recipes")
         .select("*")
         .in("category", CAMPING_CATEGORIES)
-        .not("main_image_url", "is", null)
         .limit(POOL) as unknown as Promise<{ data: unknown[] | null }>,
     )
   }
 
-  // Always add fallback pool
+  // Fallback: 최신순
   queries.push(
     supabase
       .from("recipes")
       .select("*")
-      .not("main_image_url", "is", null)
       .order("created_at", { ascending: false })
       .limit(POOL) as unknown as Promise<{ data: unknown[] | null }>,
   )
@@ -238,7 +298,7 @@ export async function getRelatedRecipes({
 
   const scored = merged
     .map((recipe) => {
-      const { score, reason } = scoreRecipe(recipe, context, regionName, menuKeyword)
+      const { score, reason } = scoreRecipe(recipe, context, regionName, menuKeywords, linkedSpecialtyIds)
       return { recipe, reason, score }
     })
     .sort((a, b) => b.score - a.score)

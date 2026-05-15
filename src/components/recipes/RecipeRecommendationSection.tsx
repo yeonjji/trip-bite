@@ -13,13 +13,14 @@ const SECTION_COPY: Record<Context, { title: string; sub: string }> = {
 
 interface Props {
   regionName?: string | null
-  menuKeyword?: string | null
+  areaCode?: string | null
+  menuKeywords?: string[]
   context: Context
   locale: string
 }
 
-export default async function RecipeRecommendationSection({ regionName, menuKeyword, context, locale }: Props) {
-  const scored = await getRelatedRecipes({ regionName, menuKeyword, context, limit: 5 })
+export default async function RecipeRecommendationSection({ regionName, areaCode, menuKeywords, context, locale }: Props) {
+  const scored = await getRelatedRecipes({ regionName, areaCode, menuKeywords, context, limit: 5 })
   if (scored.length === 0) return null
 
   const { title, sub } = SECTION_COPY[context]

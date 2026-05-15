@@ -35,3 +35,31 @@ export const getAreaName = (code: string, locale: "ko" | "en" = "ko") => {
   if (!area) return code;
   return locale === "ko" ? area.nameKo : area.nameEn;
 };
+
+// 도/광역시명 문자열 → 법정동 area_code (regions 테이블 기준)
+const PROVINCE_KEYWORD_MAP: [string[], string][] = [
+  [["서울"], "11"],
+  [["부산"], "26"],
+  [["대구"], "27"],
+  [["인천"], "28"],
+  [["광주"], "29"],
+  [["대전"], "30"],
+  [["울산"], "31"],
+  [["세종"], "36110"],
+  [["경기"], "41"],
+  [["충북", "충청북"], "43"],
+  [["충남", "충청남"], "44"],
+  [["전남", "전라남"], "46"],
+  [["경북", "경상북"], "47"],
+  [["경남", "경상남"], "48"],
+  [["제주"], "50"],
+  [["강원"], "51"],
+  [["전북", "전라북"], "52"],
+];
+
+export function provinceToAreaCode(province: string): string {
+  for (const [keywords, code] of PROVINCE_KEYWORD_MAP) {
+    if (keywords.some((kw) => province.includes(kw))) return code;
+  }
+  return "";
+}

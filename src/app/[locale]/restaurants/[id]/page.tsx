@@ -241,7 +241,13 @@ export default async function RestaurantDetailPage({ params }: Props) {
       <TravelBlogReviewSection placeName={title} regionName={regionName} />
 
       {/* 지역 레시피 추천 */}
-      <RecipeRecommendationSection regionName={regionName} menuKeyword={firstmenu ?? undefined} context="restaurant" locale={locale} />
+      <RecipeRecommendationSection
+        regionName={regionName}
+        areaCode={destination?.area_code}
+        menuKeywords={[firstmenu, destination?.cat3].filter((v): v is string => !!v)}
+        context="restaurant"
+        locale={locale}
+      />
 
       {/* 이 근처에서 같이 가볼 곳 */}
       {regionName && <NearbyNaverPlaces regionName={regionName} />}

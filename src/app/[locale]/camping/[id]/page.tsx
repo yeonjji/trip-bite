@@ -25,6 +25,7 @@ import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
 import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendationSection"
+import { provinceToAreaCode } from "@/lib/constants/area-codes"
 import TravelSpecialtiesSection from "@/components/travel/TravelSpecialtiesSection"
 import TransitSection from "@/components/transit/TransitSection"
 import NearbyShopsTravelSection from "@/components/nearby/NearbyShopsTravelSection"
@@ -617,7 +618,7 @@ export default async function CampingDetailPage({ params }: PageProps) {
       <TravelBlogReviewSection placeName={name} regionName={regionName} />
 
       <Separator className="my-6" />
-      <RecipeRecommendationSection regionName={regionName} context="camping" locale={locale} />
+      <RecipeRecommendationSection regionName={regionName} areaCode={provinceToAreaCode(doNm)} context="camping" locale={locale} />
 
       <Separator className="my-6" />
       <TravelSpecialtiesSection specialties={specialties} regionName={regionName} />
