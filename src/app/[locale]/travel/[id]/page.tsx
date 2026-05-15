@@ -5,7 +5,7 @@ import type { Metadata } from "next"
 export const revalidate = 3600
 
 import { Suspense } from "react"
-import { getDestinationDetail } from "@/lib/data/destinations"
+import { getDestinationShell } from "@/lib/data/destinations"
 import { buildAlternates } from "@/lib/utils/metadata"
 import { getAccessibilityInfo } from "@/lib/data/accessibility"
 import Rating from "@/components/shared/Rating"
@@ -22,6 +22,11 @@ import RecipeRecommendationSection from "@/components/recipes/RecipeRecommendati
 import TransitSection from "@/components/transit/TransitSection"
 import TravelTipSection from "@/components/travel/TravelTipSection"
 import PetInfoSection from "@/components/travel/PetInfoSection"
+import IntroSection from "@/components/travel/IntroSection"
+import IntroSkeleton from "@/components/travel/IntroSkeleton"
+import WikiSection from "@/components/travel/WikiSection"
+import WikiSkeleton from "@/components/travel/WikiSkeleton"
+import KakaoLinkSection from "@/components/travel/KakaoLinkSection"
 import NearbyFacilitiesSection from "@/components/nearby/NearbyFacilitiesSection"
 import NearbyFacilitiesSkeleton from "@/components/nearby/NearbyFacilitiesSkeleton"
 import NearbyShopsSection from "@/components/nearby/NearbyShopsSection"
@@ -39,7 +44,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
-  const { detail, petPlace } = await getDestinationDetail(id)
+  const { detail, petPlace } = await getDestinationShell(id)
 
   if (!detail) {
     return { title: "여행지" }
@@ -71,7 +76,7 @@ export default async function TravelDetailPage({ params }: Props) {
 
   setRequestLocale(locale)
 
-  const { destination, detail, intro, images, wiki, kakaoPlace, petPlace, petTourInfo, barrierFreePlace } = await getDestinationDetail(id)
+  const { destination, detail, petPlace, barrierFreePlace } = await getDestinationShell(id)
 
   const fallback = petPlace ?? barrierFreePlace ?? null
 
@@ -100,13 +105,9 @@ export default async function TravelDetailPage({ params }: Props) {
 
   const provinceFullName = addr1.split(" ")[0] ?? ""
 
-  const galleryImages = images.map((img) => ({
-    url: img.originimgurl,
-    alt: img.imgname,
-  }))
-
-  if (galleryImages.length === 0 && (detail?.firstimage || destination?.first_image || fallback?.first_image)) {
-    const coverUrl = detail?.firstimage ?? destination?.first_image ?? fallback?.first_image ?? ""
+  const galleryImages: { url: string; alt: string }[] = []
+  const coverUrl = detail?.firstimage ?? destination?.first_image ?? fallback?.first_image
+  if (coverUrl) {
     galleryImages.push({ url: coverUrl, alt: title })
   }
 
@@ -122,16 +123,7 @@ export default async function TravelDetailPage({ params }: Props) {
     return sigungu.replace(/(특별자치시|광역시|특별시|시|군|구)$/, "")
   })()
 
-  const isWorldHeritage =
-    intro?.heritage1 === "1" || intro?.heritage2 === "1" || intro?.heritage3 === "1"
-
-  const heritageLabels: string[] = []
-  if (intro?.heritage1 === "1")
-    heritageLabels.push(isKo ? "세계문화유산" : "World Cultural Heritage")
-  if (intro?.heritage2 === "1")
-    heritageLabels.push(isKo ? "세계자연유산" : "World Natural Heritage")
-  if (intro?.heritage3 === "1")
-    heritageLabels.push(isKo ? "세계기록유산" : "World Documentary Heritage")
+  const contentTypeId = destination?.content_type_id ?? detail?.contenttypeid ?? "12"
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
@@ -159,20 +151,6 @@ export default async function TravelDetailPage({ params }: Props) {
         </div>
       )}
 
-      {/* 세계유산 뱃지 */}
-      {isWorldHeritage && (
-        <div className="mb-4 flex flex-wrap gap-2">
-          {heritageLabels.map((label) => (
-            <span
-              key={label}
-              className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800"
-            >
-              🏛 {label}
-            </span>
-          ))}
-        </div>
-      )}
-
       <div className="mb-2 flex justify-end">
         <ShareButton
           title={title}
@@ -186,174 +164,82 @@ export default async function TravelDetailPage({ params }: Props) {
         </div>
       )}
 
-      {/* 기본 정보 카드 */}
-      <div className="mb-6 space-y-3 rounded-xl bg-[#F9F7EF] p-4 soft-card-shadow">
-        {addr1 && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-24 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "주소" : "Address"}
-            </span>
-            <span className="text-foreground">{addr1} {addr2}</span>
-          </div>
-        )}
-        {tel && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-24 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "전화" : "Phone"}
-            </span>
-            <a href={`tel:${tel}`} className="text-[#D84315] hover:underline">
-              {tel}
-            </a>
-          </div>
-        )}
-        {intro?.infocenter && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-24 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "문의/안내" : "Info"}
-            </span>
-            <span className="text-foreground">{intro.infocenter}</span>
-          </div>
-        )}
-        {intro?.usetime && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-24 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "이용시간" : "Hours"}
-            </span>
-            <span className="whitespace-pre-line text-foreground" dangerouslySetInnerHTML={{ __html: intro.usetime }} />
-          </div>
-        )}
-        {intro?.restdate && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-24 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "쉬는날" : "Closed"}
-            </span>
-            <span className="text-foreground" dangerouslySetInnerHTML={{ __html: intro.restdate }} />
-          </div>
-        )}
-        {intro?.useseason && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-24 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "이용시기" : "Season"}
-            </span>
-            <span className="text-foreground">{intro.useseason}</span>
-          </div>
-        )}
-        {intro?.parking && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-24 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "주차시설" : "Parking"}
-            </span>
-            <span className="text-foreground">{intro.parking}</span>
-          </div>
-        )}
-        {intro?.accomcount && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-24 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "수용인원" : "Capacity"}
-            </span>
-            <span className="text-foreground">{intro.accomcount}</span>
-          </div>
-        )}
-        {intro?.chkpet && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-24 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "반려동물" : "Pets"}
-            </span>
-            <span className="text-foreground">{intro.chkpet}</span>
-          </div>
-        )}
-        {barrierFreePlace && (
-          <>
-            {barrierFreePlace.wheelchair && (
-              <div className="flex gap-2 text-sm">
-                <span className="w-24 shrink-0 font-medium text-muted-foreground">
-                  {isKo ? "휠체어 대여" : "Wheelchair"}
-                </span>
-                <span className="text-foreground">♿ {barrierFreePlace.wheelchair}</span>
-              </div>
-            )}
-            {barrierFreePlace.exit_accessible && (
-              <div className="flex gap-2 text-sm">
-                <span className="w-24 shrink-0 font-medium text-muted-foreground">
-                  {isKo ? "출입구 접근" : "Entrance"}
-                </span>
-                <span className="text-foreground">🚪 {barrierFreePlace.exit_accessible}</span>
-              </div>
-            )}
-            {barrierFreePlace.restroom_wh && (
-              <div className="flex gap-2 text-sm">
-                <span className="w-24 shrink-0 font-medium text-muted-foreground">
-                  {isKo ? "장애인 화장실" : "Restroom"}
-                </span>
-                <span className="text-foreground">🚻 {barrierFreePlace.restroom_wh}</span>
-              </div>
-            )}
-            {barrierFreePlace.elevator && (
-              <div className="flex gap-2 text-sm">
-                <span className="w-24 shrink-0 font-medium text-muted-foreground">
-                  {isKo ? "엘리베이터" : "Elevator"}
-                </span>
-                <span className="text-foreground">🛗 {barrierFreePlace.elevator}</span>
-              </div>
-            )}
-            {barrierFreePlace.parking_wh && (
-              <div className="flex gap-2 text-sm">
-                <span className="w-24 shrink-0 font-medium text-muted-foreground">
-                  {isKo ? "장애인 주차" : "Parking"}
-                </span>
-                <span className="text-foreground">🅿️ {barrierFreePlace.parking_wh}</span>
-              </div>
-            )}
-          </>
-        )}
-        {intro?.chkbabycarriage && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-24 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "유모차 대여" : "Stroller"}
-            </span>
-            <span className="text-foreground">{intro.chkbabycarriage}</span>
-          </div>
-        )}
-        {intro?.chkcreditcard && (
-          <div className="flex gap-2 text-sm">
-            <span className="w-24 shrink-0 font-medium text-muted-foreground">
-              {isKo ? "신용카드" : "Credit Card"}
-            </span>
-            <span className="text-foreground">{intro.chkcreditcard}</span>
-          </div>
-        )}
-      </div>
+      {/* 기본 정보 카드 — shell 전용 (주소/전화/접근성) */}
+      {(addr1 || tel || barrierFreePlace) && (
+        <div className="mb-6 space-y-3 rounded-xl bg-[#F9F7EF] p-4 soft-card-shadow">
+          {addr1 && (
+            <div className="flex gap-2 text-sm">
+              <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                {isKo ? "주소" : "Address"}
+              </span>
+              <span className="text-foreground">{addr1} {addr2}</span>
+            </div>
+          )}
+          {tel && (
+            <div className="flex gap-2 text-sm">
+              <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                {isKo ? "전화" : "Phone"}
+              </span>
+              <a href={`tel:${tel}`} className="text-[#D84315] hover:underline">
+                {tel}
+              </a>
+            </div>
+          )}
+          {barrierFreePlace && (
+            <>
+              {barrierFreePlace.wheelchair && (
+                <div className="flex gap-2 text-sm">
+                  <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                    {isKo ? "휠체어 대여" : "Wheelchair"}
+                  </span>
+                  <span className="text-foreground">♿ {barrierFreePlace.wheelchair}</span>
+                </div>
+              )}
+              {barrierFreePlace.exit_accessible && (
+                <div className="flex gap-2 text-sm">
+                  <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                    {isKo ? "출입구 접근" : "Entrance"}
+                  </span>
+                  <span className="text-foreground">🚪 {barrierFreePlace.exit_accessible}</span>
+                </div>
+              )}
+              {barrierFreePlace.restroom_wh && (
+                <div className="flex gap-2 text-sm">
+                  <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                    {isKo ? "장애인 화장실" : "Restroom"}
+                  </span>
+                  <span className="text-foreground">🚻 {barrierFreePlace.restroom_wh}</span>
+                </div>
+              )}
+              {barrierFreePlace.elevator && (
+                <div className="flex gap-2 text-sm">
+                  <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                    {isKo ? "엘리베이터" : "Elevator"}
+                  </span>
+                  <span className="text-foreground">🛗 {barrierFreePlace.elevator}</span>
+                </div>
+              )}
+              {barrierFreePlace.parking_wh && (
+                <div className="flex gap-2 text-sm">
+                  <span className="w-24 shrink-0 font-medium text-muted-foreground">
+                    {isKo ? "장애인 주차" : "Parking"}
+                  </span>
+                  <span className="text-foreground">🅿️ {barrierFreePlace.parking_wh}</span>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
+
+      {/* 운영시간/체험/세계유산 등 부가 정보 (TourAPI detailIntro 의존) */}
+      <Suspense fallback={<IntroSkeleton />}>
+        <IntroSection contentId={id} contentTypeId={contentTypeId} isKo={isKo} />
+      </Suspense>
 
       {/* 반려동물 동반 정보 */}
       {petPlace && (
-        <PetInfoSection petPlace={petPlace} petTourInfo={petTourInfo} isKo={isKo} />
-      )}
-
-      {/* 체험 안내 */}
-      {(intro?.expguide || intro?.expagerange) && (
-        <div className="mb-6 rounded-xl bg-[#F9F7EF] p-4 soft-card-shadow">
-          <h2 className="mb-3 font-headline text-base font-bold text-[#1B1C1A]">
-            {isKo ? "체험 안내" : "Experience Guide"}
-          </h2>
-          <div className="space-y-2">
-            {intro?.expagerange && (
-              <div className="flex gap-2 text-sm">
-                <span className="w-24 shrink-0 font-medium text-muted-foreground">
-                  {isKo ? "체험 연령" : "Age Range"}
-                </span>
-                <span className="text-foreground">{intro.expagerange}</span>
-              </div>
-            )}
-            {intro?.expguide && (
-              <div className="flex gap-2 text-sm">
-                <span className="w-24 shrink-0 font-medium text-muted-foreground">
-                  {isKo ? "체험 안내" : "Guide"}
-                </span>
-                <span className="whitespace-pre-line text-foreground">{intro.expguide}</span>
-              </div>
-            )}
-          </div>
-        </div>
+        <PetInfoSection petPlace={petPlace} petTourInfo={null} isKo={isKo} />
       )}
 
       {overview && (
@@ -369,54 +255,16 @@ export default async function TravelDetailPage({ params }: Props) {
       )}
 
       {/* 위키백과 보충 설명 */}
-      {wiki && wiki.extract && (
-        <div className="mb-6 rounded-xl bg-[#F9F7EF] p-4 soft-card-shadow">
-          <div className="mb-2 flex items-center justify-between">
-            <h2 className="font-headline text-base font-bold text-[#1B1C1A]">
-              {isKo ? "위키백과" : "Wikipedia"}
-            </h2>
-            {wiki.content_urls?.desktop?.page && (
-              <a
-                href={wiki.content_urls.desktop.page}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-primary hover:underline"
-              >
-                {isKo ? "전체 보기" : "Read more"}
-              </a>
-            )}
-          </div>
-          <div className="flex items-start gap-3">
-            {wiki.thumbnail && (
-              <img
-                src={wiki.thumbnail.source}
-                alt={wiki.title}
-                className="h-20 w-20 shrink-0 rounded-lg object-cover"
-              />
-            )}
-            <p className="text-sm leading-relaxed text-[#5A413A] line-clamp-5">
-              {wiki.extract}
-            </p>
-          </div>
-        </div>
-      )}
+      <Suspense fallback={<WikiSkeleton />}>
+        <WikiSection title={title} isKo={isKo} />
+      </Suspense>
 
       {/* 지도 바로가기 버튼 */}
-      {(kakaoPlace || (lat !== null && lng !== null)) && (
+      {hasCoords && (
         <div className="mb-6 flex flex-wrap gap-2">
-          {kakaoPlace?.place_url && (
-            <a
-              href={kakaoPlace.place_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#FFEDE7] px-4 py-2 text-sm font-medium text-[#D84315] hover:bg-[#D84315] hover:text-white transition-colors"
-            >
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-              </svg>
-              {isKo ? "카카오맵 보기" : "Kakao Map"}
-            </a>
-          )}
+          <Suspense fallback={null}>
+            <KakaoLinkSection title={title} lat={lat!} lng={lng!} isKo={isKo} />
+          </Suspense>
           <a
             href={buildNaverMapUrl(title, lat ?? undefined, lng ?? undefined)}
             target="_blank"
@@ -431,12 +279,12 @@ export default async function TravelDetailPage({ params }: Props) {
         </div>
       )}
 
-      {lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng) && (
+      {hasCoords && (
         <div className="mb-6">
           <h2 className="mb-2 font-headline text-xl font-bold text-[#1B1C1A]">
             {isKo ? "위치" : "Location"}
           </h2>
-          <NaverMap lat={lat} lng={lng} markerTitle={title} showMarker className="relative h-64 w-full overflow-hidden rounded-xl" />
+          <NaverMap lat={lat!} lng={lng!} markerTitle={title} showMarker className="relative h-64 w-full overflow-hidden rounded-xl" />
         </div>
       )}
 
