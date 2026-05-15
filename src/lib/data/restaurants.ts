@@ -85,18 +85,32 @@ export async function getRestaurantDetail(contentId: string): Promise<{
     throw new Error(`맛집 상세 조회 실패: ${error.message}`);
   }
 
-  const [detailRes, introRes, imagesRes] = await Promise.allSettled([
-    tourApi.detailCommon(contentId),
+  // destinations 행(content_type_id='39')이 source of truth. detailCommon 호출 불필요.
+  // detailIntro/detailImage는 DB 컬럼이 아직 없어 외부 호출 유지 (TODO: Step 2 plan).
+  const dest = (destination as Destination) ?? null;
+  const detail: TourDetailCommon | null = dest
+    ? {
+        contentid: dest.content_id,
+        contenttypeid: dest.content_type_id,
+        title: dest.title,
+        homepage: dest.homepage,
+        overview: dest.overview,
+        createdtime: dest.created_at,
+        modifiedtime: dest.updated_at,
+        tel: dest.tel,
+        addr1: dest.addr1,
+        addr2: dest.addr2,
+        mapx: dest.mapx != null ? String(dest.mapx) : undefined,
+        mapy: dest.mapy != null ? String(dest.mapy) : undefined,
+        firstimage: dest.first_image,
+        firstimage2: dest.first_image2,
+      }
+    : null;
+
+  const [introRes, imagesRes] = await Promise.allSettled([
     tourApi.detailIntro(contentId, "39"),
     tourApi.detailImage(contentId),
   ]);
-
-  const detail =
-    detailRes.status === "fulfilled"
-      ? (detailRes.value.response.body.items !== ""
-          ? detailRes.value.response.body.items.item[0]
-          : null) ?? null
-      : null;
 
   const intro =
     introRes.status === "fulfilled"
@@ -111,7 +125,7 @@ export async function getRestaurantDetail(contentId: string): Promise<{
       : [];
 
   return {
-    destination: (destination as Destination) ?? null,
+    destination: dest,
     detail,
     intro,
     images,
