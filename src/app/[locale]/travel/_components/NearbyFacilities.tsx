@@ -21,6 +21,8 @@ interface Props {
   wifi: NearbyWifi[];
   parking: NearbyParking[];
   evStations: NearbyEvStation[];
+  lat?: number | null;
+  lng?: number | null;
 }
 
 function formatHhmm(hhmm: string | null): string {
@@ -29,7 +31,7 @@ function formatHhmm(hhmm: string | null): string {
 }
 
 export default function NearbyFacilities({
-  locale, toilets, wifi, parking, evStations,
+  locale, toilets, wifi, parking, evStations, lat, lng,
 }: Props) {
   const isKo = locale === "ko";
 
@@ -67,14 +69,18 @@ export default function NearbyFacilities({
   const totalCount = toilets.length + wifi.length + parking.length + evStations.length;
 
   useEffect(() => {
+    const coordInfo = (lat != null && lng != null)
+      ? `좌표: lat=${lat}, lng=${lng} (10km 반경 조회)`
+      : "좌표 없음 → DB 조회 자체를 하지 않음";
+
     if (totalCount === 0) {
-      console.log("[주변 시설] 정보가 없습니다 (화장실:0 / 와이파이:0 / 주차장:0 / 전기차충전:0)");
+      console.log(`[주변 시설] 정보가 없습니다 (화장실:0 / 와이파이:0 / 주차장:0 / 전기차충전:0) | ${coordInfo}`);
     } else {
       console.log(
-        `[주변 시설] 정보가 있습니다 — 화장실:${toilets.length} / 와이파이:${wifi.length} / 주차장:${parking.length} / 전기차충전:${evStations.length}`
+        `[주변 시설] 정보가 있습니다 — 화장실:${toilets.length} / 와이파이:${wifi.length} / 주차장:${parking.length} / 전기차충전:${evStations.length} | ${coordInfo}`
       );
     }
-  }, [totalCount, toilets.length, wifi.length, parking.length, evStations.length]);
+  }, [totalCount, toilets.length, wifi.length, parking.length, evStations.length, lat, lng]);
 
   if (totalCount === 0) return null;
 

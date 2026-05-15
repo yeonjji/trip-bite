@@ -594,6 +594,8 @@ export default async function CampingDetailPage({ params }: PageProps) {
         wifi={nearbyFacilities.wifi}
         parking={nearbyFacilities.parking}
         evStations={nearbyFacilities.evStations}
+        lat={lat}
+        lng={lng}
       />
 
       {/* 주변 추천 정보 */}

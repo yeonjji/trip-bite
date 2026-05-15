@@ -477,6 +477,8 @@ export default async function TravelDetailPage({ params }: Props) {
         wifi={nearbyFacilities.wifi}
         parking={nearbyFacilities.parking}
         evStations={nearbyFacilities.evStations}
+        lat={lat}
+        lng={lng}
       />
 
       {/* 주변 생활 편의 */}

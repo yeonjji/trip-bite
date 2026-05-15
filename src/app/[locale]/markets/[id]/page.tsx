@@ -249,6 +249,8 @@ export default async function MarketDetailPage({ params }: Props) {
         wifi={nearbyFacilities.wifi}
         parking={nearbyFacilities.parking}
         evStations={nearbyFacilities.evStations}
+        lat={lat}
+        lng={lng}
       />
 
       {/* 주변 추천 정보 */}
