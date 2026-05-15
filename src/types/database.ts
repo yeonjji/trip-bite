@@ -76,6 +76,9 @@ export interface Destination {
   rating_avg: number;
   rating_count: number;
   cached_at: string;
+  // Step 2: detailIntro2 / detailImage2 응답 캐시 (null이면 미백필)
+  intro_data?: Record<string, unknown> | null;
+  image_data?: Array<Record<string, unknown>> | null;
   created_at: string;
   updated_at: string;
 }
