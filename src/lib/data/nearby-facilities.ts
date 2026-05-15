@@ -1,16 +1,11 @@
 import { createClient as createAnonClient } from "@supabase/supabase-js";
+import { createClient as createServerClient } from "@/lib/supabase/server";
 import { unstable_cache } from "next/cache";
 
 function getAnonClient() {
   return createAnonClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      global: {
-        fetch: (url: RequestInfo | URL, options: RequestInit = {}) =>
-          fetch(url, { ...options, cache: "no-store" }),
-      },
-    }
   );
 }
 
@@ -92,7 +87,7 @@ export async function getNearbyFacilities(
   radiusMeters = 2000,
   limit = 5
 ): Promise<NearbyFacilitiesResult> {
-  const supabase = getAnonClient();
+  const supabase = await createServerClient();
 
   const [toiletsResult, wifiResult, parkingResult, evResult] = await Promise.allSettled([
     supabase.rpc("get_nearby_public_toilets", {
