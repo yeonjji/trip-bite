@@ -22,6 +22,8 @@ import { getNearbyTourRecommendations, getNearbyFoodItems } from "@/lib/data/nea
 import NaverMap from "@/components/maps/NaverMap";
 import ShareButton from "@/components/shared/ShareButton";
 import FacilityNearbySections from "@/components/nearby/FacilityNearbySection";
+import { getNearbyShops } from "@/lib/data/nearby-shops";
+import NearbyShopsTravelSection from "@/components/nearby/NearbyShopsTravelSection";
 
 export const dynamic = "force-dynamic";
 
@@ -127,13 +129,14 @@ export default async function EvChargingDetailPage({ params }: PageProps) {
   const hasLocation = !isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0;
 
   const tourTabOrder = ["accommodation", "travel", "festival"] as const;
-  const [restaurantItems, cafeItems, tourRecs] = hasLocation
+  const [restaurantItems, cafeItems, tourRecs, nearbyShops] = hasLocation
     ? await Promise.all([
         getNearbyFoodItems({ lat, lng, type: "restaurant", limit: 8 }),
         getNearbyFoodItems({ lat, lng, type: "cafe", limit: 8 }),
         getNearbyTourRecommendations({ lat, lng, types: [...tourTabOrder], limitPerType: 6 }),
+        getNearbyShops(lat, lng),
       ])
-    : [[], [], { travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }];
+    : [[], [], { travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }, null];
 
   // output kW 기준으로 급속/완속 판단 (22kW 초과 = 급속)
   const hasFast = chargers.some((c) => parseFloat(c.output) > 22);
@@ -411,6 +414,8 @@ export default async function EvChargingDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+
+        {nearbyShops && <NearbyShopsTravelSection shops={nearbyShops} isKo={isKo} />}
 
         {hasLocation && (
           <FacilityNearbySections

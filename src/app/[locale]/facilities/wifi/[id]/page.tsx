@@ -18,6 +18,8 @@ import { getNearbyTourRecommendations, getNearbyFoodItems } from "@/lib/data/nea
 import NaverMap from "@/components/maps/NaverMap";
 import ShareButton from "@/components/shared/ShareButton";
 import FacilityNearbySections from "@/components/nearby/FacilityNearbySection";
+import { getNearbyShops } from "@/lib/data/nearby-shops";
+import NearbyShopsTravelSection from "@/components/nearby/NearbyShopsTravelSection";
 
 export const dynamic = "force-dynamic";
 
@@ -67,13 +69,14 @@ export default async function WifiDetailPage({ params }: PageProps) {
   const hasLocation = lat !== null && lng !== null && lat !== 0 && lng !== 0;
 
   const tourTabOrder = ["travel", "festival", "accommodation"] as const;
-  const [restaurantItems, cafeItems, tourRecs] = hasLocation
+  const [restaurantItems, cafeItems, tourRecs, nearbyShops] = hasLocation
     ? await Promise.all([
         getNearbyFoodItems({ lat: lat!, lng: lng!, type: "restaurant", limit: 8 }),
         getNearbyFoodItems({ lat: lat!, lng: lng!, type: "cafe", limit: 8 }),
         getNearbyTourRecommendations({ lat: lat!, lng: lng!, types: [...tourTabOrder], limitPerType: 6 }),
+        getNearbyShops(lat!, lng!),
       ])
-    : [[], [], { travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }];
+    : [[], [], { travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }, null];
   const address = wifi.address_road || wifi.address_jibun || "";
   const region = [wifi.sigungu_name, wifi.sido_name].filter(Boolean).join(" ");
 
@@ -273,6 +276,8 @@ export default async function WifiDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+
+        {nearbyShops && <NearbyShopsTravelSection shops={nearbyShops} isKo={isKo} />}
 
         {hasLocation && (
           <FacilityNearbySections

@@ -24,6 +24,8 @@ import { getToiletById } from "@/lib/data/public-toilets";
 import { getNearbyTourRecommendations, getNearbyFoodItems } from "@/lib/data/nearby-tour-recommendations";
 import NaverMap from "@/components/maps/NaverMap";
 import FacilityNearbySections from "@/components/nearby/FacilityNearbySection";
+import { getNearbyShops } from "@/lib/data/nearby-shops";
+import NearbyShopsTravelSection from "@/components/nearby/NearbyShopsTravelSection";
 
 export const dynamic = "force-dynamic";
 
@@ -73,13 +75,14 @@ export default async function RestroomDetailPage({ params }: PageProps) {
   const hasLocation = lat !== null && lng !== null && lat !== 0 && lng !== 0;
 
   const tourTabOrder = ["travel", "festival", "accommodation"] as const;
-  const [restaurantItems, cafeItems, tourRecs] = hasLocation
+  const [restaurantItems, cafeItems, tourRecs, nearbyShops] = hasLocation
     ? await Promise.all([
         getNearbyFoodItems({ lat: lat!, lng: lng!, type: "restaurant", limit: 8 }),
         getNearbyFoodItems({ lat: lat!, lng: lng!, type: "cafe", limit: 8 }),
         getNearbyTourRecommendations({ lat: lat!, lng: lng!, types: [...tourTabOrder], limitPerType: 6 }),
+        getNearbyShops(lat!, lng!),
       ])
-    : [[], [], { travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }];
+    : [[], [], { travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }, null];
   const address = toilet.address_road || toilet.address_jibun || "";
   const disabledTotal = (toilet.disabled_male ?? 0) + (toilet.disabled_female ?? 0);
 
@@ -353,6 +356,8 @@ export default async function RestroomDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+
+        {nearbyShops && <NearbyShopsTravelSection shops={nearbyShops} isKo={isKo} />}
 
         {hasLocation && (
           <FacilityNearbySections
