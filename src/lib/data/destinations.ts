@@ -130,6 +130,91 @@ export async function getDestinations(params: {
   return { items, totalCount: count ?? 0, petInfoMap };
 }
 
+/**
+ * Shell loader — page-shell에 즉시 필요한 데이터만 한 번에 fetch.
+ * SEO/LCP/뱃지에 필요한 destination + detailCommon + petPlace + barrierFreePlace 만 포함.
+ * intro / images / wiki / kakao / petTourInfo는 Suspense 안에서 별도 fetch.
+ */
+export const getDestinationShell = cache(async function getDestinationShell(contentId: string): Promise<{
+  destination: Destination | null;
+  detail: TourDetailCommon | null;
+  petPlace: PetFriendlyPlace | null;
+  barrierFreePlace: BarrierFreePlace | null;
+}> {
+  const supabase = await createClient();
+
+  const [rowRes, petRes, barrierRes] = await Promise.allSettled([
+    supabase.from("destinations").select("*").eq("content_id", contentId).single(),
+    supabase.from("pet_friendly_places").select("*").eq("content_id", contentId).maybeSingle(),
+    supabase.from("barrier_free_places").select("*").eq("content_id", contentId).maybeSingle(),
+  ]);
+
+  const destination =
+    rowRes.status === "fulfilled" ? ((rowRes.value.data as Destination | null) ?? null) : null;
+  const petPlace =
+    petRes.status === "fulfilled" ? ((petRes.value.data as PetFriendlyPlace | null) ?? null) : null;
+  const barrierFreePlace =
+    barrierRes.status === "fulfilled"
+      ? ((barrierRes.value.data as BarrierFreePlace | null) ?? null)
+      : null;
+
+  // 24시간 캐시: 유효하면 Supabase row를 detail 형태로 변환, 만료/없으면 TourAPI detailCommon fetch
+  let freshDetail = null;
+  try {
+    freshDetail = await getCachedOrFetch(
+      destination?.cached_at ?? null,
+      DESTINATION_TTL_HOURS,
+      () => tourApi.detailCommon(contentId),
+    );
+  } catch {
+    // TourAPI 실패 시 Supabase 데이터로 fallback
+  }
+
+  let detail: TourDetailCommon | null = null;
+  if (freshDetail !== null) {
+    try {
+      const items = freshDetail.response.body.items;
+      detail =
+        items !== "" && Array.isArray(items.item) && items.item.length > 0 ? items.item[0] : null;
+    } catch {
+      detail = null;
+    }
+  } else if (destination) {
+    detail = {
+      contentid: destination.content_id,
+      contenttypeid: destination.content_type_id,
+      title: destination.title,
+      homepage: destination.homepage,
+      overview: destination.overview,
+      createdtime: destination.created_at,
+      modifiedtime: destination.updated_at,
+      tel: destination.tel,
+      addr1: destination.addr1,
+      addr2: destination.addr2,
+      mapx: destination.mapx != null ? String(destination.mapx) : undefined,
+      mapy: destination.mapy != null ? String(destination.mapy) : undefined,
+      firstimage: destination.first_image,
+      firstimage2: destination.first_image2,
+    };
+  }
+
+  return { destination, detail, petPlace, barrierFreePlace };
+});
+
+/** Streaming 전용: TourAPI detailIntro (운영시간/주차/체험안내/세계유산 등) */
+export async function getDestinationIntro(
+  contentId: string,
+  contentTypeId: string = "12",
+): Promise<TourSpotDetail | null> {
+  try {
+    const res = await tourApi.detailIntro(contentId, contentTypeId);
+    const items = res.response.body.items;
+    return items !== "" && items.item.length > 0 ? (items.item[0] as TourSpotDetail) : null;
+  } catch {
+    return null;
+  }
+}
+
 export const getDestinationDetail = cache(async function getDestinationDetail(contentId: string): Promise<{
   destination: Destination | null;
   detail: TourDetailCommon | null;
