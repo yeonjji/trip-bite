@@ -18,7 +18,7 @@ import NearbyFacilities from "@/app/[locale]/travel/_components/NearbyFacilities
 import NearbyTourRecommendationsSection from "@/components/nearby/NearbyTourRecommendations"
 import NearbyNaverPlaces from "@/components/nearby/NearbyNaverPlaces"
 import TravelBlogReviewSection from "@/components/travel/TravelBlogReviewSection"
-import NearbyShopsSection from "@/components/nearby/NearbyShopsSection"
+import NearbyShopsTravelSection from "@/components/nearby/NearbyShopsTravelSection"
 
 export const dynamic = "force-dynamic"
 
@@ -261,7 +261,7 @@ export default async function MarketDetailPage({ params }: Props) {
       {/* 여행 후기 */}
       {/* 주변 생활 편의 */}
       {nearbyShops && (
-        <NearbyShopsSection shops={nearbyShops} pageType="market" isKo={isKo} />
+        <NearbyShopsTravelSection shops={nearbyShops} isKo={isKo} />
       )}
 
       <TravelBlogReviewSection placeName={mktNm} regionName={regionName} />
