@@ -3,13 +3,11 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { tourApi } from "@/lib/api/tour-api";
-import { getCachedOrFetch } from "@/lib/utils/cache";
 import type { Destination } from "@/types/database";
 import type { TourDetailCommon, TourSpotDetail } from "@/types/tour-api";
 import type { PetFriendlyPlace } from "@/types/pet-friendly";
 import type { BarrierFreePlace } from "@/types/barrier-free";
 
-const DESTINATION_TTL_HOURS = 24;
 
 // 자연경관 + 고건물 위주, 신식건물 제외
 const HERO_KEYWORDS = [
@@ -156,45 +154,25 @@ export const getDestinationShell = cache(async function getDestinationShell(cont
       ? ((barrierRes.value.data as BarrierFreePlace | null) ?? null)
       : null;
 
-  // 24시간 캐시: 유효하면 Supabase row를 detail 형태로 변환, 만료/없으면 TourAPI detailCommon fetch
-  let freshDetail = null;
-  try {
-    freshDetail = await getCachedOrFetch(
-      destination?.cached_at ?? null,
-      DESTINATION_TTL_HOURS,
-      () => tourApi.detailCommon(contentId),
-    );
-  } catch {
-    // TourAPI 실패 시 Supabase 데이터로 fallback
-  }
-
-  let detail: TourDetailCommon | null = null;
-  if (freshDetail !== null) {
-    try {
-      const items = freshDetail.response.body.items;
-      detail =
-        items !== "" && Array.isArray(items.item) && items.item.length > 0 ? items.item[0] : null;
-    } catch {
-      detail = null;
-    }
-  } else if (destination) {
-    detail = {
-      contentid: destination.content_id,
-      contenttypeid: destination.content_type_id,
-      title: destination.title,
-      homepage: destination.homepage,
-      overview: destination.overview,
-      createdtime: destination.created_at,
-      modifiedtime: destination.updated_at,
-      tel: destination.tel,
-      addr1: destination.addr1,
-      addr2: destination.addr2,
-      mapx: destination.mapx != null ? String(destination.mapx) : undefined,
-      mapy: destination.mapy != null ? String(destination.mapy) : undefined,
-      firstimage: destination.first_image,
-      firstimage2: destination.first_image2,
-    };
-  }
+  // destinations row가 source of truth. sync-destinations.mjs가 TourAPI 데이터를 정기적으로 채움.
+  const detail: TourDetailCommon | null = destination
+    ? {
+        contentid: destination.content_id,
+        contenttypeid: destination.content_type_id,
+        title: destination.title,
+        homepage: destination.homepage,
+        overview: destination.overview,
+        createdtime: destination.created_at,
+        modifiedtime: destination.updated_at,
+        tel: destination.tel,
+        addr1: destination.addr1,
+        addr2: destination.addr2,
+        mapx: destination.mapx != null ? String(destination.mapx) : undefined,
+        mapy: destination.mapy != null ? String(destination.mapy) : undefined,
+        firstimage: destination.first_image,
+        firstimage2: destination.first_image2,
+      }
+    : null;
 
   return { destination, detail, petPlace, barrierFreePlace };
 });
