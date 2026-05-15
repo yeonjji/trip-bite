@@ -65,7 +65,7 @@ function commonParams() {
   return p;
 }
 
-async function fetchList(pageNo = 1, numOfRows = 100) {
+async function fetchList(pageNo = 1, numOfRows = 1000) {
   const p = commonParams();
   p.set("pageNo", String(pageNo));
   p.set("numOfRows", String(numOfRows));

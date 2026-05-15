@@ -28,7 +28,7 @@ async function fetchAreaBasedList(lDongRegnCd, contentTypeId, pageNo = 1) {
     MobileOS: "ETC",
     MobileApp: "TripBite",
     _type: "json",
-    numOfRows: "100",
+    numOfRows: "1000",
     pageNo: String(pageNo),
     lDongRegnCd,
     contentTypeId,
