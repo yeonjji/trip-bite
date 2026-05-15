@@ -147,7 +147,7 @@ export default async function CampingDetailPage({ params }: PageProps) {
   const [nearbyFacilities, nearbyShops, nearbyTourRecommendations, specialties] = await Promise.all([
     hasValidCoords
       ? getNearbyFacilities(lat!, lng!)
-      : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
+      : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [], errors: undefined }),
     hasValidCoords ? getNearbyShops(lat!, lng!) : Promise.resolve(null),
     hasValidCoords
       ? getNearbyTourRecommendations({

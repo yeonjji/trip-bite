@@ -100,7 +100,7 @@ export default async function TravelDetailPage({ params }: Props) {
 
   const [nearbyRestaurants, nearbyFacilities, specialties, nearbyTourRecommendations, nearbyShops] = await Promise.all([
     hasCoords ? getNearbyRestaurants(lat!, lng!, id) : Promise.resolve([]),
-    hasCoords ? getNearbyFacilities(lat!, lng!) : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
+    hasCoords ? getNearbyFacilities(lat!, lng!) : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [], errors: undefined }),
     provinceFullName ? getSpecialtiesByRegionName(provinceFullName, 5) : Promise.resolve([]),
     hasCoords
       ? getNearbyTourRecommendations({

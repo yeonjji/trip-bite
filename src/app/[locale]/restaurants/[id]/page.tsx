@@ -93,7 +93,7 @@ export default async function RestaurantDetailPage({ params }: Props) {
         }),
       ])
     : [
-        { toilets: [], wifi: [], parking: [], evStations: [] },
+        { toilets: [], wifi: [], parking: [], evStations: [], errors: undefined },
         null,
         { travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] },
       ]
