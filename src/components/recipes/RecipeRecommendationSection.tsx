@@ -30,10 +30,9 @@ export default async function RecipeRecommendationSection({ regionName, menuKeyw
       sub={sub}
       moreHref={`/${locale}/recipes`}
       moreLabel="레시피 전체"
+      showImage={false}
       items={scored.map(({ recipe: r, reason }) => ({
         href: `/${locale}/recipes/${r.id}`,
-        imageUrl: r.main_image_url,
-        imagePlaceholder: "🍽",
         tag: r.category ?? undefined,
         title: r.name,
         reason,
