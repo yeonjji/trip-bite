@@ -16,7 +16,7 @@ if (!SUPABASE_URL || !SERVICE_ROLE_KEY || !API_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 const BASE_URL = "https://apis.data.go.kr/B551011/DataLabService";
-const NUM_OF_ROWS = 100;
+const NUM_OF_ROWS = 1000;
 
 // 날짜 인자 파싱 (yyyyMMdd)
 function resolveDateRange() {

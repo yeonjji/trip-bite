@@ -50,7 +50,7 @@ function commonParams() {
 }
 
 // searchFestival2: 날짜 범위 + 지역코드로 축제 조회
-async function fetchFestivalPage(eventStartDate, areaCode, pageNo, numOfRows = 100) {
+async function fetchFestivalPage(eventStartDate, areaCode, pageNo, numOfRows = 1000) {
   const p = commonParams();
   p.set("eventStartDate", eventStartDate);
   p.set("areaCode", areaCode);

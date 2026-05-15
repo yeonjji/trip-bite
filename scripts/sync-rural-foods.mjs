@@ -60,7 +60,7 @@ function buildImageUrl(fileCours, thumbNm) {
   return `http://www.nongsaro.go.kr/${fileCours.replace(/^\//, "")}${thumbNm}`;
 }
 
-async function fetchList(pageNo, numOfRows = 100) {
+async function fetchList(pageNo, numOfRows = 1000) {
   const url = `${BASE}/fdNmLst?apiKey=${RURAL_API_KEY}&pageNo=${pageNo}&numOfRows=${numOfRows}&format=json`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -93,7 +93,7 @@ async function main() {
   const totalCount = first.totalCount;
   console.log(`총 향토음식 수: ${totalCount}건`);
 
-  const PAGE_SIZE = 100;
+  const PAGE_SIZE = 1000;
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
   let processed = 0;
   let failed = 0;
