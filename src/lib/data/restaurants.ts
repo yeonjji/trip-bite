@@ -1,9 +1,12 @@
 // P1-37: 맛집 데이터 레이어 (Supabase destinations, content_type_id='39')
 
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createAnonClient } from "@supabase/supabase-js";
+import { unstable_cache } from "next/cache";
 import { tourApi } from "@/lib/api/tour-api";
 import type { Destination } from "@/types/database";
 import type { TourDetailCommon, RestaurantDetail, TourImage } from "@/types/tour-api";
+import { roundCoord } from "@/lib/utils/cache-key";
 
 export async function getRestaurants(params: {
   areaCode?: string;
@@ -138,4 +141,55 @@ export async function getNearbyRestaurants(
   }
 
   return (data as Destination[]) ?? [];
+}
+
+function getAnonClient() {
+  return createAnonClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+}
+
+// 내부 캐시 함수: 라운딩된 좌표 + excludeId를 받아 인자 기반 키로 동작.
+const _nearbyRestaurantsCachedInner = unstable_cache(
+  async (
+    rLat: number,
+    rLng: number,
+    excludeContentId: string | null,
+    radiusMeters: number,
+    limit: number,
+  ): Promise<Destination[]> => {
+    const supabase = getAnonClient();
+    const { data, error } = await supabase.rpc("get_nearby_restaurants", {
+      lat:           rLat,
+      lng:           rLng,
+      radius_meters: radiusMeters,
+      result_limit:  limit,
+      exclude_id:    excludeContentId,
+    });
+    if (error) {
+      console.error("[getNearbyRestaurantsCached] RPC error:", error.message);
+      return [];
+    }
+    return (data as Destination[]) ?? [];
+  },
+  ["nearby-restaurants"],
+  { revalidate: 3600, tags: ["nearby-restaurants"] },
+);
+
+// 캐시된 버전 — 상세 페이지 Suspense 내부 전용.
+export function getNearbyRestaurantsCached(
+  lat: number,
+  lng: number,
+  excludeContentId?: string,
+  radiusMeters = 5000,
+  limit = 4,
+): Promise<Destination[]> {
+  return _nearbyRestaurantsCachedInner(
+    roundCoord(lat),
+    roundCoord(lng),
+    excludeContentId ?? null,
+    radiusMeters,
+    limit,
+  );
 }
