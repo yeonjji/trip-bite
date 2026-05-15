@@ -85,8 +85,8 @@ export async function getRestaurantDetail(contentId: string): Promise<{
     throw new Error(`맛집 상세 조회 실패: ${error.message}`);
   }
 
-  // destinations 행(content_type_id='39')이 source of truth. detailCommon 호출 불필요.
-  // detailIntro/detailImage는 DB 컬럼이 아직 없어 외부 호출 유지 (TODO: Step 2 plan).
+  // destinations 행(content_type_id='39')이 source of truth. detail은 row에서 직접 구성,
+  // intro/image는 destinations.intro_data / image_data jsonb 컬럼 (DB-first, Step 2 plan).
   const dest = (destination as Destination) ?? null;
   const detail: TourDetailCommon | null = dest
     ? {
