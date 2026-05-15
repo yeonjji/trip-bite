@@ -2,14 +2,14 @@ import { notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 3600
 
 import { getDestinationDetail } from "@/lib/data/destinations"
-import { getNearbyRestaurants } from "@/lib/data/restaurants"
-import { getSpecialtiesByRegionName } from "@/lib/data/specialties"
-import { getNearbyFacilities } from "@/lib/data/nearby-facilities"
-import { getNearbyShops } from "@/lib/data/nearby-shops"
-import { getNearbyTourRecommendations } from "@/lib/data/nearby-tour-recommendations"
+import { getNearbyRestaurantsCached } from "@/lib/data/restaurants"
+import { getSpecialtiesByRegionNameCached } from "@/lib/data/specialties"
+import { getNearbyFacilitiesCached } from "@/lib/data/nearby-facilities"
+import { getNearbyShopsCached } from "@/lib/data/nearby-shops"
+import { getNearbyTourRecommendationsCached } from "@/lib/data/nearby-tour-recommendations"
 import { buildAlternates } from "@/lib/utils/metadata"
 import HorizontalScrollSection from "@/components/shared/HorizontalScrollSection"
 import { getAreaName } from "@/lib/constants/area-codes"
@@ -101,18 +101,13 @@ export default async function TravelDetailPage({ params }: Props) {
   const provinceFullName = addr1.split(" ")[0] ?? ""
 
   const [nearbyRestaurants, nearbyFacilities, specialties, nearbyTourRecommendations, nearbyShops] = await Promise.all([
-    hasCoords ? getNearbyRestaurants(lat!, lng!, id) : Promise.resolve([]),
-    hasCoords ? getNearbyFacilities(lat!, lng!) : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [], errors: undefined }),
-    provinceFullName ? getSpecialtiesByRegionName(provinceFullName, 5) : Promise.resolve([]),
+    hasCoords ? getNearbyRestaurantsCached(lat!, lng!, id) : Promise.resolve([]),
+    hasCoords ? getNearbyFacilitiesCached(lat!, lng!) : Promise.resolve({ toilets: [], wifi: [], parking: [], evStations: [] }),
+    provinceFullName ? getSpecialtiesByRegionNameCached(provinceFullName, 5) : Promise.resolve([]),
     hasCoords
-      ? getNearbyTourRecommendations({
-          lat: lat!,
-          lng: lng!,
-          excludeContentId: id,
-          types: ["festival", "accommodation", "travel"],
-        })
+      ? getNearbyTourRecommendationsCached(lat!, lng!, id, ["festival", "accommodation", "travel"])
       : Promise.resolve({ travel: [], festival: [], accommodation: [], restaurant: [], cafe: [] }),
-    hasCoords ? getNearbyShops(lat!, lng!) : Promise.resolve(null),
+    hasCoords ? getNearbyShopsCached(lat!, lng!) : Promise.resolve(null),
   ])
 
   const galleryImages = images.map((img) => ({
@@ -481,7 +476,6 @@ export default async function TravelDetailPage({ params }: Props) {
         evStations={nearbyFacilities.evStations}
         lat={lat}
         lng={lng}
-        errors={nearbyFacilities.errors}
       />
 
       {/* 주변 생활 편의 */}
