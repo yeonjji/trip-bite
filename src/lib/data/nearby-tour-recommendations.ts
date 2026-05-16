@@ -1,6 +1,5 @@
-import { tourApi } from "@/lib/api/tour-api";
 import { unstable_cache } from "next/cache";
-import type { TourSpotBase } from "@/types/tour-api";
+import { createClient } from "@/lib/supabase/server";
 
 export type NearbyTourType = "travel" | "festival" | "accommodation" | "restaurant" | "cafe";
 
@@ -26,67 +25,48 @@ const CONTENT_TYPE_BY_NEARBY_TYPE: Record<NearbyTourType, string> = {
   cafe: "39",
 };
 
-// 카페/전통찻집 cat3 코드 (TourAPI v4)
-const CAT3_BY_NEARBY_TYPE: Partial<Record<NearbyTourType, string>> = {
-  cafe: "A05020900",
-};
-
 export const NEARBY_TOUR_PLACEHOLDER_IMAGE = "/file.svg";
 
 const DEFAULT_RADIUS_METERS = 15_000;
-const FETCH_POOL_SIZE = 30;
 
-function toArray<T>(value: T[] | T | undefined | null): T[] {
-  if (!value) return [];
-  return Array.isArray(value) ? value : [value];
+// RPC row shape (migration 041 RETURNS TABLE 일치)
+interface NearbyTourRpcRow {
+  content_id: string;
+  content_type_id: string;
+  title: string;
+  addr1: string;
+  first_image: string | null;
+  lat: number;
+  lng: number;
+  distance_km: number;
 }
 
-function toNumber(value: unknown): number | null {
-  const n = Number(value);
-  return Number.isFinite(n) ? n : null;
+function contentTypeIdToNearbyType(contentTypeId: string): NearbyTourType | null {
+  switch (contentTypeId) {
+    case "12":
+      return "travel";
+    case "15":
+      return "festival";
+    case "32":
+      return "accommodation";
+    case "39":
+      return "restaurant"; // cafe와 restaurant은 동일 content_type_id, 호출 시 type 지정으로 구분
+    default:
+      return null;
+  }
 }
 
-export function calculateDistanceKm(
-  from: { lat: number; lng: number },
-  to: { lat: number; lng: number }
-): number {
-  const earthRadiusKm = 6371;
-  const toRad = (degree: number) => (degree * Math.PI) / 180;
-  const dLat = toRad(to.lat - from.lat);
-  const dLng = toRad(to.lng - from.lng);
-  const lat1 = toRad(from.lat);
-  const lat2 = toRad(to.lat);
-
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  return Math.round(earthRadiusKm * c * 10) / 10;
-}
-
-export function normalizeNearbyTourItem(
-  item: TourSpotBase,
-  type: NearbyTourType,
-  origin: { lat: number; lng: number }
-): NearbyTourItem | null {
-  const lat = toNumber(item.mapy);
-  const lng = toNumber(item.mapx);
-  const contentId = item.contentid ? String(item.contentid) : "";
-  const title = item.title?.trim() ?? "";
-
-  if (!contentId || !title || lat === null || lng === null) return null;
-
+function rowToNearbyTourItem(row: NearbyTourRpcRow, type: NearbyTourType): NearbyTourItem {
   return {
-    id: `${type}-${contentId}`,
-    contentId,
-    title,
+    id: `${type}-${row.content_id}`,
+    contentId: row.content_id,
+    title: row.title,
     type,
-    address: [item.addr1, item.addr2].filter(Boolean).join(" "),
-    image: item.firstimage || item.firstimage2 || NEARBY_TOUR_PLACEHOLDER_IMAGE,
-    lat,
-    lng,
-    distance: calculateDistanceKm(origin, { lat, lng }),
+    address: row.addr1,
+    image: row.first_image || NEARBY_TOUR_PLACEHOLDER_IMAGE,
+    lat: row.lat,
+    lng: row.lng,
+    distance: row.distance_km,
   };
 }
 
@@ -105,33 +85,24 @@ export async function getNearbyTourItems({
   limit?: number;
   radiusMeters?: number;
 }): Promise<NearbyTourItem[]> {
-  try {
-    const response = await tourApi.locationBasedList({
-      mapX: lng,
-      mapY: lat,
-      radius: radiusMeters,
-      contentTypeId: CONTENT_TYPE_BY_NEARBY_TYPE[type],
-      cat3: CAT3_BY_NEARBY_TYPE[type],
-      arrange: "E",
-      pageNo: 1,
-      numOfRows: FETCH_POOL_SIZE,
-    });
+  const supabase = await createClient();
+  const contentTypeId = CONTENT_TYPE_BY_NEARBY_TYPE[type];
 
-    const rawItems = response.response.body.items === ""
-      ? []
-      : toArray(response.response.body.items.item);
+  const { data, error } = await supabase.rpc("get_nearby_tour_items", {
+    p_lat: lat,
+    p_lng: lng,
+    p_exclude: excludeContentId ?? null,
+    p_types: [contentTypeId],
+    radius_meters: radiusMeters,
+    result_limit: limit,
+  });
 
-    return rawItems
-      .filter((item) => String(item.contentid) !== String(excludeContentId ?? ""))
-      .filter((item) => item.firstimage || item.firstimage2)
-      .map((item) => normalizeNearbyTourItem(item, type, { lat, lng }))
-      .filter((item): item is NearbyTourItem => item !== null)
-      .sort((a, b) => a.distance - b.distance)
-      .slice(0, limit);
-  } catch (error) {
-    console.error(`nearby ${type} fetch error:`, error instanceof Error ? error.message : error);
+  if (error) {
+    console.error(`nearby ${type} RPC error:`, error.message);
     return [];
   }
+
+  return ((data as NearbyTourRpcRow[]) ?? []).map((row) => rowToNearbyTourItem(row, type));
 }
 
 export async function getNearbyTourRecommendations({
@@ -147,20 +118,37 @@ export async function getNearbyTourRecommendations({
   types?: NearbyTourType[];
   limitPerType?: number;
 }): Promise<NearbyTourRecommendations> {
-  const entries = await Promise.all(
-    types.map(async (type) => [
-      type,
-      await getNearbyTourItems({ lat, lng, type, excludeContentId, limit: limitPerType }),
-    ] as const)
+  const contentTypeIds = Array.from(
+    new Set(types.map((t) => CONTENT_TYPE_BY_NEARBY_TYPE[t])),
   );
 
-  return {
-    travel: entries.find(([type]) => type === "travel")?.[1] ?? [],
-    festival: entries.find(([type]) => type === "festival")?.[1] ?? [],
-    accommodation: entries.find(([type]) => type === "accommodation")?.[1] ?? [],
-    restaurant: entries.find(([type]) => type === "restaurant")?.[1] ?? [],
-    cafe: entries.find(([type]) => type === "cafe")?.[1] ?? [],
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("get_nearby_tour_items", {
+    p_lat: lat,
+    p_lng: lng,
+    p_exclude: excludeContentId ?? null,
+    p_types: contentTypeIds,
+    radius_meters: DEFAULT_RADIUS_METERS,
+    result_limit: limitPerType * contentTypeIds.length,
+  });
+
+  const empty: NearbyTourRecommendations = {
+    travel: [], festival: [], accommodation: [], restaurant: [], cafe: [],
   };
+
+  if (error) {
+    console.error("getNearbyTourRecommendations RPC error:", error.message);
+    return empty;
+  }
+
+  const grouped: NearbyTourRecommendations = { ...empty };
+  for (const row of ((data as NearbyTourRpcRow[]) ?? [])) {
+    const nearbyType = contentTypeIdToNearbyType(row.content_type_id);
+    if (!nearbyType || !types.includes(nearbyType)) continue;
+    if (grouped[nearbyType].length >= limitPerType) continue;
+    grouped[nearbyType].push(rowToNearbyTourItem(row, nearbyType));
+  }
+  return grouped;
 }
 
 export const getNearbyTourRecommendationsCached = unstable_cache(
