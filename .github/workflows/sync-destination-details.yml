@@ -4,8 +4,8 @@ name: sync-destination-details
 # KST 02:00 (UTC 17:00) 매일 실행. 수동 실행도 가능.
 
 on:
-  schedule:
-    - cron: "0 17 * * *"
+  # PR1 후속: 스케줄 비활성화 (sync-destination-intros.yml / sync-destination-images.yml로 분할됨).
+  # 수동 실행은 rollback용으로 유지. PR3에서 파일 자체 삭제 예정.
   workflow_dispatch:
 
 jobs:
