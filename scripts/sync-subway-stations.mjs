@@ -97,8 +97,9 @@ async function main() {
     phone:       header.findIndex((h) => h.includes("전화번호")),
   };
 
-  const rows = [];
+  const byStationId = new Map();
   let skipped = 0;
+  let mergedLines = 0;
 
   for (let i = 1; i < lines.length; i++) {
     const fields = parseCsvLine(lines[i]);
@@ -107,15 +108,29 @@ async function main() {
     const lat = parseFloat(fields[idx.lat]);
     const lng = parseFloat(fields[idx.lng]);
 
-    if (!stationId || !stationName || isNaN(lat) || isNaN(lng)) {
+    if (!stationId || !stationName || Number.isNaN(lat) || Number.isNaN(lng)) {
       skipped++;
       continue;
     }
 
-    rows.push({
+    const newLineName = fields[idx.lineName]?.trim() ?? "";
+    const existing = byStationId.get(stationId);
+
+    if (existing) {
+      // 환승역: 같은 station_id가 여러 노선에 등록됨 → line_name을 ", "로 합침
+      if (newLineName && !existing.line_name.split(", ").includes(newLineName)) {
+        existing.line_name = existing.line_name
+          ? `${existing.line_name}, ${newLineName}`
+          : newLineName;
+        mergedLines++;
+      }
+      continue;
+    }
+
+    byStationId.set(stationId, {
       station_id:    stationId,
       station_name:  stationName,
-      line_name:     fields[idx.lineName]?.trim() ?? "",
+      line_name:     newLineName,
       road_address:  idx.roadAddress >= 0 ? fields[idx.roadAddress]?.trim() || null : null,
       jibun_address: idx.jibunAddress >= 0 ? fields[idx.jibunAddress]?.trim() || null : null,
       lat,
@@ -126,15 +141,18 @@ async function main() {
     });
   }
 
-  console.log(`파싱 완료: ${rows.length}건, 스킵 ${skipped}건 (필수 필드 누락)`);
+  const rows = [...byStationId.values()];
+  console.log(`파싱 완료: ${rows.length}건 (환승역 노선 병합 ${mergedLines}건), 스킵 ${skipped}건`);
 
   let totalUpserted = 0;
+  let failedBatches = 0;
   for (let i = 0; i < rows.length; i += BATCH_SIZE) {
     const batch = rows.slice(i, i + BATCH_SIZE);
     const { error, count } = await supabase
       .from("subway_stations")
       .upsert(batch, { onConflict: "station_id", count: "exact" });
     if (error) {
+      failedBatches++;
       console.error(`  ❌ batch ${i}~${i + batch.length}: ${error.message}`);
       continue;
     }
@@ -142,6 +160,10 @@ async function main() {
     console.log(`  진행: ${totalUpserted}/${rows.length}`);
   }
 
+  if (failedBatches > 0) {
+    console.error(`\n⚠️  완료(부분 실패)! 업서트 ${totalUpserted}건 / 스킵 ${skipped}건 / 실패 batch ${failedBatches}개`);
+    process.exit(1);
+  }
   console.log(`\n🎉 완료! 업서트 ${totalUpserted}건 / 스킵 ${skipped}건`);
 }
 
