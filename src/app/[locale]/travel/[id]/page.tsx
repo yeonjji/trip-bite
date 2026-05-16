@@ -7,12 +7,11 @@ export const revalidate = 3600
 import { Suspense } from "react"
 import { getDestinationShell } from "@/lib/data/destinations"
 import { buildAlternates } from "@/lib/utils/metadata"
-import { getAccessibilityInfo } from "@/lib/data/accessibility"
 import Rating from "@/components/shared/Rating"
 import ImageGallery from "@/components/shared/ImageGallery"
 import ShareButton from "@/components/shared/ShareButton"
 import ReviewSection from "@/components/reviews/ReviewSection"
-import AccessibilityBadge from "@/components/shared/AccessibilityBadge"
+import AccessibilityBadgesSection from "@/components/travel/AccessibilityBadgesSection"
 import WeatherWidget from "@/components/weather/WeatherWidget"
 import NaverMap from "@/components/maps/NaverMap"
 import { buildNaverMapUrl } from "@/lib/utils/map"
@@ -82,10 +81,6 @@ export default async function TravelDetailPage({ params }: Props) {
     notFound()
   }
 
-  const accessibility = destination?.id
-    ? await getAccessibilityInfo(destination.id)
-    : null
-
   const isKo = locale === "ko"
 
   const title = detail?.title ?? destination?.title ?? fallback?.title ?? ""
@@ -136,16 +131,10 @@ export default async function TravelDetailPage({ params }: Props) {
       </div>
 
       {/* 접근성 뱃지 */}
-      {accessibility && (
-        accessibility.pet_possible ||
-        accessibility.wheelchair ||
-        accessibility.foreign_friendly
-      ) && (
-        <div className="mb-4 flex flex-wrap gap-2">
-          {accessibility.pet_possible && <AccessibilityBadge type="pet" />}
-          {accessibility.wheelchair && <AccessibilityBadge type="wheelchair" />}
-          {accessibility.foreign_friendly && <AccessibilityBadge type="foreign" />}
-        </div>
+      {destination?.id && (
+        <Suspense fallback={null}>
+          <AccessibilityBadgesSection destinationId={destination.id} />
+        </Suspense>
       )}
 
       <div className="mb-2 flex justify-end">
