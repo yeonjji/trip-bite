@@ -55,9 +55,9 @@ async function processRow({ content_id }) {
   if (delErr) throw delErr;
 
   if (images.length === 0) {
-    // 빈 응답이면 "처리 완료" 마커가 없으므로 다음 실행 시 또 시도됨.
-    // 명시적 sentinel row가 필요한 경우 별도 컬럼 추가 (현재는 단순화).
-    return { inserted: 0 };
+    // 빈 응답: DB에 sentinel row가 없어 다음 실행 시 다시 후보가 됨.
+    // 같은 세션에서는 재시도 안 하도록 caller에서 emptyIds Set에 추가.
+    return { inserted: 0, empty: true };
   }
 
   const rows = images.map((img, i) => ({
@@ -67,11 +67,11 @@ async function processRow({ content_id }) {
     serial_num: typeof img.serialnum === "string" ? parseInt(img.serialnum, 10) : (img.serialnum ?? i),
   })).filter((r) => r.origin_url);
 
-  if (rows.length === 0) return { inserted: 0 };
+  if (rows.length === 0) return { inserted: 0, empty: true };
 
   const { error: insErr } = await supabase.from("destination_images").insert(rows);
   if (insErr) throw insErr;
-  return { inserted: rows.length };
+  return { inserted: rows.length, empty: false };
 }
 
 async function fetchPendingBatch(excludeIds) {
@@ -98,22 +98,30 @@ async function main() {
   console.log("🖼  destination_images 동기화 시작...\n");
   let totalProcessed = 0;
   let totalInserted = 0;
+  let totalEmpty = 0;
   let totalErrors = 0;
   const failedIds = new Set();
+  const emptyIds = new Set();
 
   while (true) {
-    const batch = await fetchPendingBatch([...failedIds]);
+    const batch = await fetchPendingBatch([...failedIds, ...emptyIds]);
     if (batch.length === 0) break;
 
     let progressedThisBatch = 0;
     for (const row of batch) {
       try {
-        const { inserted } = await processRow(row);
+        const { inserted, empty } = await processRow(row);
         totalProcessed++;
         totalInserted += inserted;
+        if (empty) {
+          emptyIds.add(row.content_id);
+          totalEmpty++;
+        }
         progressedThisBatch++;
         if (totalProcessed % 50 === 0) {
-          console.log(`  진행: ${totalProcessed}건 (이미지 ${totalInserted}장)`);
+          console.log(
+            `  진행: ${totalProcessed}건 (이미지 ${totalInserted}장 / 빈 응답 ${totalEmpty}건)`,
+          );
         }
       } catch (err) {
         totalErrors++;
@@ -130,7 +138,7 @@ async function main() {
   }
 
   console.log(
-    `\n🎉 완료! 처리 ${totalProcessed}건 / 이미지 ${totalInserted}장 / 실패 ${totalErrors}건`,
+    `\n🎉 완료! 처리 ${totalProcessed}건 / 이미지 ${totalInserted}장 / 빈 응답 ${totalEmpty}건 / 실패 ${totalErrors}건`,
   );
   if (totalErrors > 0) process.exit(1);
 }
