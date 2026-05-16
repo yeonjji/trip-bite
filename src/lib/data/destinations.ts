@@ -179,9 +179,8 @@ export const getDestinationShell = cache(async function getDestinationShell(cont
 /**
  * Streaming 전용: detailIntro 데이터 (운영시간/주차/체험안내/세계유산 등).
  *
- * DB-only. source of truth = sync-destination-details.mjs로 적재된 intro_data.
+ * DB-only. source of truth = destination_intros 테이블 (sync-destination-intros.mjs).
  * 백필 안 된 row는 null → IntroSection이 "정보없음"으로 처리.
- * 외부 호출 fallback 없음 (TourAPI 한도 영향 0).
  */
 export async function getDestinationIntro(
   contentId: string,
@@ -189,12 +188,17 @@ export async function getDestinationIntro(
   const supabase = await createClient();
 
   const { data: row } = await supabase
-    .from("destinations")
-    .select("intro_data")
+    .from("destination_intros")
+    .select("common_fields, extras")
     .eq("content_id", contentId)
     .maybeSingle();
 
-  return row?.intro_data != null ? (row.intro_data as unknown as TourSpotDetail) : null;
+  if (!row) return null;
+
+  const common = (row.common_fields ?? {}) as Record<string, unknown>;
+  const extras = (row.extras ?? {}) as Record<string, unknown>;
+
+  return { ...common, ...extras } as unknown as TourSpotDetail;
 }
 
 /**
