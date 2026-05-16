@@ -202,22 +202,29 @@ export async function getDestinationIntro(
 }
 
 /**
- * 상세 이미지 갤러리 데이터 (destinations 테이블 image_data 컬럼).
+ * 상세 이미지 갤러리 데이터 (destination_images 테이블 1:N).
  *
- * DB-only. source of truth = sync-destination-details.mjs로 적재된 image_data.
- * 백필 안 된 row는 [] 반환 (galleryImages에 합쳐져 firstimage 정도만 표시됨).
+ * DB-only. source of truth = sync-destination-images.mjs.
+ * serial_num 오름차순.
  */
 export async function getDestinationImagesFromDb(
   contentId: string,
 ): Promise<TourImage[]> {
   const supabase = await createClient();
 
-  const { data: row } = await supabase
-    .from("destinations")
-    .select("image_data")
+  const { data } = await supabase
+    .from("destination_images")
+    .select("origin_url, image_name, serial_num")
     .eq("content_id", contentId)
-    .maybeSingle();
+    .order("serial_num", { ascending: true });
 
-  return Array.isArray(row?.image_data) ? (row.image_data as unknown as TourImage[]) : [];
+  return (data ?? []).map((r) => ({
+    contentid: contentId,
+    originimgurl: r.origin_url,
+    imgname: r.image_name ?? "",
+    smallimageurl: r.origin_url,
+    serialnum: r.serial_num != null ? String(r.serial_num) : "",
+    cpyrhtDivCd: "",
+  } as unknown as TourImage));
 }
 
