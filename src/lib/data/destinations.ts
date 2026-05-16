@@ -179,9 +179,8 @@ export const getDestinationShell = cache(async function getDestinationShell(cont
 /**
  * Streaming 전용: detailIntro 데이터 (운영시간/주차/체험안내/세계유산 등).
  *
- * DB-only. source of truth = sync-destination-details.mjs로 적재된 intro_data.
+ * DB-only. source of truth = destination_intros 테이블 (sync-destination-intros.mjs).
  * 백필 안 된 row는 null → IntroSection이 "정보없음"으로 처리.
- * 외부 호출 fallback 없음 (TourAPI 한도 영향 0).
  */
 export async function getDestinationIntro(
   contentId: string,
@@ -189,31 +188,43 @@ export async function getDestinationIntro(
   const supabase = await createClient();
 
   const { data: row } = await supabase
-    .from("destinations")
-    .select("intro_data")
+    .from("destination_intros")
+    .select("common_fields, extras")
     .eq("content_id", contentId)
     .maybeSingle();
 
-  return row?.intro_data != null ? (row.intro_data as unknown as TourSpotDetail) : null;
+  if (!row) return null;
+
+  const common = (row.common_fields ?? {}) as Record<string, unknown>;
+  const extras = (row.extras ?? {}) as Record<string, unknown>;
+
+  return { ...common, ...extras } as unknown as TourSpotDetail;
 }
 
 /**
- * 상세 이미지 갤러리 데이터 (destinations 테이블 image_data 컬럼).
+ * 상세 이미지 갤러리 데이터 (destination_images 테이블 1:N).
  *
- * DB-only. source of truth = sync-destination-details.mjs로 적재된 image_data.
- * 백필 안 된 row는 [] 반환 (galleryImages에 합쳐져 firstimage 정도만 표시됨).
+ * DB-only. source of truth = sync-destination-images.mjs.
+ * serial_num 오름차순.
  */
 export async function getDestinationImagesFromDb(
   contentId: string,
 ): Promise<TourImage[]> {
   const supabase = await createClient();
 
-  const { data: row } = await supabase
-    .from("destinations")
-    .select("image_data")
+  const { data } = await supabase
+    .from("destination_images")
+    .select("origin_url, image_name, serial_num")
     .eq("content_id", contentId)
-    .maybeSingle();
+    .order("serial_num", { ascending: true });
 
-  return Array.isArray(row?.image_data) ? (row.image_data as unknown as TourImage[]) : [];
+  return (data ?? []).map((r) => ({
+    contentid: contentId,
+    originimgurl: r.origin_url,
+    imgname: r.image_name ?? "",
+    smallimageurl: r.origin_url,
+    serialnum: r.serial_num != null ? String(r.serial_num) : "",
+    cpyrhtDivCd: "",
+  } as unknown as TourImage));
 }
 

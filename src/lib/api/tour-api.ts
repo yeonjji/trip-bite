@@ -71,21 +71,6 @@ export const tourApi = {
     return fetchTourApi<TourSpotBase>("searchKeyword2", searchParams);
   },
 
-  // 위치 기반 관광정보 조회
-  locationBasedList(params: TourApiListParams): Promise<ApiResponse<TourSpotBase>> {
-    const searchParams = getCommonParams();
-    if (params.numOfRows !== undefined) searchParams.set("numOfRows", String(params.numOfRows));
-    if (params.pageNo !== undefined) searchParams.set("pageNo", String(params.pageNo));
-    if (params.contentTypeId) searchParams.set("contentTypeId", params.contentTypeId);
-    if (params.arrange) searchParams.set("arrange", params.arrange);
-    if (params.mapX !== undefined) searchParams.set("mapX", String(params.mapX));
-    if (params.mapY !== undefined) searchParams.set("mapY", String(params.mapY));
-    if (params.radius !== undefined) searchParams.set("radius", String(params.radius));
-    if (params.cat3) searchParams.set("cat3", params.cat3);
-
-    return fetchTourApi<TourSpotBase>("locationBasedList2", searchParams);
-  },
-
   // P1-14: 공통 상세 조회
   detailCommon(contentId: string): Promise<ApiResponse<TourDetailCommon>> {
     const searchParams = getCommonParams();
