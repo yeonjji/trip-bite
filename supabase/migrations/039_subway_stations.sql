@@ -23,7 +23,6 @@ create trigger set_subway_stations_updated_at
   before update on public.subway_stations
   for each row execute function public.set_updated_at();
 
-create index if not exists subway_stations_station_id_idx on public.subway_stations(station_id);
 create index if not exists subway_stations_location_idx on public.subway_stations using gist(location);
 
 alter table public.subway_stations enable row level security;
@@ -79,3 +78,5 @@ language sql stable as $$
   order by s.location <-> origin.g
   limit result_limit;
 $$;
+
+grant execute on function public.get_nearby_subway(numeric, numeric, int, int) to anon, authenticated;
