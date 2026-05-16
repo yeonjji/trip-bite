@@ -2,7 +2,6 @@
 
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { tourApi } from "@/lib/api/tour-api";
 import type { Destination } from "@/types/database";
 import type { TourDetailCommon, TourSpotDetail, TourImage } from "@/types/tour-api";
 import type { PetFriendlyPlace } from "@/types/pet-friendly";
@@ -178,14 +177,14 @@ export const getDestinationShell = cache(async function getDestinationShell(cont
 });
 
 /**
- * Streaming 전용: detailIntro 데이터 가져오기 (운영시간/주차/체험안내/세계유산 등).
+ * Streaming 전용: detailIntro 데이터 (운영시간/주차/체험안내/세계유산 등).
  *
- * DB-first 패턴: destinations.intro_data 조회 → miss 시 외부 호출 + upsert.
- * 백필 완료 후에는 항상 DB hit. cold cache 대응으로 fallback 유지.
+ * DB-only. source of truth = sync-destination-details.mjs로 적재된 intro_data.
+ * 백필 안 된 row는 null → IntroSection이 "정보없음"으로 처리.
+ * 외부 호출 fallback 없음 (TourAPI 한도 영향 0).
  */
 export async function getDestinationIntro(
   contentId: string,
-  contentTypeId: string = "12",
 ): Promise<TourSpotDetail | null> {
   const supabase = await createClient();
 
@@ -195,33 +194,14 @@ export async function getDestinationIntro(
     .eq("content_id", contentId)
     .maybeSingle();
 
-  // DB hit: 빈 객체({})는 "백필됐지만 외부도 데이터 없었음" 마커 — 재호출 안 함.
-  if (row?.intro_data != null) {
-    return row.intro_data as unknown as TourSpotDetail;
-  }
-
-  // DB miss: 외부 호출 + upsert
-  try {
-    const res = await tourApi.detailIntro(contentId, contentTypeId);
-    const items = res.response.body.items;
-    const intro =
-      items !== "" && items.item.length > 0 ? (items.item[0] as TourSpotDetail) : null;
-
-    await supabase
-      .from("destinations")
-      .update({ intro_data: intro ?? {} })
-      .eq("content_id", contentId);
-
-    return intro;
-  } catch {
-    return null;
-  }
+  return row?.intro_data != null ? (row.intro_data as unknown as TourSpotDetail) : null;
 }
 
 /**
  * 상세 이미지 갤러리 데이터 (destinations 테이블 image_data 컬럼).
  *
- * DB-first 패턴: 조회 → miss 시 외부 호출 + upsert.
+ * DB-only. source of truth = sync-destination-details.mjs로 적재된 image_data.
+ * 백필 안 된 row는 [] 반환 (galleryImages에 합쳐져 firstimage 정도만 표시됨).
  */
 export async function getDestinationImagesFromDb(
   contentId: string,
@@ -234,24 +214,6 @@ export async function getDestinationImagesFromDb(
     .eq("content_id", contentId)
     .maybeSingle();
 
-  if (Array.isArray(row?.image_data)) {
-    return row.image_data as unknown as TourImage[];
-  }
-
-  // DB miss: 외부 호출 + upsert
-  try {
-    const res = await tourApi.detailImage(contentId);
-    const items = res.response.body.items;
-    const images: TourImage[] = items !== "" ? items.item : [];
-
-    await supabase
-      .from("destinations")
-      .update({ image_data: images })
-      .eq("content_id", contentId);
-
-    return images;
-  } catch {
-    return [];
-  }
+  return Array.isArray(row?.image_data) ? (row.image_data as unknown as TourImage[]) : [];
 }
 

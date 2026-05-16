@@ -2,14 +2,13 @@ import { getDestinationIntro } from "@/lib/data/destinations"
 
 interface Props {
   contentId: string
-  contentTypeId?: string
   isKo: boolean
 }
 
-export default async function IntroSection({ contentId, contentTypeId = "12", isKo }: Props) {
+export default async function IntroSection({ contentId, isKo }: Props) {
   let intro
   try {
-    intro = await getDestinationIntro(contentId, contentTypeId)
+    intro = await getDestinationIntro(contentId)
   } catch (err) {
     console.error("[IntroSection] failed:", err)
     return null

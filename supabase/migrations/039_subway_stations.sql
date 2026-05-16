@@ -2,6 +2,10 @@
 -- 출처: 공공데이터포털 "전국도시철도역사정보표준데이터" (CSV 일괄 적재)
 -- 패턴: nearby_facilities (toilets/wifi/parking/ev) 동일
 
+
+-- Supabase는 PostGIS를 extensions 스키마에 설치. geography/st_* 함수를
+-- 풀 qualifier 없이 쓰려면 search_path에 extensions 추가 필요.
+set local search_path = public, extensions;
 create table if not exists public.subway_stations (
   id              uuid primary key default gen_random_uuid(),
   station_id      text not null unique,
@@ -31,7 +35,10 @@ create policy "Anyone can read subway_stations"
 
 -- upsert 시 location 컬럼을 lat/lng로부터 자동 채우는 트리거
 create or replace function public.subway_stations_set_location()
-returns trigger language plpgsql as $$
+returns trigger
+language plpgsql
+set search_path = public, extensions
+as $$
 begin
   new.location := st_setsrid(st_makepoint(new.lng, new.lat), 4326)::geography;
   return new;
@@ -60,7 +67,9 @@ returns table (
   lng numeric,
   distance_m int
 )
-language sql stable as $$
+language sql stable
+set search_path = public, extensions
+as $$
   with origin as (
     select st_setsrid(st_makepoint(p_lng::float8, p_lat::float8), 4326)::geography g
   )

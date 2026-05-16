@@ -121,7 +121,6 @@ export default async function TravelDetailPage({ params }: Props) {
     return sigungu.replace(/(특별자치시|광역시|특별시|시|군|구)$/, "")
   })()
 
-  const contentTypeId = destination?.content_type_id ?? detail?.contenttypeid ?? "12"
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
@@ -232,7 +231,7 @@ export default async function TravelDetailPage({ params }: Props) {
 
       {/* 운영시간/체험/세계유산 등 부가 정보 (TourAPI detailIntro 의존) */}
       <Suspense fallback={<IntroSkeleton />}>
-        <IntroSection contentId={id} contentTypeId={contentTypeId} isKo={isKo} />
+        <IntroSection contentId={id} isKo={isKo} />
       </Suspense>
 
       {/* 반려동물 동반 정보 */}
