@@ -56,6 +56,23 @@ function contentTypeIdToNearbyType(contentTypeId: string): NearbyTourType | null
   }
 }
 
+// content_type_id를 requested types 안의 매칭 NearbyTourType 배열로 변환.
+// 39 → restaurant + cafe 동시 가능 (caller 요청에 따라).
+function nearbyTypesForContentTypeId(
+  contentTypeId: string,
+  requested: readonly NearbyTourType[],
+): NearbyTourType[] {
+  const result: NearbyTourType[] = [];
+  if (contentTypeId === "39") {
+    if (requested.includes("restaurant")) result.push("restaurant");
+    if (requested.includes("cafe")) result.push("cafe");
+    return result;
+  }
+  const single = contentTypeIdToNearbyType(contentTypeId);
+  if (single && requested.includes(single)) result.push(single);
+  return result;
+}
+
 function rowToNearbyTourItem(row: NearbyTourRpcRow, type: NearbyTourType): NearbyTourItem {
   return {
     id: `${type}-${row.content_id}`,
@@ -141,12 +158,15 @@ export async function getNearbyTourRecommendations({
     return empty;
   }
 
+  // content_type_id 39는 restaurant + cafe 양쪽에 매핑됨.
+  // requested types에 두 가지 모두 있으면 같은 row를 두 type 모두에 push.
   const grouped: NearbyTourRecommendations = { ...empty };
   for (const row of ((data as NearbyTourRpcRow[]) ?? [])) {
-    const nearbyType = contentTypeIdToNearbyType(row.content_type_id);
-    if (!nearbyType || !types.includes(nearbyType)) continue;
-    if (grouped[nearbyType].length >= limitPerType) continue;
-    grouped[nearbyType].push(rowToNearbyTourItem(row, nearbyType));
+    const candidateTypes = nearbyTypesForContentTypeId(row.content_type_id, types);
+    for (const t of candidateTypes) {
+      if (grouped[t].length >= limitPerType) continue;
+      grouped[t].push(rowToNearbyTourItem(row, t));
+    }
   }
   return grouped;
 }
