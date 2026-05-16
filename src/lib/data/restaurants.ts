@@ -110,7 +110,7 @@ export async function getRestaurantDetail(contentId: string): Promise<{
   // DB-first 패턴 (Step 2 plan): intro/images 모두 destinations 테이블 jsonb 컬럼에서 읽음.
   // 백필 안 된 row는 함수 내부에서 외부 호출 + upsert.
   const [introData, imageData] = await Promise.all([
-    getDestinationIntro(contentId, "39"),
+    getDestinationIntro(contentId),
     getDestinationImagesFromDb(contentId),
   ]);
 
