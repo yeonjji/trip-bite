@@ -18,7 +18,7 @@ if (!SUPABASE_URL || !SERVICE_ROLE_KEY || !TOUR_API_KEY) {
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
 const BASE_URL = "https://apis.data.go.kr/B551011/KorService2";
-const BATCH_SIZE = 100;
+const BATCH_SIZE = 1000;
 const ROW_SLEEP_MS = 150;
 
 async function fetchDetailIntro(contentId, contentTypeId) {
