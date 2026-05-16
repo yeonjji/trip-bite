@@ -1,17 +1,17 @@
-name: sync-destination-details
+name: sync-destination-intros
 
-# destinations.intro_data / image_data 백필 (intro_data IS NULL인 row만 처리, resume 지원)
+# detailIntro2 적재 — destination_intros에 row 없는 destination만 처리
 # KST 02:00 (UTC 17:00) 매일 실행. 수동 실행도 가능.
 
 on:
-  # PR1 후속: 스케줄 비활성화 (sync-destination-intros.yml / sync-destination-images.yml로 분할됨).
-  # 수동 실행은 rollback용으로 유지. PR3에서 파일 자체 삭제 예정.
+  schedule:
+    - cron: "0 17 * * *"
   workflow_dispatch:
 
 jobs:
   backfill:
     runs-on: ubuntu-latest
-    timeout-minutes: 350  # GitHub Actions 최대 6h 한도 내. TourAPI 한도에 막히면 자체 종료.
+    timeout-minutes: 350
 
     steps:
       - name: Checkout
@@ -36,4 +36,4 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
-        run: node scripts/sync-destination-details.mjs
+        run: node scripts/sync-destination-intros.mjs
