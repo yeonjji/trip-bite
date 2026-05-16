@@ -8,8 +8,8 @@ import type {
   NearbyTourItem,
   NearbyTourRecommendations,
   NearbyTourType,
-} from "@/lib/data/nearby-tour-recommendations";
-import { NEARBY_TOUR_PLACEHOLDER_IMAGE } from "@/lib/data/nearby-tour-recommendations";
+} from "@/lib/data/nearby-tour-recommendations-shared";
+import { NEARBY_TOUR_PLACEHOLDER_IMAGE } from "@/lib/data/nearby-tour-recommendations-shared";
 
 type FacilityNearbyType = NearbyTourType | "restaurant" | "cafe";
 

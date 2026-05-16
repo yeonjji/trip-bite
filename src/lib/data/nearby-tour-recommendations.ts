@@ -1,21 +1,18 @@
 import { unstable_cache } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import {
+  NEARBY_TOUR_PLACEHOLDER_IMAGE,
+  type NearbyTourItem,
+  type NearbyTourRecommendations,
+  type NearbyTourType,
+} from "@/lib/data/nearby-tour-recommendations-shared";
 
-export type NearbyTourType = "travel" | "festival" | "accommodation" | "restaurant" | "cafe";
-
-export interface NearbyTourItem {
-  id: string;
-  contentId: string;
-  title: string;
-  type: NearbyTourType;
-  address: string;
-  image: string;
-  lat: number;
-  lng: number;
-  distance: number;
-}
-
-export type NearbyTourRecommendations = Record<NearbyTourType, NearbyTourItem[]>;
+export {
+  NEARBY_TOUR_PLACEHOLDER_IMAGE,
+  type NearbyTourItem,
+  type NearbyTourRecommendations,
+  type NearbyTourType,
+};
 
 const CONTENT_TYPE_BY_NEARBY_TYPE: Record<NearbyTourType, string> = {
   travel: "12",
@@ -24,8 +21,6 @@ const CONTENT_TYPE_BY_NEARBY_TYPE: Record<NearbyTourType, string> = {
   restaurant: "39",
   cafe: "39",
 };
-
-export const NEARBY_TOUR_PLACEHOLDER_IMAGE = "/file.svg";
 
 const DEFAULT_RADIUS_METERS = 15_000;
 
