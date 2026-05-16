@@ -16,18 +16,6 @@ interface KakaoSearchResponse {
   meta: { total_count: number }
 }
 
-export interface KakaoTransitPlace {
-  id: string
-  place_name: string
-  place_url: string
-  distance: string // meters as string
-}
-
-interface KakaoCategoryResponse {
-  documents: (KakaoTransitPlace & { category_group_code: string })[]
-  meta: { total_count: number }
-}
-
 export async function searchKakaoPlace(
   query: string,
   lat?: number,
@@ -58,42 +46,5 @@ export async function searchKakaoPlace(
     return data.documents?.[0] ?? null
   } catch {
     return null
-  }
-}
-
-export async function searchNearbyTransit(
-  lat: number,
-  lng: number,
-  categoryCode: "SW8",
-  radius = 1000,
-  size = 5
-): Promise<KakaoTransitPlace[]> {
-  const key = process.env.KAKAO_REST_API_KEY
-  if (!key) return []
-
-  try {
-    const params = new URLSearchParams({
-      category_group_code: categoryCode,
-      x: String(lng),
-      y: String(lat),
-      radius: String(radius),
-      sort: "distance",
-      size: String(size),
-    })
-
-    const res = await fetch(
-      `https://dapi.kakao.com/v2/local/search/category.json?${params}`,
-      {
-        next: { revalidate: 86400 },
-        headers: { Authorization: `KakaoAK ${key}` },
-      }
-    )
-
-    if (!res.ok) return []
-
-    const data: KakaoCategoryResponse = await res.json()
-    return data.documents ?? []
-  } catch {
-    return []
   }
 }
